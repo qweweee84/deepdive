@@ -1,5 +1,5 @@
 /* --- Google Font Import --- */
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap');
 
 /* --- Global Reset & Base Styles --- */
 * {
@@ -55,65 +55,113 @@ body {
     gap: 1.5rem;
 }
 
-.card-link {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
+.infographic-list li {
+    position: relative;
     background-color: #ffffff;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    height: 100%;
-    text-align: center;
-    min-height: 120px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    overflow: hidden;
 }
 
-.card-link:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+.infographic-list li:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+}
+
+.card-link {
+    display: block;
+    text-decoration: none;
+    padding: 2.5rem 2rem 1.5rem 2rem;
+    height: auto;
+    position: relative;
 }
 
 .card-link:focus-visible {
     outline: 3px solid #3498db;
     outline-offset: 3px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
 .card-link .title {
-    font-size: 1.3rem;
-    color: #34495e;
+    font-size: 1.35rem;
+    color: #2c3e50;
     font-weight: 700;
+    text-align: center;
+    margin-bottom: 0;
+    line-height: 1.4;
 }
 
-/* --- YouTube Link Styling --- */
+/* --- YouTube Link Styling (Improved Button Design) --- */
 .youtube-link {
-    display: inline-block;
-    margin-top: 0.75rem;
-    font-size: 1rem;
-    color: #e74c3c;
-    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1.5rem 1rem 1.5rem 1rem;
+    padding: 0.85rem 1.5rem;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+    color: white;
     text-decoration: none;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative;
-    padding-left: 1.2rem;
-    transition: color 0.3s ease;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(238, 90, 82, 0.3);
 }
 
 .youtube-link::before {
-    content: "▶";
+    content: '';
     position: absolute;
-    left: 0;
     top: 0;
-    font-size: 1rem;
-    color: #e74c3c;
-}
-.youtube-link:hover {
-    color: #c0392b;
-    text-decoration: underline;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
 }
 
+.youtube-link:hover::before {
+    left: 100%;
+}
+
+.youtube-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(238, 90, 82, 0.4);
+    background: linear-gradient(135deg, #ff5252 0%, #d32f2f 100%);
+}
+
+.youtube-link:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(238, 90, 82, 0.3);
+}
+
+.play-icon {
+    width: 0;
+    height: 0;
+    border-left: 8px solid white;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    margin-left: 2px;
+}
+
+/* --- Card Hover Effects --- */
+.infographic-list li::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #3498db, #2ecc71, #f39c12, #e74c3c);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.infographic-list li:hover::before {
+    opacity: 1;
+}
 
 /* --- Responsive Design (Media Queries) --- */
 @media (min-width: 768px) {
@@ -129,5 +177,25 @@ body {
 @media (min-width: 1024px) {
     .infographic-list {
         grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .card-link {
+        padding: 2rem 1.5rem 1rem 1.5rem;
+    }
+    
+    .card-link .title {
+        font-size: 1.2rem;
+    }
+    
+    .youtube-link {
+        margin: 1rem 0.5rem 1rem 0.5rem;
+        padding: 0.75rem 1.25rem;
+        font-size: 0.9rem;
     }
 }
