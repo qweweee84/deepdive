@@ -91,18 +91,29 @@ body {
 /* --- YouTube Link Styling --- */
 .youtube-link {
     display: inline-block;
-    margin-top: 0.5rem;
-    font-size: 0.95rem;
+    margin-top: 0.75rem;
+    font-size: 1rem;
     color: #e74c3c;
-    font-weight: 500;
+    font-weight: 600;
     text-decoration: none;
+    position: relative;
+    padding-left: 1.2rem;
     transition: color 0.3s ease;
 }
 
+.youtube-link::before {
+    content: "▶";
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 1rem;
+    color: #e74c3c;
+}
 .youtube-link:hover {
     color: #c0392b;
     text-decoration: underline;
 }
+
 
 /* --- Responsive Design (Media Queries) --- */
 @media (min-width: 768px) {
