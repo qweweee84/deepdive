@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인포그래픽: 현명한 상속 및 증여 절세 전략</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .kpi-value {
+            font-weight: 900;
+            font-size: 3rem;
+            line-height: 1.2;
+        }
+        .kpi-unit {
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-left: 0.5rem;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .flowchart-box {
+            border: 2px solid;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            flex-grow: 1;
+        }
+        .flowchart-arrow {
+            font-size: 2.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+        h2 {
+            font-size: 2.25rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        p, li {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #334155;
+        }
+    </style>
+</head>
+<body class="bg-[#f0f4f8]">
+    
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+
+        <header class="text-center my-8 md:my-16">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-[#003f5c] mb-4">현명한 자산 이전 안내서</h1>
+            <p class="text-xl md:text-2xl text-[#665191]">상속 및 증여 절세 전략 완전 정복</p>
+        </header>
+
+        <section id="intro" class="card">
+            <h2 class="text-[#003f5c]">상속 vs 증여: 무엇이 다를까요?</h2>
+            <div class="text-center mb-8">
+                <p class="text-lg">평생 모은 소중한 자산을 자녀에게 물려주는 방법은 크게 두 가지입니다. 바로 '상속'과 '증여'입니다. 재산을 주는 시점에 따라 구분되며, 세금 계산 방식에 결정적인 차이가 있어 미리 계획하는 것이 매우 중요합니다.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-center">
+                <div class="p-6 border-4 border-dashed border-[#ff7c43] rounded-lg">
+                    <h3 class="text-[#d45087]">상속 (사후 이전)</h3>
+                    <p class="text-5xl mb-4">⚰️</p>
+                    <p>재산을 가진 사람이 <strong>사망</strong>한 후 재산이 이전되는 것</p>
+                    <p class="mt-4 p-2 bg-red-100 text-red-800 rounded-md font-bold"><strong>세금 방식: 유산세</strong><br>고인이 남긴 '전체 유산'에 대해 세금 부과</p>
+                </div>
+                <div class="p-6 border-4 border-dashed border-[#ffa600] rounded-lg">
+                    <h3 class="text-[#a05195]">증여 (사전 이전)</h3>
+                    <p class="text-5xl mb-4">🎁</p>
+                    <p>재산을 가진 사람이 <strong>생전</strong>에 무상으로 재산을 이전하는 것</p>
+                    <p class="mt-4 p-2 bg-green-100 text-green-800 rounded-md font-bold"><strong>세금 방식: 유산취득세</strong><br>재산을 '받는 사람'이 받은 만큼 각자 세금 부과</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="gifting-strategy" class="card">
+            <h2 class="text-[#003f5c]">최고의 절세 전략: 사전 증여 활용법</h2>
+            <div class="text-center mb-8">
+                <p class="text-lg">미리 계획하고 실행하는 사전 증여는 세금 부담을 크게 줄일 수 있는 가장 강력한 도구입니다. '10년 주기 비과세 한도'와 '가치 상승 자산'을 활용하는 것이 핵심입니다.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <h3>📊 10년 주기 증여재산 공제 한도 비교</h3>
+                    <p class="mb-4">증여세는 수증자(받는 사람)를 기준으로 10년마다 공제 한도가 초기화됩니다. 이 제도를 잘 활용하면 세금 없이 많은 자산을 이전할 수 있습니다.</p>
+                    <div class="chart-container">
+                        <canvas id="giftTaxDeductionChart"></canvas>
+                    </div>
+                </div>
+                <div class="text-center p-6 bg-[#f0f4f8] rounded-lg">
+                     <h3>✨ 10년 주기 활용 예시</h3>
+                     <p class="text-gray-600 mb-4">성인 자녀 1명에게 세금 없이 증여하려면?</p>
+                     <div class="space-y-3 text-left">
+                        <div class="flex items-start">
+                            <span class="text-2xl mr-3">👨‍👩‍👧</span>
+                            <p><strong>부모님</strong>이 10년간 <strong class="text-[#ff7c43] text-xl">5천만 원</strong> 증여</p>
+                        </div>
+                        <div class="flex items-start">
+                             <span class="text-2xl mr-3">👴</span>
+                            <p><strong>친할아버지</strong>가 10년간 <strong class="text-[#ff7c43] text-xl">5천만 원</strong> 증여</p>
+                        </div>
+                        <div class="flex items-start">
+                             <span class="text-2xl mr-3">👵</span>
+                            <p><strong>외할머니</strong>가 10년간 <strong class="text-[#ff7c43] text-xl">5천만 원</strong> 증여</p>
+                        </div>
+                     </div>
+                     <p class="mt-6 font-bold text-xl text-[#003f5c]">총 <strong class="text-[#d45087] text-2xl">1억 5천만 원</strong>을 비과세로 증여 가능!</p>
+                </div>
+            </div>
+
+            <hr class="my-12">
+
+            <div>
+                <h3 class="text-center">📈 가치가 오를 자산을 먼저 증여하세요</h3>
+                <p class="text-center mb-4">증여세는 증여 '당시'의 시가로 계산됩니다. 따라서 앞으로 가치가 크게 오를 부동산이나 주식을 미리 증여하면, 미래의 가치 상승분에 대한 세금을 피할 수 있습니다.</p>
+                <div class="chart-container h-96 max-h-[500px]">
+                    <canvas id="assetValueChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="mt-12 p-6 bg-red-50 border-l-4 border-red-500 text-red-800 rounded-r-lg">
+                <h3 class="font-bold text-red-900">🚨 반드시 알아야 할 '10년의 함정'</h3>
+                <p>상속개시일(사망일)로부터 10년 이내에 상속인에게 증여한 재산은 상속재산에 다시 합산되어 상속세가 계산됩니다. 사전 증여의 절세 효과를 온전히 누리려면, 증여 후 최소 10년 이상 건강하게 생존하는 것이 중요합니다. 따라서 한 살이라도 젊을 때 장기적인 계획을 세우는 것이 현명합니다.</p>
+            </div>
+        </section>
+
+        <section id="inheritance-deduction" class="card">
+            <h2 class="text-[#003f5c]">상속세 줄이는 핵심 공제 항목 3가지</h2>
+            <div class="text-center mb-8">
+                <p class="text-lg">상속세는 다양한 공제 제도를 통해 부담을 줄일 수 있습니다. 이 핵심 공제 항목들을 잘 활용하는 것이 상속세 절세의 열쇠입니다.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="chart-container !h-64 !max-h-64">
+                        <canvas id="lumpSumDeductionChart"></canvas>
+                    </div>
+                    <h3 class="mt-4">일괄공제</h3>
+                    <p>자녀 등 상속인이 있으면 기본적으로 <strong>5억 원</strong>을 공제받습니다. 상속재산이 5억 원 이하면 상속세가 없습니다.</p>
+                </div>
+                <div class="text-center">
+                    <div class="chart-container !h-64 !max-h-64">
+                        <canvas id="spouseDeductionChart"></canvas>
+                    </div>
+                    <h3 class="mt-4">배우자 상속공제</h3>
+                    <p>배우자가 생존 시 <strong>최소 5억 원</strong>에서 실제 상속받는 금액에 따라 <strong>최대 30억 원</strong>까지 공제 가능합니다.</p>
+                </div>
+                <div class="text-center">
+                    <div class="chart-container !h-64 !max-h-64">
+                         <canvas id="financialAssetDeductionChart"></canvas>
+                    </div>
+                    <h3 class="mt-4">금융재산 상속공제</h3>
+                    <p>예금, 주식 등 순금융재산의 20%를 <strong>최대 2억 원</strong>까지 공제받을 수 있습니다.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="final-step" class="card">
+            <h2 class="text-[#003f5c]">분쟁을 막는 현명한 마무리</h2>
+            <div class="text-center mb-8">
+                <p class="text-lg">완벽한 절세 계획도 가족 분쟁 앞에서는 의미를 잃습니다. 법적 효력을 갖춘 '유언장'과 진심이 담긴 '소통'으로 가족의 화목을 지키세요.</p>
+            </div>
+
+            <div>
+                <h3>📜 내 뜻을 지키는 법적 장치, 유언장 전격 비교</h3>
+                <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 mt-4">
+                    <div class="flowchart-box border-[#f95d6a]">
+                        <h4 class="text-xl font-bold mb-2 text-[#d45087]">자필증서 유언</h4>
+                        <ul class="text-left list-disc list-inside space-y-2">
+                            <li><strong>장점:</strong> 비용 없음, 간편함</li>
+                            <li><strong>단점:</strong> 엄격한 요건 불충족 시 무효 위험 높음 (주소, 날짜, 이름, 날인 필수)</li>
+                            <li><strong>결론:</strong> 신중한 접근 필요</li>
+                        </ul>
+                    </div>
+                    <div class="flowchart-arrow text-gray-400">vs</div>
+                    <div class="flowchart-box border-[#665191]">
+                        <h4 class="text-xl font-bold mb-2 text-[#665191]">공정증서 유언</h4>
+                        <ul class="text-left list-disc list-inside space-y-2">
+                            <li><strong>장점:</strong> 법적 효력 확실, 분쟁 가능성 최소화</li>
+                            <li><strong>단점:</strong> 공증 비용 발생 (최대 300만원), 증인 2명 필요</li>
+                            <li><strong>결론:</strong> 가장 안전하고 확실한 방법</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-12">
+
+            <div class="text-center p-8 bg-blue-50 rounded-lg">
+                <h3 class="text-[#2f4b7c]">🤝 모든 계획에 앞서는 지혜: 소통</h3>
+                <p class="text-2xl my-4">💬</p>
+                <p class="max-w-2xl mx-auto">수많은 상속 분쟁의 진짜 원인은 돈이 아닌 '소통의 부재'에서 오는 서운함과 의심입니다. 재산 목록과 분배 계획의 이유를 자녀들에게 진솔하게 설명하고 이해를 구하는 과정이 반드시 필요합니다. 이것이야말로 자녀에게 물려줄 수 있는 가장 값진 유산입니다.</p>
+            </div>
+        </section>
+
+        <footer class="text-center my-8 md:my-12">
+            <p class="text-lg font-bold text-[#003f5c]">기억하세요, 최고의 상속은 재산이 아니라 가족의 화목을 지키는 지혜입니다.</p>
+            <p class="mt-2 text-gray-500">50플러스 딥리서치가 여러분의 현명한 자산 계획을 응원합니다.</p>
+        </footer>
+
+    </div>
+
+    <!-- Color Palette: Brilliant Blues (#003f5c, #2f4b7c, #665191, #a05195, #d45087, #f95d6a, #ff7c43, #ffa600) -->
+    <!-- Infographic Narrative Plan: 
+        1.  Hook: Compare Inheritance vs. Gifting to establish the core problem.
+        2.  Core Strategy: Detail Advance Gifting with charts on tax-free limits (Bar Chart) and the value-freezing effect (Line Chart).
+        3.  Key Tactics: Visualize major Inheritance Tax Deductions using Donut Charts for quick comprehension.
+        4.  Human Element: Contrast Will types with a CSS-based flowchart and emphasize Communication as the ultimate solution.
+        5.  Conclusion: Reinforce the core message. 
+    -->
+    <!-- Visualization Choices:
+        1.  Gift Tax Limits -> Goal: Compare -> Chart.js Bar Chart. Justification: Clearly compares discrete values (deduction amounts) across different categories (recipients). NO SVG.
+        2.  Asset Value Growth -> Goal: Change -> Chart.js Line Chart. Justification: Best for showing a trend over time and comparing two scenarios (gifting vs. inheriting). NO SVG.
+        3.  Inheritance Deductions -> Goal: Inform -> Chart.js Donut Chart. Justification: Visually represents a single, important data point in an engaging way, suitable for an infographic. NO SVG.
+        4.  Will Comparison -> Goal: Organize -> Structured HTML/CSS with Tailwind. Justification: Creates a clear, responsive flowchart comparing two processes without relying on prohibited SVG or Mermaid JS.
+    -->
+    <!-- NEITHER Mermaid JS NOR SVG were used anywhere in the output. -->
+    
+    <script>
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+                return label.join(' ');
+            }
+            return label;
+        };
+
+        const sharedChartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        title: tooltipTitleCallback
+                    }
+                }
+            }
+        };
+
+        const sharedDoughnutOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    enabled: false
+                }
+            }
+        };
+
+        new Chart(document.getElementById('giftTaxDeductionChart'), {
+            type: 'bar',
+            data: {
+                labels: ['배우자', '성인 자녀', '미성년 자녀', '기타 친족'],
+                datasets: [{
+                    label: '10년간 비과세 한도 (원)',
+                    data: [600000000, 50000000, 20000000, 10000000],
+                    backgroundColor: ['#665191', '#a05195', '#d45087', '#f95d6a'],
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                ...sharedChartOptions,
+                plugins: {
+                    ...sharedChartOptions.plugins,
+                     legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        ticks: {
+                            callback: function(value, index, values) {
+                                if (value >= 100000000) {
+                                    return (value / 100000000) + '억';
+                                }
+                                return (value / 10000) + '만';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('assetValueChart'), {
+            type: 'line',
+            data: {
+                labels: ['증여 시점', '5년 후', '10년 후', '15년 후', '20년 후 (상속 시점)'],
+                datasets: [
+                    {
+                        label: '상속 시 과세 기준 가치',
+                        data: [5, 7, 10, 13, 15],
+                        borderColor: '#f95d6a',
+                        backgroundColor: 'rgba(249, 93, 106, 0.2)',
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: '증여 시 과세 기준 가치',
+                        data: [5, 5, 5, 5, 5],
+                        borderColor: '#ffa600',
+                        borderDash: [5, 5],
+                        backgroundColor: 'transparent',
+                        fill: false,
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                ...sharedChartOptions,
+                 scales: {
+                    y: {
+                         ticks: {
+                            callback: function(value, index, values) {
+                                return value + '억 원';
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: '자산 가치'
+                        }
+                    }
+                }
+            }
+        });
+
+        const createDoughnutChart = (id, label, value, color) => {
+            new Chart(document.getElementById(id), {
+                type: 'doughnut',
+                data: {
+                    labels: [label],
+                    datasets: [{
+                        data: [1],
+                        backgroundColor: [color],
+                        borderWidth: 0
+                    }]
+                },
+                options: sharedDoughnutOptions,
+                plugins: [{
+                    id: 'doughnut-center-text',
+                    beforeDraw: function(chart) {
+                        const ctx = chart.ctx;
+                        const {width, height} = chart;
+                        ctx.restore();
+                        const fontSize = (height / 114).toFixed(2);
+                        ctx.font = `bold ${fontSize}rem Noto Sans KR`;
+                        ctx.textBaseline = "middle";
+                        ctx.fillStyle = color;
+
+                        const text = value;
+                        const textX = Math.round((width - ctx.measureText(text).width) / 2);
+                        const textY = height / 2;
+
+                        ctx.fillText(text, textX, textY);
+                        ctx.save();
+                    }
+                }]
+            });
+        };
+        
+        createDoughnutChart('lumpSumDeductionChart', '일괄공제', '5억 원', '#003f5c');
+        createDoughnutChart('spouseDeductionChart', '배우자공제', '최대 30억', '#665191');
+        createDoughnutChart('financialAssetDeductionChart', '금융재산공제', '최대 2억', '#ff7c43');
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>퇴행성 무릎 관절염 통합 관리 인포그래픽</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F4F7F5;
+        }
+        .brand-text-deep-blue { color: #0A2463; }
+        .brand-text-bright-blue { color: #3E92CC; }
+        .brand-text-orange { color: #FF9F1C; }
+        .brand-text-red { color: #E71D36; }
+        .brand-text-gray { color: #6A7A8C; }
+        .brand-bg-deep-blue { background-color: #0A2463; }
+        .brand-bg-bright-blue { background-color: #3E92CC; }
+        .brand-bg-orange { background-color: #FF9F1C; }
+        .brand-bg-red { background-color: #E71D36; }
+        .brand-bg-gray { background-color: #6A7A8C; }
+        .brand-bg-light-gray { background-color: #F4F7F5; }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .kpi-card {
+            background-color: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+        .flowchart-node {
+            background-color: white;
+            border: 2px solid #3E92CC;
+            color: #0A2463;
+        }
+        .flowchart-arrow {
+            color: #3E92CC;
+            font-weight: bold;
+        }
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 900;
+            color: #0A2463;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .section-subtitle {
+            font-size: 1.125rem;
+            color: #6A7A8C;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 3rem auto;
+        }
+        .card-title {
+            font-weight: 700;
+            color: #0A2463;
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+    </style>
+</head>
+<body class="brand-bg-light-gray">
+
+    <div class="container mx-auto p-4 md:p-8">
+        
+        <header class="text-center my-12">
+            <h1 class="text-4xl md:text-6xl font-black brand-text-deep-blue mb-4">퇴행성 무릎 관절염</h1>
+            <p class="text-xl md:text-2xl brand-text-bright-blue font-bold">현명한 관리로 되찾는 활기찬 일상</p>
+            <div class="mt-6 text-2xl md:text-3xl font-bold brand-text-orange p-4 bg-white inline-block rounded-lg shadow-lg">
+                관절염, 단순한 '노화'가 아닌 '관리 가능한 질환'입니다.
+            </div>
+        </header>
+
+        <main>
+            <section id="understanding" class="my-16">
+                <h2 class="section-title">1. 바로 알기: 퇴행성 관절염의 정체</h2>
+                <p class="section-subtitle">단순히 뼈가 닳는 것이 아닙니다. 우리 몸 속 '염증과의 전쟁'을 이해하는 것이 관리의 첫걸음입니다.</p>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                    <div class="kpi-card">
+                        <h3 class="card-title">염증과 파괴의 악순환</h3>
+                        <p class="mb-6 brand-text-gray">퇴행성 관절염은 기계적 손상으로 시작되어 염증 반응을 통해 스스로 연골을 파괴하는 악순환에 빠지게 됩니다.</p>
+                        <div class="space-y-4">
+                            <div class="flowchart-node text-center p-3 rounded-lg shadow">① 기계적 스트레스 (노화, 비만, 외상)</div>
+                            <div class="text-center flowchart-arrow text-3xl">↓</div>
+                            <div class="flowchart-node text-center p-3 rounded-lg shadow">② 연골 손상 및 미세 조각 발생</div>
+                            <div class="text-center flowchart-arrow text-3xl">↓</div>
+                            <div class="flowchart-node text-center p-3 rounded-lg shadow">③ 면역계의 '이물질' 인식 → 활막 염증 발생</div>
+                            <div class="text-center flowchart-arrow text-3xl">↓</div>
+                             <div class="flowchart-node text-center p-3 rounded-lg shadow">④ 염증 물질 분비 (사이토카인)</div>
+                            <div class="text-center flowchart-arrow text-3xl">↓</div>
+                            <div class="flowchart-node text-center p-3 rounded-lg shadow brand-bg-red text-white border-red-500">⑤ 연골 파괴 효소 (MMP) 생성 폭증 → 연골 파괴 가속화</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <h3 class="card-title">퇴행성 vs 류마티스 관절염 전격 비교</h3>
+                        <p class="mb-6 brand-text-gray">증상은 비슷해도 원인과 치료법은 완전히 다릅니다. 정확한 구분이 중요합니다.</p>
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="p-3 font-bold brand-text-deep-blue border-b-2 border-gray-200">구분</th>
+                                    <th class="p-3 font-bold brand-text-bright-blue border-b-2 border-gray-200">퇴행성 관절염</th>
+                                    <th class="p-3 font-bold brand-text-orange border-b-2 border-gray-200">류마티스 관절염</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-gray-200">
+                                    <td class="p-3 font-bold">원인</td>
+                                    <td class="p-3">기계적 마모 & 퇴행</td>
+                                    <td class="p-3">자가면역 공격</td>
+                                </tr>
+                                <tr class="border-b border-gray-200">
+                                    <td class="p-3 font-bold">통증</td>
+                                    <td class="p-3">활동 후(오후) 악화</td>
+                                    <td class="p-3">기상 후(아침) 악화</td>
+                                </tr>
+                                <tr class="border-b border-gray-200">
+                                    <td class="p-3 font-bold">뻣뻣함</td>
+                                    <td class="p-3">30분 미만</td>
+                                    <td class="p-3">1시간 이상</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold">부위</td>
+                                    <td class="p-3">비대칭적 (무릎 등)</td>
+                                    <td class="p-3">대칭적 (손/발가락 등)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="exercise" class="my-16">
+                <h2 class="section-title">2. 현명한 운동: 관절을 지키는 약</h2>
+                <p class="section-subtitle">통증이 두려워 움직이지 않으면 근육이 약해져 관절 부담이 커집니다. '독'이 되는 운동은 피하고 '약'이 되는 운동을 꾸준히 실천하세요.</p>
+                <div class="kpi-card mb-8">
+                    <h3 class="card-title text-center">무릎 스트레스 지수 비교</h3>
+                    <div class="chart-container">
+                        <canvas id="exerciseChart"></canvas>
+                    </div>
+                    <p class="text-center mt-4 brand-text-gray">관절에 가해지는 충격과 압박을 최소화하는 운동 선택이 핵심입니다.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="kpi-card">
+                        <h3 class="card-title">① 의자에 앉아 다리 들기</h3>
+                        <p class="brand-text-gray mb-4">체중 부하 없이 허벅지 앞 근육(대퇴사두근)을 직접 강화합니다.</p>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><span class="font-bold">자세:</span> 허리 펴고 의자에 앉아 한쪽 다리를 수평으로 들어 올리기</li>
+                            <li><span class="font-bold">횟수:</span> 10초 유지, 15회씩 3세트</li>
+                            <li><span class="font-bold">주의:</span> 상체 반동 금지! 오직 허벅지 힘으로만!</li>
+                        </ul>
+                    </div>
+                    <div class="kpi-card">
+                        <h3 class="card-title">② 누워서 다리 들어 올리기</h3>
+                        <p class="brand-text-gray mb-4">통증이 심할 때도 가장 안전하게 할 수 있는 기본 운동입니다.</p>
+                         <ul class="list-disc list-inside space-y-2">
+                            <li><span class="font-bold">자세:</span> 누워서 한쪽 다리를 반대편 무릎 높이까지 들어 올리기</li>
+                            <li><span class="font-bold">횟수:</span> 10초 유지, 15회씩 3세트</li>
+                            <li><span class="font-bold">주의:</span> 허리가 뜨지 않게 복부에 힘주기!</li>
+                        </ul>
+                    </div>
+                    <div class="kpi-card">
+                        <h3 class="card-title">③ 실내 자전거 안장 높이</h3>
+                        <p class="brand-text-gray mb-4">안장 높이가 운동 효과와 무릎 건강을 좌우합니다.</p>
+                        <div class="flex flex-col items-center justify-center h-full">
+                            <div class="w-24 h-24 brand-bg-bright-blue rounded-full flex items-center justify-center text-white text-2xl font-bold">10-15°</div>
+                            <p class="mt-4 text-center font-bold">페달이 가장 낮은 지점에 있을 때,<br>무릎이 살짝 구부러지는 각도</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="nutrition" class="my-16">
+                <h2 class="section-title">3. 항염 식단: 통증을 잠재우는 힘</h2>
+                <p class="section-subtitle">음식은 염증에 불을 붙이기도, 불을 끄기도 합니다. 내 몸의 염증을 다스리는 식단을 선택하세요.</p>
+                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div class="kpi-card">
+                        <h3 class="card-title text-center">내 몸의 소방수, 항염증 식품</h3>
+                        <div class="chart-container h-64 md:h-80">
+                            <canvas id="nutritionChart"></canvas>
+                        </div>
+                        <p class="text-center mt-4 brand-text-gray">염증 억제 영양소가 풍부한 식품으로 식단을 채워보세요.</p>
+                    </div>
+                    <div class="kpi-card brand-bg-red text-white">
+                        <h3 class="card-title text-white text-center">염증에 기름 붓는 식품들: 반드시 피하세요!</h3>
+                        <ul class="space-y-4 mt-6">
+                            <li class="flex items-center">
+                                <span class="text-2xl mr-4">🍔</span>
+                                <div>
+                                    <h4 class="font-bold">가공식품, 붉은 고기</h4>
+                                    <p class="text-sm opacity-90">포화지방, 최종당화산물(AGEs)이 염증을 증폭시킵니다.</p>
+                                </div>
+                            </li>
+                            <li class="flex items-center">
+                                <span class="text-2xl mr-4">🍩</span>
+                                <div>
+                                    <h4 class="font-bold">설탕, 정제 탄수화물</h4>
+                                    <p class="text-sm opacity-90">염증성 사이토카인 분비를 촉진하고 연골을 딱딱하게 만듭니다.</p>
+                                </div>
+                            </li>
+                             <li class="flex items-center">
+                                <span class="text-2xl mr-4">🍟</span>
+                                <div>
+                                    <h4 class="font-bold">트랜스지방, 튀김</h4>
+                                    <p class="text-sm opacity-90">체내 염증 수치를 직접적으로 높이는 최악의 지방입니다.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                 </div>
+            </section>
+
+            <section id="lifestyle" class="my-16">
+                <h2 class="section-title">4. 똑똑한 생활 습관: 무릎 부담 줄이기</h2>
+                <p class="section-subtitle">일상 속 작은 변화가 모여 무릎의 수명을 연장합니다. 오늘부터 하나씩 실천해보세요.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="kpi-card text-center col-span-1 md:col-span-2 lg:col-span-1">
+                        <h3 class="card-title">1kg의 기적, 체중 관리</h3>
+                        <p class="brand-text-gray mb-4">체중 감량은 최고의 비수술적 치료법입니다.</p>
+                        <div class="my-6">
+                            <p class="brand-text-deep-blue font-bold text-lg">체중 <span class="brand-text-red text-3xl font-black">1kg</span> 감량 시</p>
+                            <p class="text-5xl my-4 flowchart-arrow">⇩</p>
+                            <p class="brand-text-deep-blue font-bold text-lg">무릎 부담 <span class="brand-text-bright-blue text-5xl font-black">4kg</span> 감소</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                         <h3 class="card-title">올바른 지팡이 사용법</h3>
+                        <p class="brand-text-gray mb-4">지팡이는 체중을 분산시켜 통증을 줄여줍니다.</p>
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="font-bold brand-text-bright-blue">▶ 짚는 손</h4>
+                                <p>통증이 있는 다리의 <span class="font-bold brand-text-red">반대쪽 손</span>으로 짚기</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold brand-text-bright-blue">▶ 오를 때 (오·건·아·지)</h4>
+                                <p>건강한 다리 → 아픈 다리+지팡이</p>
+                            </div>
+                            <div>
+                                 <h4 class="font-bold brand-text-bright-blue">▶ 내려갈 때 (내·지·아·건)</h4>
+                                <p>지팡이 → 아픈 다리 → 건강한 다리</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                         <h3 class="card-title">좌식 생활은 이제 그만!</h3>
+                        <p class="brand-text-gray mb-4">바닥에 앉는 습관은 무릎 관절의 최대 적입니다.</p>
+                        <div class="flex justify-around items-end mt-8">
+                            <div class="text-center">
+                                <div class="w-20 h-20 bg-red-100 border-4 border-dashed border-red-500 rounded-lg flex items-center justify-center mb-2"><span class="text-3xl">🧎</span></div>
+                                <p class="font-bold brand-text-red">높은 압력</p>
+                                <p class="text-sm brand-text-gray">쪼그려 앉기<br>양반다리</p>
+                            </div>
+                             <div class="text-center">
+                                <div class="w-20 h-20 bg-blue-100 border-4 border-dashed border-blue-500 rounded-lg flex items-center justify-center mb-2"><span class="text-3xl">🪑</span></div>
+                                <p class="font-bold brand-text-bright-blue">낮은 압력</p>
+                                <p class="text-sm brand-text-gray">의자 사용<br>입식 생활</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="text-center mt-16 py-8 border-t-2 border-gray-200">
+            <p class="brand-text-deep-blue font-bold text-xl">이제 당신의 무릎 건강, 적극적으로 관리할 시간입니다.</p>
+            <p class="brand-text-gray mt-2 text-sm">본 정보는 제공된 리서치 자료를 바탕으로 제작되었으며, 의학적 진단이나 처방을 대체할 수 없습니다.</p>
+        </footer>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const wrapLabel = (label) => {
+        const maxLength = 16;
+        if (typeof label !== 'string' || label.length <= maxLength) {
+            return label;
+        }
+        const words = label.split(' ');
+        const lines = [];
+        let currentLine = '';
+        for (const word of words) {
+            if ((currentLine + ' ' + word).trim().length > maxLength) {
+                lines.push(currentLine.trim());
+                currentLine = word;
+            } else {
+                currentLine = (currentLine + ' ' + word).trim();
+            }
+        }
+        if (currentLine) {
+            lines.push(currentLine.trim());
+        }
+        return lines;
+    };
+
+    const tooltipTitleCallback = (tooltipItems) => {
+        const item = tooltipItems[0];
+        let label = item.chart.data.labels[item.dataIndex];
+        if (Array.isArray(label)) {
+            return label.join(' ');
+        }
+        return label;
+    };
+    
+    const exerciseData = {
+        labels: ['쪼그려 앉기', '험준한 등산', '달리기', '평지 걷기', '실내 자전거', '수영/수중운동'].map(wrapLabel),
+        datasets: [{
+            label: '무릎 스트레스 지수 (상대적)',
+            data: [95, 80, 65, 30, 20, 10],
+            backgroundColor: [
+                '#E71D36',
+                '#E71D36',
+                '#FF9F1C',
+                '#3E92CC',
+                '#3E92CC',
+                '#0A2463'
+            ],
+            borderColor: '#FFFFFF',
+            borderWidth: 2,
+            axis: 'y',
+        }]
+    };
+
+    const exerciseConfig = {
+        type: 'bar',
+        data: exerciseData,
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        title: tooltipTitleCallback
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: '스트레스 지수 (높을수록 부담 가중)',
+                        color: '#6A7A8C'
+                    }
+                },
+                y: {
+                    ticks: {
+                       font: {
+                          size: 10
+                       }
+                    }
+                }
+            }
+        }
+    };
+
+    const exerciseCtx = document.getElementById('exerciseChart').getContext('2d');
+    new Chart(exerciseCtx, exerciseConfig);
+    
+    const nutritionData = {
+        labels: ['등 푸른 생선 (오메가3)', '녹색 잎채소 (항산화)', '베리류 (폴리페놀)', '견과류', '엑스트라 버진 올리브유'].map(wrapLabel),
+        datasets: [{
+            label: '항염증 식품 구성',
+            data: [30, 25, 20, 15, 10],
+            backgroundColor: [
+                '#0A2463',
+                '#3E92CC',
+                '#6A7A8C',
+                '#FF9F1C',
+                '#D8D8D8'
+            ],
+            hoverOffset: 4
+        }]
+    };
+    
+    const nutritionConfig = {
+        type: 'doughnut',
+        data: nutritionData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 15,
+                        padding: 15
+                    }
+                },
+                tooltip: {
+                     callbacks: {
+                        title: tooltipTitleCallback
+                    }
+                }
+            }
+        }
+    };
+    
+    const nutritionCtx = document.getElementById('nutritionChart').getContext('2d');
+    new Chart(nutritionCtx, nutritionConfig);
+});
+</script>
+
+</body>
+</html>

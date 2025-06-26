@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>뇌 건강 통장을 채우는 습관: 치매 예방 인포그래픽</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 640px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-[#00A5E3] mb-4">뇌 건강 통장을 채우는 습관</h1>
+            <p class="text-lg text-gray-600">과학적 근거에 기반한 치매 예방 가이드로 빛나는 당신의 내일을 지키세요.</p>
+        </header>
+
+        <main class="space-y-12">
+
+            <section id="data-overview" class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-2xl font-bold text-center mb-4 text-[#00A5E3]">치매, 예방할 수 있을까요?</h2>
+                    <p class="text-center text-gray-600 mb-6">세계적인 의학 저널 '란셋'의 2020년 보고서에 따르면, 생활 습관 개선으로 관리 가능한 12가지 위험 요인을 통해 전 세계 치매 사례의 상당 부분을 예방할 수 있다고 합니다. 이것은 치매가 운명이 아니라 선택의 문제일 수 있다는 강력한 증거입니다.</p>
+                    <div class="chart-container mx-auto max-w-xs">
+                        <canvas id="dementiaRiskChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-2xl font-bold text-center mb-4 text-[#00A5E3]">식단이 만드는 기적</h2>
+                    <p class="text-center text-gray-600 mb-6">'마인드(MIND) 식단'을 꾸준히 실천하면 알츠하이머병 발병 위험을 크게 낮출 수 있습니다. 특정 영양제가 아닌, 전체적인 식사 패턴이 뇌 건강의 핵심입니다.</p>
+                    <div class="text-center">
+                        <p class="text-lg text-gray-700">알츠하이머 발병 위험</p>
+                        <p class="text-7xl md:text-8xl font-extrabold text-[#FF5768] my-4">최대 53%</p>
+                        <p class="text-lg text-gray-700">감소 효과</p>
+                    </div>
+                    <p class="text-xs text-center text-gray-500 mt-6">Rush University Medical Center 연구 결과</p>
+                </div>
+            </section>
+            
+            <section id="myths-truths">
+                <h2 class="text-3xl font-bold text-center mb-8">가장 흔한 오해와 핵심 진실 3가지</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white rounded-2xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4">오해 1: 유전병이라 피할 수 없다?</h3>
+                        <p class="text-red-500 mb-4 line-through">부모님이 치매면 나도 어쩔 수 없이 걸린다.</p>
+                        <h4 class="font-semibold text-green-600 mb-2">✅ 핵심 진실</h4>
+                        <p class="text-gray-700">노인성 치매의 80% 이상은 유전병이 아닙니다. 유전자보다 고혈압, 당뇨, 비만, 흡연, 운동 부족 등 생활 습관의 영향이 훨씬 더 큽니다. 우리의 선택으로 충분히 예방 가능합니다.</p>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4">오해 2: 고스톱/퍼즐만 하면 된다?</h3>
+                        <p class="text-red-500 mb-4 line-through">머리 쓰는 놀이를 하니 뇌는 건강할 것이다.</p>
+                        <h4 class="font-semibold text-green-600 mb-2">✅ 핵심 진실</h4>
+                        <p class="text-gray-700">'익숙한 자극'이 아닌 '새롭고 도전적인 자극'이 핵심입니다. 뇌의 신경망을 다양하게 만드는 외국어, 악기, 춤 배우기 등이 '인지 예비능'을 키워 뇌를 더 튼튼하게 만듭니다.</p>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4">오해 3: 뇌 영양제 하나면 충분하다?</h3>
+                        <p class="text-red-500 mb-4 line-through">기억력에 좋다는 영양제 하나만 챙겨 먹으면 안심이다.</p>
+                        <h4 class="font-semibold text-green-600 mb-2">✅ 핵심 진실</h4>
+                        <p class="text-gray-700">단독으로 치매를 예방하는 영양제는 없습니다. 중요한 것은 특정 성분이 아닌, 전체적인 '식단'입니다. 운동, 식단, 두뇌 활동, 사회적 교류가 함께 어우러져야 합니다.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="action-plan">
+                <h2 class="text-3xl font-bold text-center mb-8">뇌 건강 통장을 채우는 실천 계획</h2>
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-2xl font-bold text-[#8DD7BF] mb-4 text-center">🧠 뇌를 살리는 식단 (MIND Diet)</h3>
+                            <div class="p-4 bg-green-50 rounded-lg">
+                                <h4 class="font-bold text-lg text-green-800 mb-3">👍 강력 추천 (더 자주 드세요)</h4>
+                                <ul class="space-y-2 text-gray-700">
+                                    <li class="flex items-center"><span class="text-green-500 mr-2">●</span>녹색 잎채소, 기타 모든 채소</li>
+                                    <li class="flex items-center"><span class="text-green-500 mr-2">●</span>베리류 (블루베리, 딸기 등)</li>
+                                    <li class="flex items-center"><span class="text-green-500 mr-2">●</span>견과류 (호두, 아몬드 등)</li>
+                                    <li class="flex items-center"><span class="text-green-500 mr-2">●</span>올리브유, 통곡물, 콩류</li>
+                                    <li class="flex items-center"><span class="text-green-500 mr-2">●</span>등푸른 생선, 가금류</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-400 mb-4 text-center invisible md:visible">.</h3>
+                            <div class="p-4 bg-red-50 rounded-lg mt-0 md:mt-11">
+                                <h4 class="font-bold text-lg text-red-800 mb-3">👎 절대 금물 (피하세요)</h4>
+                                <ul class="space-y-2 text-gray-700">
+                                    <li class="flex items-center"><span class="text-red-500 mr-2">●</span>붉은 육류 (과도한 섭취)</li>
+                                    <li class="flex items-center"><span class="text-red-500 mr-2">●</span>버터, 마가린, 치즈 (과도한 섭취)</li>
+                                    <li class="flex items-center"><span class="text-red-500 mr-2">●</span>패스트푸드, 튀김류</li>
+                                    <li class="flex items-center"><span class="text-red-500 mr-2">●</span>과자, 케이크, 단 음료</li>
+                                    <li class="flex items-center"><span class="text-red-500 mr-2">●</span>가공육 (햄, 소시지 등)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="lifestyle">
+                <h2 class="text-3xl font-bold text-center mb-8">뇌를 살리는 습관 vs 뇌를 망치는 습관</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                        <h3 class="text-2xl font-bold text-center mb-6">👍 뇌를 깨우는 5가지 습관</h3>
+                        <ol class="space-y-4">
+                           <li class="flex items-start"><span class="text-2xl font-bold text-[#00A5E3] mr-3">1.</span><div><strong class="font-semibold">규칙적인 운동</strong><p class="text-sm text-gray-600">주 150분 이상 빠르게 걷기, 자전거 등</p></div></li>
+                           <li class="flex items-start"><span class="text-2xl font-bold text-[#00A5E3] mr-3">2.</span><div><strong class="font-semibold">새로운 도전</strong><p class="text-sm text-gray-600">외국어, 악기, 그림 등 낯선 배움을 즐기기</p></div></li>
+                           <li class="flex items-start"><span class="text-2xl font-bold text-[#00A5E3] mr-3">3.</span><div><strong class="font-semibold">사회적 교류</strong><p class="text-sm text-gray-600">가족, 친구와 깊이있는 대화, 동호회 활동</p></div></li>
+                           <li class="flex items-start"><span class="text-2xl font-bold text-[#00A5E3] mr-3">4.</span><div><strong class="font-semibold">적극적인 두뇌활동</strong><p class="text-sm text-gray-600">독서, 신문 읽기, 일기 쓰기</p></div></li>
+                           <li class="flex items-start"><span class="text-2xl font-bold text-[#00A5E3] mr-3">5.</span><div><strong class="font-semibold">질 좋은 수면</strong><p class="text-sm text-gray-600">하루 7~8시간의 충분하고 깊은 잠</p></div></li>
+                        </ol>
+                    </div>
+                     <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                        <h3 class="text-2xl font-bold text-center mb-6">👎 뇌를 잠재우는 5가지 습관</h3>
+                         <ol class="space-y-4">
+                           <li class="flex items-start"><span class="text-2xl font-bold text-[#FF5768] mr-3">1.</span><div><strong class="font-semibold">좌식 생활</strong><p class="text-sm text-gray-600">하루 종일 앉거나 누워 지내는 것</p></div></li>
+                           <li class="flex items-start"><span class="text-2xl font-bold text-[#FF5768] mr-3">2.</span><div><strong class="font-semibold">사회적 고립</strong><p class="text-sm text-gray-600">사람들과의 교류 단절, 외로움</p></div></li>
+                           <li class="flex items-start"><span class="text-2xl font-bold text-[#FF5768] mr-3">3.</span><div><strong class="font-semibold">만성 스트레스</strong><p class="text-sm text-gray-600">우울감, 스트레스를 풀지 않고 방치하는 것</p></div></li>
+                           <li class="flex items-start"><span class="text-2xl font-bold text-[#FF5768] mr-3">4.</span><div><strong class="font-semibold">과도한 음주</strong><p class="text-sm text-gray-600">습관적인 과음 및 폭음</p></div></li>
+                           <li class="flex items-start"><span class="text-2xl font-bold text-[#FF5768] mr-3">5.</span><div><strong class="font-semibold">흡연</strong><p class="text-sm text-gray-600">직접 흡연 및 간접흡연 모두 해당</p></div></li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="progressive-overload">
+                <h2 class="text-3xl font-bold text-center mb-8">뇌도 근육처럼, 점진적으로 단련하세요!</h2>
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <p class="text-center text-gray-600 mb-8">매번 같은 난이도의 활동은 뇌를 성장시키지 못합니다. '조금 더 어렵게' 도전하는 '점진적 과부하' 원리로 뇌의 신경망을 8차선 고속도로처럼 넓고 튼튼하게 만드세요.</p>
+                    <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4">
+                        <div class="text-center p-4 border-2 border-gray-200 rounded-lg w-full md:w-1/4">
+                            <p class="text-4xl mb-2">🎹</p>
+                            <p class="font-bold">1단계</p>
+                            <p class="text-sm">음계 익히기</p>
+                        </div>
+                        <div class="text-2xl text-gray-400 transform md:rotate-0 rotate-90">&rarr;</div>
+                        <div class="text-center p-4 border-2 border-gray-200 rounded-lg w-full md:w-1/4">
+                            <p class="text-4xl mb-2">🎶</p>
+                            <p class="font-bold">2단계</p>
+                            <p class="text-sm">동요 연주하기</p>
+                        </div>
+                        <div class="text-2xl text-gray-400 transform md:rotate-0 rotate-90">&rarr;</div>
+                        <div class="text-center p-4 border-2 border-blue-200 bg-blue-50 rounded-lg w-full md:w-1/4">
+                            <p class="text-4xl mb-2">🎼</p>
+                            <p class="font-bold">3단계</p>
+                            <p class="text-sm">양손으로 화음 넣기</p>
+                        </div>
+                        <div class="text-2xl text-gray-400 transform md:rotate-0 rotate-90">&rarr;</div>
+                        <div class="text-center p-4 border-2 border-blue-400 bg-blue-100 rounded-lg w-full md:w-1/4">
+                            <p class="text-4xl mb-2">🏆</p>
+                            <p class="font-bold">4단계</p>
+                            <p class="text-sm">좋아하는 곡 완주하기</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+        
+        <footer class="text-center mt-16 py-8 border-t-2 border-[#00A5E3]">
+            <h3 class="text-2xl font-bold mb-4">오늘 당장 시작할 수 있는 가장 쉬운 첫걸음</h3>
+            <p class="text-lg text-gray-700">오늘 저녁 식사 후, 딱 <strong class="text-[#FFBF65] font-extrabold text-xl">15분</strong>만 집 주변을 가볍게 산책해 보세요.<br>그것이 바로 당신의 뇌 건강 통장에 넣는 소중한 첫 번째 입금입니다.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        const wrapLabel = (label, maxWidth) => {
+            if (label.length <= maxWidth) {
+                return label;
+            }
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = '';
+            words.forEach(word => {
+                if ((currentLine + ' ' + word).length > maxWidth) {
+                    lines.push(currentLine.trim());
+                    currentLine = word;
+                } else {
+                    currentLine += ' ' + word;
+                }
+            });
+            lines.push(currentLine.trim());
+            return lines;
+        };
+        
+        const dementiaCtx = document.getElementById('dementiaRiskChart').getContext('2d');
+        const dementiaRiskChart = new Chart(dementiaCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['관리 가능 위험 요인', '기타 요인'],
+                datasets: [{
+                    label: '치매 위험 요인',
+                    data: [40, 60],
+                    backgroundColor: [
+                        '#00A5E3',
+                        '#E5E7EB'
+                    ],
+                    borderColor: [
+                        '#FFFFFF',
+                        '#FFFFFF'
+                    ],
+                    borderWidth: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                size: 14,
+                                family: "'Noto Sans KR', sans-serif"
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) {
+                                  return label.join(' ');
+                                } else {
+                                  return label;
+                                }
+                            }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: '치매 위험 요인 비중 (%)',
+                        font: {
+                            size: 16,
+                            weight: 'bold',
+                            family: "'Noto Sans KR', sans-serif"
+                        },
+                        padding: {
+                            top: 10,
+                            bottom: 20
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
