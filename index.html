@@ -17,30 +17,74 @@
       color: #2c3e50;
       font-size: 2rem;
       margin-bottom: 1.5rem;
+      text-align: center;
     }
     ul {
       list-style: none;
       padding: 0;
     }
     li {
-      margin-bottom: 0.8rem;
+      margin-bottom: 1rem;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease;
+    }
+    li:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
     a {
+      display: block;
       text-decoration: none;
       color: #007acc;
       font-size: 1.1rem;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
     }
     a:hover {
-      text-decoration: underline;
       color: #005b99;
+      background-color: #f0f8ff;
+    }
+    .icon {
+      margin-right: 10px;
+      font-size: 1.2rem;
     }
   </style>
 </head>
 <body>
   <h1>📊 건강 인포그래픽 리스트</h1>
   <ul id="infographic-list">
-    <!-- JavaScript로 링크 자동 생성 -->
+    <li>
+      <a href="https://qweweee84.github.io/deepdive/Infographics/근감소증%20예방%20및%20관리.html">
+        <span class="icon">💪</span>근감소증 예방 및 관리 인포그래픽
+      </a>
+    </li>
+    <li>
+      <a href="https://qweweee84.github.io/deepdive/Infographics/퇴행성%20무릎%20관절염%20관리.html">
+        <span class="icon">🦵</span>퇴행성 무릎 관절염 관리 인포그래픽
+      </a>
+    </li>
+    <li>
+      <a href="https://qweweee84.github.io/deepdive/Infographics/대상포진%20예방%20및%20관리.html">
+        <span class="icon">🛡️</span>대상포진 예방 및 관리 인포그래픽
+      </a>
+    </li>
+    <li>
+      <a href="https://qweweee84.github.io/deepdive/Infographics/현명한%20상속%20및%20증여%20전략.html">
+        <span class="icon">💰</span>현명한 상속 및 증여 전략 인포그래픽
+      </a>
+    </li>
+    <li>
+      <a href="https://qweweee84.github.io/deepdive/Infographics/뇌%20건강%20및%20치매%20예방.html">
+        <span class="icon">🧠</span>뇌 건강 및 치매 예방 인포그래픽
+      </a>
+    </li>
+    <li>
+      <a href="https://qweweee84.github.io/deepdive/Infographics/공황장애%20극복.html">
+        <span class="icon">🌟</span>공황장애 인포그래픽
+      </a>
+    </li>
   </ul>
-  <script src="config.js"></script>
 </body>
 </html>
