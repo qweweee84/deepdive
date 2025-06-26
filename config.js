@@ -1,4 +1,4 @@
-const BASE_URL = "https://qweweee84.github.io/deepdive/";
+const BASE_URL = "https://qweweee84.github.io/deepdive/Infographics/";
 
 const infographicPages = [
     { title: "근감소증 예방 및 관리 인포그래픽", filename: "근감소증 예방 및 관리.html" },
@@ -16,6 +16,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const a = document.createElement("a");
     a.href = BASE_URL + page.filename;
     a.textContent = page.title;
+    a.target = "_blank"; // 새 탭에서 열기
     li.appendChild(a);
     list.appendChild(li);
   });
