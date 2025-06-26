@@ -51,12 +51,10 @@ body {
 .infographic-list {
     list-style: none;
     display: grid;
-    /* 모바일에서는 1열 */
     grid-template-columns: 1fr;
     gap: 1.5rem;
 }
 
-/* --- Card Link Item --- */
 .card-link {
     display: flex;
     flex-direction: column;
@@ -70,7 +68,7 @@ body {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     height: 100%;
     text-align: center;
-    min-height: 120px; /* 카드의 최소 높이를 지정하여 통일성 부여 */
+    min-height: 120px;
 }
 
 .card-link:hover {
@@ -84,19 +82,29 @@ body {
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
-/* --- 제거된 부분: .card-link .icon 스타일이 삭제되었습니다 --- */
-
 .card-link .title {
-    /* 변경된 부분: 아이콘이 없으므로 글자 크기를 키워 존재감을 줍니다. */
     font-size: 1.3rem;
     color: #34495e;
     font-weight: 700;
 }
 
+/* --- YouTube Link Styling --- */
+.youtube-link {
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+    color: #e74c3c;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.youtube-link:hover {
+    color: #c0392b;
+    text-decoration: underline;
+}
 
 /* --- Responsive Design (Media Queries) --- */
-
-/* 태블릿 (768px 이상) */
 @media (min-width: 768px) {
     .site-header h1 {
         font-size: 3rem;
@@ -107,7 +115,6 @@ body {
     }
 }
 
-/* 데스크탑 (1024px 이상) */
 @media (min-width: 1024px) {
     .infographic-list {
         grid-template-columns: repeat(3, 1fr);
