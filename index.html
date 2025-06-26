@@ -1,90 +1,61 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>건강 리스트</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f9f9f9;
-      color: #333;
-      padding: 2rem;
-      max-width: 800px;
-      margin: auto;
-    }
-    h1 {
-      color: #2c3e50;
-      font-size: 2rem;
-      margin-bottom: 1.5rem;
-      text-align: center;
-    }
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-    li {
-      margin-bottom: 1rem;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      transition: transform 0.2s ease;
-    }
-    li:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    }
-    a {
-      display: block;
-      text-decoration: none;
-      color: #007acc;
-      font-size: 1.1rem;
-      padding: 1rem 1.5rem;
-      border-radius: 8px;
-    }
-    a:hover {
-      color: #005b99;
-      background-color: #f0f8ff;
-    }
-    .icon {
-      margin-right: 10px;
-      font-size: 1.2rem;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>빛나는 50+를 위한 정보 가이드</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>📊 건강 리스트</h1>
-  <ul id="infographic-list">
-    <li>
-      <a href="/infographics/sarcopenia.html">
-        <span class="icon">💪</span>근감소증 예방 및 관리
-      </a>
-    </li>
-    <li>
-      <a href="/infographics/degenerative_knee_arthritis.html">
-        <span class="icon">🦵</span>퇴행성 무릎 관절염 관리
-      </a>
-    </li>
-    <li>
-      <a href="/infographics/shingles.html">
-        <span class="icon">🛡️</span>대상포진 예방 및 관리
-      </a>
-    </li>
-    <li>
-      <a href="/infographics/inheritance_and_gifting.html.html">
-        <span class="icon">💰</span>현명한 상속 및 증여 전략
-      </a>
-    </li>
-    <li>
-      <a href="/infographics/dementia.html">
-        <span class="icon">🧠</span>뇌 건강 및 치매 예방
-      </a>
-    </li>
-    <li>
-      <a href="/infographics/panic_disorder.html">
-        <span class="icon">🌟</span>공황장애
-      </a>
-    </li>
-  </ul>
+
+    <div class="container">
+        <header class="site-header">
+            <h1>🌟 빛나는 50+를 위한 정보 가이드</h1>
+            <p>건강, 자산 관리, 지혜로운 삶을 위한 다양한 정보를 만나보세요.</p>
+        </header>
+
+        <main>
+            <ul class="infographic-list">
+                <li>
+                    <a href="/infographics/sarcopenia.html" class="card-link">
+                        <span class="title">근감소증 예방 및 관리</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/infographics/degenerative_knee_arthritis.html" class="card-link">
+                        <span class="title">퇴행성 무릎 관절염 관리</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/infographics/shingles.html" class="card-link">
+                        <span class="title">대상포진 예방 및 관리</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/infographics/inheritance_and_gifting.html" class="card-link">
+                        <span class="title">현명한 상속 및 증여 전략</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/infographics/dementia.html" class="card-link">
+                        <span class="title">뇌 건강 및 치매 예방</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/infographics/panic_disorder.html" class="card-link">
+                        <span class="title">공황장애 바로 알기</span>
+                    </a>
+                </li>
+            </ul>
+        </main>
+
+        <footer class="site-footer">
+            <p>&copy; 2025 정보 가이드. All rights reserved.</p>
+        </footer>
+    </div>
+
 </body>
 </html>
