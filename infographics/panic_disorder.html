@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공황장애: 삶을 멈추는 공포에서 벗어나는 길</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F8F1E5;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .flowchart-arrow {
+            font-size: 2rem;
+            color: #F7A823;
+            line-height: 1;
+            align-self: center;
+        }
+        .card {
+            background-color: #FFFFFF;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <header class="bg-[#00A9E0] text-white text-center py-12 px-4">
+        <h1 class="text-4xl md:text-5xl font-bold mb-2">공황장애: 삶을 멈추는 공포에서 벗어나는 길</h1>
+        <p class="text-lg md:text-xl max-w-3xl mx-auto">두려움의 감옥에서 걸어 나와, 다시 자유로운 삶을 되찾기 위한 안내서</p>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+
+        <section id="definition" class="mb-16">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-bold text-[#00A9E0] mb-2">공황장애, 바로 알기</h2>
+                <p class="max-w-2xl mx-auto text-lg">공황장애는 단순한 불안 증세가 아닌, '예기불안'과 '회피 행동'이 삶을 잠식하는 질환입니다.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="card">
+                    <h3 class="text-2xl font-bold text-center mb-4 text-[#00B8A9]">공황장애의 세 가지 얼굴</h3>
+                     <p class="mb-4 text-center">공황장애는 갑작스러운 공황발작, 그리고 그에 대한 두려움이 만들어내는 예기불안과 회피행동이라는 세 요소가 맞물려 돌아가는 악순환입니다.</p>
+                    <div class="chart-container h-64 md:h-80">
+                        <canvas id="panicDisorderComponentsChart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 class="text-2xl font-bold text-center mb-4 text-[#00B8A9]">공황발작 vs 공황장애</h3>
+                    <div class="flex flex-col space-y-4">
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg">📢 공황발작 (Panic Attack)</h4>
+                            <p>극심한 공포와 함께 심계항진, 호흡곤란 등 신체 증상이 갑작스럽게 나타나는 하나의 '사건'. 건강한 사람도 경험할 수 있습니다.</p>
+                        </div>
+                        <div class="text-center text-4xl font-bold text-[#F7A823]">+</div>
+                        <div class="bg-orange-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg">🧠 예기불안 & 회피행동</h4>
+                            <p>'또 발작이 올까?' 하는 지속적인 두려움(예기불안)으로 인해 특정 상황이나 장소를 피하게(회피행동) 되는 상태.</p>
+                        </div>
+                         <div class="text-center text-4xl font-bold text-gray-600">=</div>
+                        <div class="bg-teal-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg">⛓️ 공황장애 (Panic Disorder)</h4>
+                            <p>발작과 그에 대한 두려움이 반복되며 일상생활이 무너지는 '질환'. 치료가 반드시 필요합니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="myths" class="mb-16">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-bold text-[#00A9E0] mb-2">오해를 넘어 진실로</h2>
+                <p class="max-w-2xl mx-auto text-lg">잘못된 믿음은 죄책감을 키우고 회복을 방해합니다. 이제, 과학적 진실을 마주할 시간입니다.</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="card text-center">
+                    <div class="text-5xl mb-4">🧠</div>
+                    <h3 class="text-xl font-bold mb-2">오해 1: 의지가 약해서</h3>
+                    <p class="text-red-500 line-through mb-2">마음만 굳게 먹으면 된다.</p>
+                    <hr class="my-3">
+                    <h4 class="font-bold text-[#00B8A9] mb-1">진실: 뇌의 경보 시스템 오작동</h4>
+                    <p>의지 문제가 아닌, 위험을 감지하는 뇌의 편도체가 과민하게 반응하는 '신경생물학적' 문제입니다.</p>
+                </div>
+                <div class="card text-center">
+                     <div class="text-5xl mb-4">❤️‍🩹</div>
+                    <h3 class="text-xl font-bold mb-2">오해 2: 죽거나 미친다</h3>
+                    <p class="text-red-500 line-through mb-2">심장마비가 오거나 정신을 잃는다.</p>
+                    <hr class="my-3">
+                    <h4 class="font-bold text-[#00B8A9] mb-1">진실: 고통스럽지만 안전하다</h4>
+                    <p>증상은 매우 고통스럽지만, 실제로 신체를 손상시키거나 정신을 잃게 만들지 않는, 몸의 과잉보호 반응입니다.</p>
+                </div>
+                <div class="card text-center">
+                     <div class="text-5xl mb-4">🌱</div>
+                    <h3 class="text-xl font-bold mb-2">오해 3: 평생 가는 불치병</h3>
+                    <p class="text-red-500 line-through mb-2">한번 걸리면 약을 평생 먹어야 한다.</p>
+                    <hr class="my-3">
+                    <h4 class="font-bold text-[#00B8A9] mb-1">진실: 치료 예후가 매우 좋다</h4>
+                    <p>정신건강의학과 질환 중 가장 치료 성공률이 높으며, 인지행동치료 등을 통해 완치가 가능합니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="solutions" class="mb-16">
+             <div class="text-center mb-10">
+                <h2 class="text-3xl font-bold text-[#00A9E0] mb-2">회복을 위한 3단계 로드맵</h2>
+                <p class="max-w-2xl mx-auto text-lg">공황의 악순환을 끊고 삶의 주도권을 되찾는 구체적인 방법입니다.</p>
+            </div>
+
+            <div class="grid md:grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="card lg:col-span-1">
+                    <h3 class="text-xl font-bold text-center text-[#00B8A9] mb-4">1단계: 발작 시 즉시 대처법</h3>
+                    <p class="text-center mb-4">공포가 덮칠 때, 싸우지 말고 안정시키는 기술을 사용하세요.</p>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                           <h4 class="font-bold">🌬️ 4-7-8 안정화 호흡</h4>
+                           <p class="text-sm">코로 4초 들이쉬고, 7초 참고, 입으로 8초 내쉬세요. 내쉬는 숨을 길게 하여 부교감신경을 활성화시킵니다.</p>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                           <h4 class="font-bold">🖐️ 5-4-3-2-1 그라운딩</h4>
+                           <p class="text-sm">보이는 것 5가지, 느껴지는 것 4가지, 들리는 것 3가지, 냄새 2가지, 맛 1가지를 찾으며 현재에 집중합니다.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card lg:col-span-2">
+                    <h3 class="text-xl font-bold text-center text-[#00B8A9] mb-4">2단계: 평상시 뇌 경보 시스템 안정화</h3>
+                     <p class="mb-4 text-center">일상 속 작은 습관이 뇌의 과민성을 낮추는 최고의 예방주사입니다. 회복을 돕는 습관과 방해하는 습관의 영향을 비교해보세요.</p>
+                    <div class="chart-container h-72 md:h-80">
+                        <canvas id="lifestyleImpactChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-8 md:col-span-3">
+                 <h3 class="text-xl font-bold text-center text-[#00B8A9] mb-4">3단계: 인지행동치료(CBT)로 뿌리 뽑기</h3>
+                 <p class="text-center mb-6 max-w-3xl mx-auto">공황장애의 핵심 고리인 '왜곡된 생각'과 '회피 행동'을 교정하는 가장 효과적인 치료법입니다. 이 흐름을 이해하고 악순환의 고리를 끊어내는 것이 목표입니다.</p>
+                 <div class="flex flex-col md:flex-row justify-center items-center gap-2 md:gap-4">
+                     <div class="p-3 rounded-lg bg-red-100 text-center w-full md:w-auto">
+                         <p class="font-bold">신체감각/상황</p>
+                         <p class="text-sm">(심장이 뜀)</p>
+                     </div>
+                     <div class="flowchart-arrow">→</div>
+                     <div class="p-3 rounded-lg bg-red-200 text-center w-full md:w-auto">
+                         <p class="font-bold">왜곡된 생각 (인지)</p>
+                         <p class="text-sm">"심장마비가 올거야!"</p>
+                     </div>
+                     <div class="flowchart-arrow">→</div>
+                     <div class="p-3 rounded-lg bg-red-300 text-center w-full md:w-auto">
+                         <p class="font-bold">불안/공포 증폭</p>
+                         <p class="text-sm">(공포감 극대화)</p>
+                     </div>
+                     <div class="flowchart-arrow">→</div>
+                     <div class="p-3 rounded-lg bg-red-400 text-center w-full md:w-auto">
+                         <p class="font-bold">회피 행동</p>
+                         <p class="text-sm">(그 장소를 뛰쳐나감)</p>
+                     </div>
+                 </div>
+                 <div class="text-center my-4">
+                     <div class="inline-block p-4 rounded-lg bg-[#00A9E0] text-white">
+                         <h4 class="font-bold">CBT 개입 지점 💡</h4>
+                         <p>"심장이 뛰는 건 불안해서 그래, 위험하지 않아." 라고 생각을 교정하고,</p>
+                         <p>두려운 상황에 점진적으로 직면(노출)하여 안전함을 재학습합니다.</p>
+                     </div>
+                 </div>
+            </div>
+        </section>
+
+        <section id="dos-donts" class="mb-16">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-bold text-[#00A9E0] mb-2">회복을 위한 약속: 하고, 하지 말 것</h2>
+                <p class="max-w-2xl mx-auto text-lg">일상에서 당신의 선택이 회복의 속도를 결정합니다.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="card border-t-4 border-green-500">
+                    <h3 class="text-2xl font-bold text-green-600 mb-4 text-center">👍 강력 추천 (Do)</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-start"><span class="text-2xl mr-3">🧘</span><div><span class="font-bold">매일 5분 복식호흡:</span> 결정적인 순간에 힘이 되는 가장 기본적인 훈련입니다.</div></li>
+                        <li class="flex items-start"><span class="text-2xl mr-3">✍️</span><div><span class="font-bold">불안 일기 작성:</span> 나의 왜곡된 생각 패턴을 객관적으로 파악하는 최고의 도구입니다.</div></li>
+                        <li class="flex items-start"><span class="text-2xl mr-3">🏃</span><div><span class="font-bold">가벼운 유산소 운동:</span> 몸을 움직여 스트레스 호르몬을 태우고, 뇌가 신체 변화에 익숙해지게 합니다.</div></li>
+                    </ul>
+                </div>
+                <div class="card border-t-4 border-red-500">
+                    <h3 class="text-2xl font-bold text-red-600 mb-4 text-center">🚫 절대 금물 (Don't)</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-start"><span class="text-2xl mr-3">🚪</span><div><span class="font-bold">회피 행동:</span> 단기적 안도감은 장기적으로 공포를 키우고 삶을 파괴하는 가장 큰 적입니다.</div></li>
+                        <li class="flex items-start"><span class="text-2xl mr-3">🍺</span><div><span class="font-bold">술/약물 의존:</span> 일시적인 효과 뒤에 더 큰 불안을 몰고 오는 위험한 지름길입니다.</div></li>
+                         <li class="flex items-start"><span class="text-2xl mr-3">💻</span><div><span class="font-bold">인터넷 정보만 신뢰:</span> 부정확한 정보는 불안을 키울 수 있습니다. 전문가와 상담하세요.</div></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section id="goal" class="mb-16">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-bold text-[#00A9E0] mb-2">치료의 최종 목표: 삶의 반경 회복</h2>
+                <p class="max-w-2xl mx-auto text-lg">치료는 단순히 증상을 없애는 것을 넘어, 두려움 때문에 포기했던 당신의 자유로운 삶을 되찾는 과정입니다.</p>
+            </div>
+            <div class="card">
+                <p class="text-center mb-4">치료와 꾸준한 노력을 통해 회피하던 활동들을 하나씩 되찾아가면서, 좁아졌던 삶의 영역이 점차 확장되는 것을 시각적으로 나타낸 그래프입니다.</p>
+                <div class="chart-container h-72 md:h-96">
+                    <canvas id="lifeExpansionChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-[#00B8A9] text-white text-center p-8">
+        <h3 class="text-2xl font-bold mb-2">당신은 혼자가 아닙니다.</h3>
+        <p class="mb-4">오늘 내디딘 작은 한 걸음이, 당신을 다시 자유로운 삶으로 이끌 것입니다.</p>
+        <p>전문적인 도움이 필요하다면, 주저하지 말고 정신건강의학과나 심리상담센터를 방문하세요.</p>
+    </footer>
+
+    <script>
+        const wrapText = (text, maxLen) => {
+            if (text.length <= maxLen) return text;
+            const words = text.split(' ');
+            const lines = [];
+            let currentLine = '';
+            words.forEach(word => {
+                if ((currentLine + ' ' + word).length > maxLen && currentLine.length > 0) {
+                    lines.push(currentLine);
+                    currentLine = word;
+                } else {
+                    currentLine = currentLine ? currentLine + ' ' + word : word;
+                }
+            });
+            lines.push(currentLine);
+            return lines;
+        };
+        
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+              return label.join(' ');
+            }
+            return label;
+        };
+
+        const sharedChartOptions = {
+             maintainAspectRatio: false,
+             responsive: true,
+             plugins: {
+                legend: {
+                    labels: {
+                        font: {
+                            family: "'Noto Sans KR', sans-serif",
+                            size: 12,
+                        }
+                    }
+                },
+                tooltip: {
+                    titleFont: { family: "'Noto Sans KR', sans-serif" },
+                    bodyFont: { family: "'Noto Sans KR', sans-serif" },
+                    callbacks: {
+                        title: tooltipTitleCallback
+                    }
+                }
+             },
+             scales: {
+                x: {
+                    ticks: {
+                        font: {
+                            family: "'Noto Sans KR', sans-serif",
+                            size: 12,
+                        }
+                    }
+                },
+                y: {
+                     ticks: {
+                        font: {
+                            family: "'Noto Sans KR', sans-serif",
+                            size: 12,
+                        }
+                    }
+                }
+             }
+        };
+
+        const panicDisorderComponentsChartCtx = document.getElementById('panicDisorderComponentsChart').getContext('2d');
+        new Chart(panicDisorderComponentsChartCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['공황발작 (사건)', '예기불안 (두려움)', '회피행동 (삶의 축소)'],
+                datasets: [{
+                    label: '공황장애 구성요소',
+                    data: [25, 40, 35],
+                    backgroundColor: ['#F7A823', '#00A9E0', '#00B8A9'],
+                    borderColor: '#FFFFFF',
+                    borderWidth: 3
+                }]
+            },
+            options: {
+                ...sharedChartOptions,
+                plugins: {
+                    ...sharedChartOptions.plugins,
+                    legend: {
+                        position: 'bottom',
+                        ...sharedChartOptions.plugins.legend
+                    }
+                },
+                scales: { x: { display: false }, y: { display: false } }
+            }
+        });
+
+        const lifestyleImpactChartCtx = document.getElementById('lifestyleImpactChart').getContext('2d');
+        new Chart(lifestyleImpactChartCtx, {
+            type: 'bar',
+            data: {
+                labels: ['규칙적 운동', '충분한 수면', '카페인 과다', '음주'],
+                datasets: [{
+                    label: '뇌 안정성 기여도',
+                    data: [80, 70, -60, -75],
+                    backgroundColor: (context) => {
+                        const value = context.dataset.data[context.dataIndex];
+                        return value > 0 ? 'rgba(0, 184, 169, 0.7)' : 'rgba(247, 168, 35, 0.7)';
+                    },
+                    borderColor: (context) => {
+                        const value = context.dataset.data[context.dataIndex];
+                        return value > 0 ? 'rgba(0, 184, 169, 1)' : 'rgba(247, 168, 35, 1)';
+                    },
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                ...sharedChartOptions,
+                 indexAxis: 'y',
+                 scales: {
+                    x: {
+                        title: { display: true, text: '회복 기여도 (높을수록 좋음)' }
+                    },
+                    y: {
+                        beginAtZero: true
+                    }
+                 },
+                 plugins: {
+                    ...sharedChartOptions.plugins,
+                    legend: {
+                        display: false
+                    }
+                 }
+            }
+        });
+        
+        const lifeExpansionChartCtx = document.getElementById('lifeExpansionChart').getContext('2d');
+        const originalLabels = ['치료 시작 전', '초기 안정기', '인지행동치료 시작', '중간 점검', '회복 및 성장기', '자유로운 삶'];
+        new Chart(lifeExpansionChartCtx, {
+            type: 'line',
+            data: {
+                labels: originalLabels.map(label => wrapText(label, 16)),
+                datasets: [{
+                    label: '삶의 반경 (활동 범위)',
+                    data: [15, 30, 50, 75, 90, 100],
+                    fill: true,
+                    backgroundColor: 'rgba(0, 169, 224, 0.2)',
+                    borderColor: '#00A9E0',
+                    tension: 0.3,
+                    pointBackgroundColor: '#00A9E0',
+                    pointRadius: 5,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                ...sharedChartOptions,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: '활동 가능 범위 (%)'
+                        }
+                    }
+                },
+                plugins: {
+                    ...sharedChartOptions.plugins,
+                     legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>근감소증 예방 및 관리 인포그래픽</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 40vh;
+        }
+        .flow-arrow {
+            position: relative;
+            padding: 0 20px;
+        }
+        .flow-arrow::after {
+            content: '→';
+            position: absolute;
+            top: 50%;
+            right: -5px;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            color: #F37021;
+        }
+        .flow-arrow:last-child::after {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-[#00A9E0] mb-2">100세 시대 건강 자산, 근육 지키기</h1>
+            <p class="text-lg text-gray-600">50대 이상을 위한 근감소증 완전 정복 가이드</p>
+        </header>
+
+        <section id="definition" class="mb-16">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">혹시 나도 근감소증일까?</h2>
+                <p class="max-w-3xl mx-auto text-gray-600">근감소증은 단순 노화가 아닌, 근육의 양과 기능이 함께 저하되는 질병입니다. 아래 아시아인 최신 진단 기준으로 내 몸 상태를 점검해보세요.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-[#00A9E0]">
+                    <h3 class="text-xl font-bold text-[#00A9E0] mb-2">근력 저하 (악력)</h3>
+                    <p class="text-4xl font-extrabold text-gray-800">남성 &lt; 28kg</p>
+                    <p class="text-4xl font-extrabold text-gray-800">여성 &lt; 18kg</p>
+                    <p class="text-sm text-gray-500 mt-2">손의 쥐는 힘이 기준치 미만일 경우</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-[#F37021]">
+                    <h3 class="text-xl font-bold text-[#F37021] mb-2">신체 기능 저하</h3>
+                     <p class="text-4xl font-extrabold text-gray-800">&gt; 12초</p>
+                    <p class="text-lg text-gray-600">의자 5번 일어서기</p>
+                    <p class="text-sm text-gray-500 mt-2">또는 보행 속도 &lt; 1.0m/s</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-[#00B3B3]">
+                    <h3 class="text-xl font-bold text-[#00B3B3] mb-2">근육량 감소</h3>
+                    <p class="text-2xl font-extrabold text-gray-800">남성 &lt; 7.0 kg/m²</p>
+                    <p class="text-2xl font-extrabold text-gray-800">여성 &lt; 5.4 kg/m²</p>
+                    <p class="text-sm text-gray-500 mt-2">(DXA 검사 기준)</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="causes" class="mb-16">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">내 근육은 왜 사라질까?</h2>
+                <p class="max-w-3xl mx-auto text-gray-600">근감소증은 세 가지 핵심 원인이 복합적으로 작용하여 발생하며, 만성 염증과 미토콘드리아 기능 저하가 이를 가속화합니다.</p>
+            </div>
+             <div class="bg-white p-8 rounded-xl shadow-lg">
+                <div class="flex flex-col md:flex-row justify-around items-center text-center">
+                    <div class="w-full md:w-1/4 p-4">
+                        <div class="text-2xl mb-2">🍽️</div>
+                        <h3 class="text-lg font-bold text-[#00A9E0]">단백동화 저항성</h3>
+                        <p class="text-sm text-gray-600">음식과 운동 자극에 근육이 둔감하게 반응하여 합성 효율이 저하됩니다.</p>
+                    </div>
+                    <div class="text-4xl text-[#F37021] hidden md:block">+</div>
+                    <div class="w-full md:w-1/4 p-4">
+                        <div class="text-2xl mb-2">🧠</div>
+                        <h3 class="text-lg font-bold text-[#00A9E0]">신경근계 퇴화</h3>
+                        <p class="text-sm text-gray-600">근육을 지배하는 운동신경세포가 줄어들어 근력과 순발력이 급감합니다.</p>
+                    </div>
+                     <div class="text-4xl text-[#F37021] hidden md:block">+</div>
+                    <div class="w-full md:w-1/4 p-4">
+                        <div class="text-2xl mb-2">📉</div>
+                        <h3 class="text-lg font-bold text-[#00A9E0]">호르몬 불균형</h3>
+                        <p class="text-sm text-gray-600">근육 합성 호르몬은 감소하고, 분해 호르몬의 영향력이 커집니다.</p>
+                    </div>
+                </div>
+                 <div class="mt-6 border-t-2 border-dashed border-gray-300 pt-6">
+                     <p class="text-center text-gray-700 font-semibold">이 모든 과정은 <span class="text-[#F37021]">만성 염증</span>과 <span class="text-[#F37021]">미토콘드리아 기능 저하</span>로 인해 악화됩니다.</p>
+                 </div>
+            </div>
+        </section>
+
+        <section id="exercise" class="mb-16">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">집에서 시작하는 근력 운동</h2>
+                <p class="max-w-3xl mx-auto text-gray-600">특별한 기구 없이 맨몸으로 전신 근력을 키울 수 있는 핵심 저항성 운동 4가지입니다. 주 2~3회, 정확한 자세로 꾸준히 실천하는 것이 중요합니다.</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-lg text-center">
+                    <div class="text-5xl mb-3">🏋️</div>
+                    <h3 class="text-xl font-bold mb-2">스쿼트</h3>
+                    <p class="text-gray-600 text-sm mb-3">하체 근력의 왕. 허벅지가 바닥과 평행이 될 때까지 앉았다 일어섭니다.</p>
+                    <p class="font-bold text-[#00A9E0]">15회 x 3세트</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg text-center">
+                    <div class="text-5xl mb-3">🦵</div>
+                    <h3 class="text-xl font-bold mb-2">런지</h3>
+                    <p class="text-gray-600 text-sm mb-3">균형감각 강화. 앞뒤 무릎이 90도가 되도록 몸을 낮춥니다.</p>
+                    <p class="font-bold text-[#00A9E0]">각 다리 12회 x 3세트</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg text-center">
+                    <div class="text-5xl mb-3">💪</div>
+                    <h3 class="text-xl font-bold mb-2">플랭크</h3>
+                    <p class="text-gray-600 text-sm mb-3">최고의 코어 운동. 머리부터 발끝까지 몸을 일직선으로 유지합니다.</p>
+                    <p class="font-bold text-[#00A9E0]">30초 x 3세트</p>
+                </div>
+                 <div class="bg-white p-6 rounded-xl shadow-lg text-center">
+                    <div class="text-5xl mb-3">🌉</div>
+                    <h3 class="text-xl font-bold mb-2">브릿지</h3>
+                    <p class="text-gray-600 text-sm mb-3">엉덩이와 허리 강화. 어깨부터 무릎까지 일직선으로 몸을 들어 올립니다.</p>
+                    <p class="font-bold text-[#00A9E0]">15회 x 3세트</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="nutrition" class="mb-16">
+            <div class="text-center mb-8">
+                 <h2 class="text-3xl font-bold text-gray-800 mb-2">근육을 채우는 영양 전략</h2>
+                <p class="max-w-3xl mx-auto text-gray-600">운동이 신호라면, 영양은 재료입니다. 특히 근육의 주성분인 단백질을 충분히, 그리고 똑똑하게 섭취하는 것이 관건입니다.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="bg-white p-8 rounded-xl shadow-lg text-center">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">하루 단백질 섭취 황금률</h3>
+                    <p class="text-gray-600 mb-4">근감소증 관리가 필요하다면 더 많은 양을 섭취해야 합니다.</p>
+                    <p class="text-5xl font-extrabold text-[#F37021] tracking-tighter">1.2~1.5<span class="text-3xl">g</span></p>
+                    <p class="text-xl text-gray-700 font-semibold">/ 체중 1kg 당</p>
+                    <p class="text-sm text-gray-500 mt-4">체중 60kg 성인 기준, 하루 72~90g의 단백질이 필요합니다.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="text-center text-xl font-bold text-gray-800 mb-4">단백질, 세 끼에 나눠 드세요!</h3>
+                    <div class="chart-container h-[250px] max-h-[30vh]">
+                         <canvas id="proteinDistributionChart"></canvas>
+                    </div>
+                     <p class="text-center text-xs text-gray-500 mt-2">한 끼에 몰아먹기보다 세 끼에 나눠 섭취할 때 근육 합성 효율이 극대화됩니다. 매 끼니 최소 20-25g을 목표로 하세요.</p>
+                </div>
+            </div>
+            
+            <div class="mt-8 bg-white p-6 rounded-xl shadow-lg">
+                <h3 class="text-center text-xl font-bold text-gray-800 mb-4">주요 고단백 식품 함량 비교 (100g 기준)</h3>
+                <div class="chart-container h-[300px] max-h-[40vh]">
+                    <canvas id="proteinSourceChart"></canvas>
+                </div>
+                <p class="text-center text-xs text-gray-500 mt-2">다양한 고단백 식품을 비타민 C, B6가 풍부한 채소와 함께 섭취하면 흡수율을 더욱 높일 수 있습니다.</p>
+            </div>
+        </section>
+
+        <section id="lifestyle" class="mb-16">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">성공으로 이끄는 습관의 힘</h2>
+                <p class="max-w-3xl mx-auto text-gray-600">운동과 식단만큼 중요한 것이 꾸준함을 만드는 마음의 근력과 근육을 위한 최적의 환경을 조성하는 생활 습관입니다.</p>
+            </div>
+            <div class="bg-white p-8 rounded-xl shadow-lg flex flex-col items-center">
+                <h3 class="text-xl font-bold text-gray-800 mb-6">꾸준함을 만드는 선순환 고리</h3>
+                <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4">
+                    <div class="text-center p-4 rounded-lg bg-blue-50 flow-arrow">
+                        <p class="font-bold text-[#00A9E0]">🎯 현실적 목표 설정</p>
+                        <p class="text-xs">"이번 주 스쿼트 2번 하기"</p>
+                    </div>
+                    <div class="text-center p-4 rounded-lg bg-orange-50 flow-arrow">
+                        <p class="font-bold text-[#F37021]">✍️ 과정 기록하기</p>
+                        <p class="text-xs">"오늘 운동 실천 완료!"</p>
+                    </div>
+                    <div class="text-center p-4 rounded-lg bg-teal-50">
+                        <p class="font-bold text-[#00B3B3]">🎉 작은 성공 체험</p>
+                        <p class="text-xs">"해냈다는 성취감 느끼기"</p>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                <div class="bg-white p-6 rounded-xl shadow-lg flex items-center">
+                    <div class="text-5xl mr-4">😴</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800">충분한 수면</h3>
+                        <p class="text-gray-600">매일 밤 7~8시간의 수면은 근육 회복과 성장을 돕는 최고의 보충제입니다.</p>
+                    </div>
+                </div>
+                 <div class="bg-white p-6 rounded-xl shadow-lg flex items-center">
+                    <div class="text-5xl mr-4">🧘</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800">스트레스 관리</h3>
+                        <p class="text-gray-600">명상, 심호흡, 가벼운 산책으로 근육 분해 호르몬 '코르티솔'을 조절하세요.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center mt-12 py-6 border-t border-gray-200">
+            <p class="text-gray-600">오늘의 작은 실천이 건강한 100세 시대를 만듭니다.</p>
+            <p class="text-xs text-gray-400 mt-2">본 정보는 교육 및 참고 목적으로 제작되었으며, 의학적 진단이나 처방을 대체할 수 없습니다. 건강에 문제가 있을 경우 전문가와 상담하세요.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        function wrapText(text, maxChars) {
+            const words = text.split(' ');
+            let lines = [];
+            let currentLine = '';
+
+            words.forEach(word => {
+                if ((currentLine + ' ' + word).length > maxChars && currentLine.length > 0) {
+                    lines.push(currentLine);
+                    currentLine = word;
+                } else {
+                    currentLine = currentLine ? currentLine + ' ' + word : word;
+                }
+            });
+            lines.push(currentLine);
+            return lines;
+        }
+
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+                return label.join(' ');
+            }
+            return label;
+        };
+        
+        const proteinDistributionCtx = document.getElementById('proteinDistributionChart').getContext('2d');
+        new Chart(proteinDistributionCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['아침', '점심', '저녁'],
+                datasets: [{
+                    label: '끼니별 단백질 배분',
+                    data: [33.3, 33.3, 33.4],
+                    backgroundColor: [
+                        '#00A9E0',
+                        '#F37021',
+                        '#00B3B3'
+                    ],
+                    borderColor: '#FFFFFF',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: tooltipTitleCallback
+                        }
+                    }
+                }
+            }
+        });
+
+        const proteinSourceCtx = document.getElementById('proteinSourceChart').getContext('2d');
+        const proteinLabels = ['닭가슴살', '고등어', '그릭 요거트', '두부', '계란(2개)'];
+        new Chart(proteinSourceCtx, {
+            type: 'bar',
+            data: {
+                labels: proteinLabels.map(label => wrapText(label, 16)),
+                datasets: [{
+                    label: '단백질 함량 (g)',
+                    data: [23, 20, 15, 12, 12],
+                    backgroundColor: [
+                        'rgba(0, 169, 224, 0.7)',
+                        'rgba(0, 179, 179, 0.7)',
+                        'rgba(253, 185, 19, 0.7)',
+                        'rgba(243, 112, 33, 0.7)',
+                        'rgba(150, 150, 150, 0.7)'
+                    ],
+                    borderColor: [
+                         '#00A9E0',
+                         '#00B3B3',
+                         '#FDB913',
+                         '#F37021',
+                         '#969696'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                         grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: tooltipTitleCallback
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
