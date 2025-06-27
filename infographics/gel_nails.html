@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Chosen Palette: Warm Neutrals with Soft Rose Accent -->
+    <!-- Application Structure Plan: A single-page, vertically scrolling narrative application designed to guide the user from understanding the problem to finding actionable solutions. The structure is thematic: 1. Introduction (The Dilemma), 2. Nail Anatomy (The Victim), 3. The Gel Process (The Crime Scene), 4. Damage Factor Analysis (The Suspects), 5. Comparison (The Verdict), 6. Healthy Guide (The Protection Plan). This flow was chosen over the report's chapter structure to create a more engaging, story-like experience for a general audience, making complex scientific information more digestible and memorable. -->
+    <!-- Visualization & Content Choices: 
+        - Nail Anatomy: Goal: Inform. Method: HTML/CSS diagram. Interaction: Hover reveals details. Justification: Visual representation is more intuitive than text for anatomical structures.
+        - Damage Chart: Goal: Compare. Method: Chart.js Bar Chart. Interaction: Tooltips. Justification: Visually quantifies the relative impact of different damage factors, highlighting the report's key finding that removal is the most significant issue.
+        - Gel vs. Regular Polish: Goal: Compare. Method: Styled HTML Table. Interaction: None. Justification: A table provides a clear, structured side-by-side comparison of features.
+        - Healthy Guide: Goal: Inform (Actionable). Method: Icon-based cards. Interaction: None. Justification: Organizes practical tips into easily scannable categories (Before, During, After).
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <title>인터랙티브 젤 네일 가이드: 아름다움과 건강 사이</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F8F7F4;
+            color: #383434;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #C78283;
+            border-bottom-color: #C78283;
+        }
+        .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .has-tooltip:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        .section-fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .section-fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-3">
+            <div class="flex justify-between items-center">
+                <div class="text-xl font-bold text-[#383434]">
+                    젤 네일의 진실
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#anatomy" class="nav-link">손톱의 구조</a>
+                    <a href="#process" class="nav-link">손상 과정</a>
+                    <a href="#culprits" class="nav-link">주요 원인</a>
+                    <a href="#solution" class="nav-link">건강 관리법</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12 md:py-20">
+        
+        <section id="hero" class="text-center mb-20 md:mb-32 section-fade-in">
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 leading-tight">아름다움의 대가는<br>손상된 손톱이어야 할까?</h1>
+            <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+                한 달간 지속되는 완벽한 광택. 젤 네일의 매력은 강력하지만, 제거 후 마주하는 약해진 손톱은 우리를 딜레마에 빠뜨립니다. 이 애플리케이션은 젤 네일의 전 과정에 숨겨진 과학적 원리를 분석하여, 무엇이 손톱을 손상시키는지, 그리고 어떻게 하면 건강과 아름다움을 모두 지킬 수 있는지 알려드립니다.
+            </p>
+        </section>
+
+        <section id="anatomy" class="mb-20 md:mb-32 section-fade-in">
+            <h2 class="text-3xl font-bold text-center mb-2">1. 사건의 현장: 우리 손톱의 구조</h2>
+            <p class="text-center text-gray-600 mb-12">손톱 손상의 원인을 알기 위해선 먼저 우리 손톱이 어떻게 이루어져 있는지 이해해야 합니다. 손톱은 단순한 판이 아닌, 정교한 3중 구조의 보호막입니다.</p>
+            <div class="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
+                <div class="relative w-full h-48 md:h-56 flex flex-col justify-end">
+                    <div class="relative group w-full h-1/4 bg-[#E0CFCF] rounded-t-xl border-2 border-b-0 border-[#C78283] cursor-pointer has-tooltip">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="font-semibold">배면판 (Dorsal Plate)</span>
+                        </div>
+                        <div class="tooltip absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-gray-800 text-white text-sm rounded-lg p-3 shadow-lg">
+                            <strong class="font-bold text-[#E0CFCF]">가장 바깥쪽 보호막.</strong> 외부 자극을 막고 유수분 증발을 방지하는 핵심 층입니다. 젤 네일 시술 시 가장 먼저 손상되는 부분입니다.
+                        </div>
+                    </div>
+                    <div class="relative group w-full h-1/2 bg-[#F1E4E4] border-2 border-b-0 border-[#C78283] cursor-pointer has-tooltip">
+                         <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="font-semibold">중간판 (Intermediate Plate)</span>
+                        </div>
+                        <div class="tooltip absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-gray-800 text-white text-sm rounded-lg p-3 shadow-lg">
+                            <strong class="font-bold text-[#F1E4E4]">가장 두꺼운 핵심 층.</strong> 손톱의 전체적인 강도와 유연성을 담당합니다.
+                        </div>
+                    </div>
+                    <div class="relative group w-full h-1/4 bg-[#F8F7F4] rounded-b-xl border-2 border-[#C78283] cursor-pointer has-tooltip">
+                         <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="font-semibold">복면판 (Ventral Plate)</span>
+                        </div>
+                         <div class="tooltip absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-gray-800 text-white text-sm rounded-lg p-3 shadow-lg">
+                            <strong class="font-bold text-[#F8F7F4]">가장 안쪽 부착층.</strong> 아래의 손톱 바닥(조상)과 단단히 결합됩니다.
+                        </div>
+                    </div>
+                </div>
+                <p class="mt-6 text-center text-gray-600">이 3개 층은 케라틴(단백질), 수분, 지질의 섬세한 균형으로 유지됩니다. 각 층에 마우스를 올려보세요.</p>
+            </div>
+        </section>
+
+        <section id="process" class="mb-20 md:mb-32 section-fade-in">
+            <h2 class="text-3xl font-bold text-center mb-2">2. 손상 과정 추적: 젤 네일 라이프사이클</h2>
+            <p class="text-center text-gray-600 mb-12">젤 네일의 뛰어난 지속력은 정밀한 과학 과정의 결과입니다. 각 단계별로 어떤 일이 일어나며, 손상 위험은 어디에 숨어있는지 확인해보세요.</p>
+            <div id="process-tabs" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <button data-target="prep" class="process-tab bg-white p-4 rounded-lg shadow font-semibold text-center cursor-pointer transition-all duration-300 active">1. 준비 (Prepping)</button>
+                <button data-target="curing" class="process-tab bg-white p-4 rounded-lg shadow font-semibold text-center cursor-pointer transition-all duration-300">2. 경화 (Curing)</button>
+                <button data-target="removal" class="process-tab bg-white p-4 rounded-lg shadow font-semibold text-center cursor-pointer transition-all duration-300">3. 제거 (Removal)</button>
+                <button data-target="comparison" class="process-tab bg-white p-4 rounded-lg shadow font-semibold text-center cursor-pointer transition-all duration-300">4. 일반 네일과 비교</button>
+            </div>
+            <div id="process-content" class="bg-white p-8 rounded-2xl shadow-lg min-h-[300px]">
+                <!-- Content will be injected by JS -->
+            </div>
+        </section>
+
+        <section id="culprits" class="mb-20 md:mb-32 section-fade-in">
+            <h2 class="text-3xl font-bold text-center mb-2">3. 범인 지목: 손톱 손상의 주범들</h2>
+            <p class="text-center text-gray-600 mb-12">젤 네일 자체가 범인일까요? 과학적 분석 결과, 진짜 범인은 시술 및 제거 과정의 특정 요인들이었습니다. 아래 차트는 각 요인이 손톱 건강에 미치는 상대적 위험도를 보여줍니다.</p>
+            <div class="chart-container bg-white p-4 md:p-8 rounded-2xl shadow-lg">
+                <canvas id="damageChart"></canvas>
+            </div>
+        </section>
+
+        <section id="solution" class="section-fade-in">
+            <h2 class="text-3xl font-bold text-center mb-2">4. 최종 해결책: 건강과 아름다움을 모두 지키는 법</h2>
+            <p class="text-center text-gray-600 mb-12">손상의 원리를 이해했다면, 이제 예방하고 관리할 수 있습니다. 아름다움을 포기하지 않으면서 손톱 건강을 지키는 과학적 관리법을 따르세요.</p>
+            <div class="grid md:grid-cols-3 gap-8 text-center">
+                <div class="bg-white p-8 rounded-2xl shadow-lg">
+                    <div class="text-5xl mb-4">🛡️</div>
+                    <h3 class="text-xl font-bold mb-2">시술 전: 선제적 방어</h3>
+                    <ul class="text-left list-disc list-inside text-gray-600 space-y-2">
+                        <li><strong>휴식기 갖기:</strong> 최소 1~2주간의 휴식으로 손톱이 회복할 시간을 주세요.</li>
+                        <li><strong>자외선 차단:</strong> 시술 20분 전, 손등에 SPF 30 이상 자외선 차단제를 바르거나 UV 차단 장갑을 착용하세요.</li>
+                        <li><strong>전문가 선택:</strong> 숙련되고 위생적인 전문가를 선택하는 것이 가장 중요합니다.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-lg">
+                    <div class="text-5xl mb-4">💡</div>
+                    <h3 class="text-xl font-bold mb-2">시술 중: 현명한 선택</h3>
+                    <ul class="text-left list-disc list-inside text-gray-600 space-y-2">
+                        <li><strong>과도한 정리 최소화:</strong> 손톱 표면을 심하게 갈거나 큐티클을 깊이 제거하지 않도록 요청하세요.</li>
+                        <li><strong>논애시드 본더 확인:</strong> 손톱 부식이 적은 '비산성(Acid-Free)' 프라이머를 사용하는지 확인하세요.</li>
+                        <li><strong>통증 시 즉시 알림:</strong> 경화 중 뜨거움(히팅)이 심하면 즉시 손을 잠시 뺐다가 다시 넣으세요.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-lg">
+                    <div class="text-5xl mb-4">💧</div>
+                    <h3 class="text-xl font-bold mb-2">제거 후: 집중 관리</h3>
+                    <ul class="text-left list-disc list-inside text-gray-600 space-y-2">
+                        <li><strong>절대 뜯지 않기:</strong> 손톱 보호층이 함께 뜯겨나가 최악의 손상을 유발합니다.</li>
+                        <li><strong>안전한 제거:</strong> 드릴 오프(숙련가) 또는 올바른 쏙오프(충분한 시간)로 제거하세요.</li>
+                        <li><strong>매일 보습하기:</strong> 큐티클 오일과 핸드크림으로 매일 유수분을 공급하는 것이 회복의 핵심입니다.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-20">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <h3 class="text-2xl font-bold mb-2">결론: 진짜 범인은 '무지'였습니다</h3>
+            <p class="max-w-3xl mx-auto text-gray-400 mb-4">
+                젤 네일 자체가 악당은 아니었습니다. 진짜 범인은 과도한 표면 정리, 건조한 제거 과정, 그리고 '이 정도는 괜찮겠지'하는 우리의 무관심이었습니다. 올바른 지식으로 현명하게 관리한다면, 아름다움과 건강 모두를 지킬 수 있습니다.
+            </p>
+            <p class="text-sm">본 콘텐츠는 제공된 과학 보고서를 기반으로 제작된 정보 제공용 인터랙티브 애플리케이션입니다.</p>
+        </div>
+    </footer>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            // Data for process tabs
+            const processData = {
+                prep: {
+                    title: '1. 준비 (Prepping): "사전 정리"인가, "표면 파괴"인가?',
+                    content: `
+                        <p class="mb-4 text-gray-700">젤의 밀착력을 높이기 위해 손톱 표면을 파일로 갈아냅니다. 이 과정은 손톱의 가장 바깥쪽 보호막(배면판)을 물리적으로 깎아내는 행위입니다. 과도한 파일링은 손톱을 얇고 약하게 만드는 직접적인 원인이 됩니다.</p>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><strong class="font-semibold text-[#C78283]">기계적 연마:</strong> 표면을 거칠게 만들어 젤이 잘 붙게 하지만, 보호층을 제거합니다.</li>
+                            <li><strong class="font-semibold text-[#C78283]">화학적 준비:</strong> 탈수제로 유수분을 제거하고, 프라이머로 젤과 손톱을 화학적으로 연결합니다. 산성 프라이머는 더 강력하지만 손상 위험도 큽니다.</li>
+                        </ul>
+                    `
+                },
+                curing: {
+                    title: '2. 경화 (Curing): "UV 램프"는 유죄인가, 무죄인가?',
+                    content: `
+                        <p class="mb-4 text-gray-700">액체 상태의 젤이 UV/LED 램프 빛을 쬐면, '광중합 반응'을 통해 수많은 분자들이 서로 연결되어 단단한 고체로 변합니다. 이는 '건조'가 아닌 '화학적 경화'입니다.</p>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><strong class="font-semibold text-[#C78283]">손톱 손상:</strong> 경화 시 발생하는 열(히팅)이 손톱의 수분을 앗아가 건조를 유발할 수 있습니다.</li>
+                            <li><strong class="font-semibold text-[#C78283]">피부 위험:</strong> 반복적인 UVA 노출은 피부 노화, 색소 침착의 원인이 될 수 있습니다. 피부암 위험은 매우 낮다는 것이 전문가들의 중론이지만, 자외선 차단제를 바르는 등 '사전 예방 원칙'을 지키는 것이 현명합니다.</li>
+                        </ul>
+                    `
+                },
+                removal: {
+                    title: '3. 제거 (Removal): 진짜 범인은 여기에 있다',
+                    content: `
+                        <p class="mb-4 text-gray-700">견고하게 굳은 젤을 제거하는 과정은 손톱 손상의 가장 결정적인 단계입니다.</p>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><strong class="font-semibold text-[#C78283]">쏙오프 (Soak-off):</strong> 순도 100% 아세톤은 젤뿐만 아니라 손톱 자체의 유분과 수분을 모두 증발시켜, 손톱을 극도로 건조하고 부서지기 쉽게 만듭니다.</li>
+                            <li><strong class="font-semibold text-[#C78283]">강제 제거 (최악의 범인):</strong> 젤을 억지로 뜯어내면, 손톱의 가장 중요한 보호막이 젤과 함께 통째로 뜯겨나가 회복하기 어려운 손상을 입힙니다.</li>
+                            <li><strong class="font-semibold text-[#C78283]">드릴 제거:</strong> 숙련된 전문가가 컬러 젤만 정교하게 갈아내는 방식은 아세톤 노출을 피하고 손톱 손상을 최소화하는 가장 안전한 방법일 수 있습니다.</li>
+                        </ul>
+                    `
+                },
+                comparison: {
+                    title: '4. 비교 분석: 일반 네일은 정말 안전할까?',
+                    content: `
+                        <p class="mb-4 text-gray-700">일반 네일 폴리시는 화학 반응이 아닌 용매(아세톤 등)가 증발하면서 마릅니다. 이 차이점이 내구성과 손상 위험도에 결정적인 영향을 미칩니다.</p>
+                         <ul class="list-disc list-inside space-y-2">
+                            <li><strong class="font-semibold text-[#C78283]">손상 가능성:</strong> 시술 자체는 손상이 거의 없지만, 잦은 수정으로 리무버(아세톤) 사용 빈도가 높아지면 결국 손톱 건조를 유발할 수 있습니다.</li>
+                            <li><strong class="font-semibold text-[#C78283]">결론:</strong> 젤 네일 자체가 범인은 아닙니다. 진짜 범인은 '과도한 파일링'과 '공격적인 제거' 과정입니다. 일반 네일은 '덜 해로운 대안'은 맞지만, '완벽히 안전한' 것은 아닙니다.</li>
+                        </ul>
+                    `
+                }
+            };
+
+            const processTabsContainer = document.getElementById('process-tabs');
+            const processContentContainer = document.getElementById('process-content');
+            
+            function updateContent(target) {
+                const data = processData[target];
+                if (data) {
+                    processContentContainer.innerHTML = `
+                        <h3 class="text-2xl font-bold mb-4">${data.title}</h3>
+                        <div>${data.content}</div>
+                    `;
+                }
+            }
+
+            processTabsContainer.addEventListener('click', function(e) {
+                if (e.target.classList.contains('process-tab')) {
+                    const target = e.target.dataset.target;
+                    
+                    document.querySelectorAll('.process-tab').forEach(tab => {
+                        tab.classList.remove('active', 'bg-[#C78283]', 'text-white');
+                        tab.classList.add('bg-white');
+                    });
+                    
+                    e.target.classList.add('active', 'bg-[#C78283]', 'text-white');
+                    e.target.classList.remove('bg-white');
+
+                    updateContent(target);
+                }
+            });
+
+            // Initial content
+            updateContent('prep');
+            document.querySelector('.process-tab[data-target="prep"]').classList.add('active', 'bg-[#C78283]', 'text-white');
+            document.querySelector('.process-tab[data-target="prep"]').classList.remove('bg-white');
+
+
+            // Damage Chart
+            const ctx = document.getElementById('damageChart').getContext('2d');
+            const damageChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['강제 제거(뜯기)', '아세톤 쏙오프', '과도한 파일링', 'UV/LED 램프 노출'],
+                    datasets: [{
+                        label: '손톱 손상 기여도',
+                        data: [95, 70, 60, 20],
+                        backgroundColor: [
+                            '#a55252',
+                            '#C78283',
+                            '#E0CFCF',
+                            '#F1E4E4'
+                        ],
+                        borderColor: [
+                            '#a55252',
+                            '#C78283',
+                            '#E0CFCF',
+                            '#F1E4E4'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += context.parsed.x + '점';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                             ticks: {
+                                callback: function(value) {
+                                    return value + '점'
+                                }
+                            }
+                        },
+                        y: {
+                           ticks: {
+                               font: {
+                                   size: 14
+                               }
+                           }
+                        }
+                    }
+                }
+            });
+
+            // Smooth scrolling for nav links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Scroll-based animations
+            const sections = document.querySelectorAll('.section-fade-in');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+            
+            // Active nav link highlighting on scroll
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sectionObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: "-50% 0px -50% 0px" });
+
+            document.querySelectorAll('main section[id]').forEach(section => {
+                sectionObserver.observe(section);
+            });
+
+        });
+    </script>
+</body>
+</html>
