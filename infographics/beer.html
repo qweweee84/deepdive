@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인터랙티브 리포트: 맥주와 뼈 건강</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony (Warm neutrals with amber and teal accents) -->
+    <!-- Application Structure Plan: A thematic, single-page scrollable app. Starts with the main conclusion, then provides an interactive J-curve visualization, a side-by-side comparison of alcohol's effects, an interactive beer selection chart, a summary of key evidence, and finishes with actionable rules. This user-centric flow prioritizes understanding and decision-making over the report's narrative structure. -->
+    <!-- Visualization & Content Choices: J-Curve (Goal: Change -> Line Chart + Slider -> User explores risk -> Engages user with core concept -> Chart.js), Beer Silicon (Goal: Compare -> Bar Chart -> Hover/Click for info -> Easy comparison -> Chart.js), Mechanisms (Goal: Inform -> Icon-based cards -> Simple hover -> Breaks down complex info -> HTML/Tailwind). All choices avoid SVG/Mermaid and focus on interactivity and clarity. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #FDFBF7;
+            color: #38332E;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 40vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s, border-color 0.3s;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #D97706; 
+            border-bottom-color: #D97706;
+        }
+        .slider-thumb::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: #D97706;
+            border-radius: 50%;
+            cursor: pointer;
+            margin-top: -8px;
+        }
+        .slider-thumb::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background: #D97706;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-3">
+            <div class="flex justify-between items-center">
+                <div class="text-xl font-bold text-amber-700">
+                    딥다이브: 맥주와 뼈 건강
+                </div>
+                <div class="hidden md:flex items-center space-x-6 text-sm">
+                    <a href="#section-intro" class="nav-link border-b-2 border-transparent pb-1">핵심 결론</a>
+                    <a href="#section-j-curve" class="nav-link border-b-2 border-transparent pb-1">J커브 효과</a>
+                    <a href="#section-two-faces" class="nav-link border-b-2 border-transparent pb-1">두 얼굴의 술</a>
+                    <a href="#section-beer-choice" class="nav-link border-b-2 border-transparent pb-1">맥주 선택 가이드</a>
+                    <a href="#section-rules" class="nav-link border-b-2 border-transparent pb-1">현명한 음주법</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="section-intro" class="py-16 md:py-24 text-center">
+            <div class="container mx-auto px-6">
+                <p class="text-amber-600 font-semibold">맥주와 골다공증, 그 오해와 진실</p>
+                <h1 class="text-4xl md:text-6xl font-bold mt-2 mb-4 leading-tight">맥주는 뼈에 해롭기만 할까?</h1>
+                <p class="text-lg md:text-xl max-w-3xl mx-auto text-gray-600 mb-8">
+                    '술은 뼈에 나쁘다'는 막연한 불안감. 하지만 모든 술이, 모든 상황에서 똑같이 해로울까요? <br class="hidden md:block">
+                    과학적 근거를 통해 맥주와 뼈 건강의 관계를 새롭게 조명합니다.
+                </p>
+                <div class="bg-white rounded-xl shadow-lg p-8 max-w-2xl mx-auto border border-amber-100">
+                    <p class="text-lg font-semibold text-gray-500 mb-2">최종 결론</p>
+                    <p class="text-2xl md:text-3xl font-bold text-teal-700">
+                        진짜 문제는 '맥주'가 아닌 '과음'입니다.
+                    </p>
+                    <p class="mt-4 text-gray-600">
+                        오히려 '어떻게' 마시느냐에 따라 맥주 속 '규소(Silicon)' 성분은 뼈의 숨은 조력자가 될 수 있습니다.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-j-curve" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold">음주량과 골절 위험의 'J커브 효과'</h2>
+                    <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">
+                        음주와 뼈 건강의 관계는 단순하지 않습니다. 아래 슬라이더를 움직여 음주량에 따른 골절 위험도 변화를 직접 확인해보세요. '적당한 음주'가 왜 중요한지 시각적으로 이해할 수 있습니다.
+                    </p>
+                </div>
+                <div class="grid md:grid-cols-5 gap-8 items-center">
+                    <div class="md:col-span-3">
+                        <div class="chart-container">
+                            <canvas id="jCurveChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="md:col-span-2 bg-stone-100 p-8 rounded-xl shadow-inner">
+                        <label for="drinkSlider" class="block text-lg font-semibold mb-2">하루 음주량 조절하기</label>
+                        <p class="text-sm text-gray-500 mb-4">표준잔 기준, 1잔 = 알코올 약 10-14g</p>
+                        <input id="drinkSlider" type="range" min="0" max="4" step="0.5" value="1" class="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer slider-thumb">
+                        <div class="flex justify-between text-xs text-gray-500 mt-2 px-1">
+                            <span>0잔</span>
+                            <span>2잔</span>
+                            <span>4+잔</span>
+                        </div>
+                        <div class="mt-8 text-center">
+                            <p class="text-lg text-gray-600">선택한 음주량</p>
+                            <p class="text-5xl font-bold text-amber-600 my-2"><span id="drinkValue">1</span>잔</p>
+                            <div id="riskAssessment" class="mt-4 p-4 rounded-lg transition-colors duration-300">
+                                <p id="riskLevel" class="font-bold text-xl"></p>
+                                <p id="riskDescription" class="text-sm mt-1"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="section-two-faces" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold">술의 두 얼굴: 뼈 도둑 vs 숨은 조력자</h2>
+                    <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">
+                        술은 섭취량에 따라 우리 뼈에 정반대의 영향을 미칩니다. '과음'이 어떻게 뼈를 파괴하는지, 그리고 '적당량의 맥주'가 왜 뼈에 도움이 될 수 있는지 그 과학적 원리를 알아봅니다.
+                    </p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 md:gap-12">
+                    <div class="bg-red-50/50 border-2 border-red-200 rounded-xl p-8">
+                        <h3 class="text-2xl font-bold text-red-700 mb-6 flex items-center">
+                            <span class="text-3xl mr-3">☠️</span> '과음'이라는 이름의 뼈 도둑
+                        </h3>
+                        <div class="space-y-6">
+                            <div class="flex items-start">
+                                <span class="text-teal-600 font-bold text-xl mr-4 mt-1">1</span>
+                                <div>
+                                    <h4 class="font-semibold">뼈 리모델링 균형 파괴</h4>
+                                    <p class="text-sm text-gray-600">뼈를 만드는 조골세포의 활동은 억제하고, 뼈를 파괴하는 파골세포는 활성화시켜 뼈의 총량을 감소시킵니다.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-teal-600 font-bold text-xl mr-4 mt-1">2</span>
+                                <div>
+                                    <h4 class="font-semibold">영양 흡수 방해</h4>
+                                    <p class="text-sm text-gray-600">뼈의 핵심 재료인 칼슘과 비타민D의 체내 흡수를 막아 뼈를 약하게 만듭니다.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-teal-600 font-bold text-xl mr-4 mt-1">3</span>
+                                <div>
+                                    <h4 class="font-semibold">호르몬 시스템 교란</h4>
+                                    <p class="text-sm text-gray-600">스트레스 호르몬인 코르티솔 분비를 촉진하고, 뼈 건강에 중요한 에스트로겐 수치를 교란시켜 뼈 손실을 가속화합니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-green-50/50 border-2 border-green-200 rounded-xl p-8">
+                        <h3 class="text-2xl font-bold text-green-700 mb-6 flex items-center">
+                            <span class="text-3xl mr-3">✨</span> '맥주' 속 숨은 조력자, 규소
+                        </h3>
+                         <div class="space-y-6">
+                            <div class="flex items-start">
+                                <span class="text-amber-600 font-bold text-xl mr-4 mt-1">1</span>
+                                <div>
+                                    <h4 class="font-semibold">뼈의 품질 향상</h4>
+                                    <p class="text-sm text-gray-600">뼈의 유연성을 담당하는 '콜라겐' 생성을 촉진하고, 칼슘이 뼈에 더 잘 달라붙도록 돕는 '접착제' 역할을 합니다.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-amber-600 font-bold text-xl mr-4 mt-1">2</span>
+                                <div>
+                                    <h4 class="font-semibold">규소의 보고, 보리와 홉</h4>
+                                    <p class="text-sm text-gray-600">맥주의 주원료인 보리와 홉에는 인체가 흡수하기 좋은 형태의 규소(오르토규산)가 풍부하게 함유되어 있습니다.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-amber-600 font-bold text-xl mr-4 mt-1">3</span>
+                                <div>
+                                    <h4 class="font-semibold">높은 체내 흡수율</h4>
+                                    <p class="text-sm text-gray-600">맥주 속 규소는 다른 식품에 비해 월등히 높은 흡수율(약 50% 이상)을 보여 가장 효율적인 규소 공급원 중 하나로 꼽힙니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-beer-choice" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold">뼈 건강을 위한 맥주 선택 가이드</h2>
+                    <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">
+                        모든 맥주가 같지는 않습니다. 맥주의 종류에 따라 뼈에 이로운 '규소' 함량은 크게 달라집니다. 어떤 맥주가 규소 함량이 높은지 차트를 통해 확인하고, 현명한 선택을 해보세요.
+                    </p>
+                </div>
+                <div class="chart-container h-[400px] md:h-[500px] max-h-[60vh]">
+                    <canvas id="beerSiliconChart"></canvas>
+                </div>
+                <div class="mt-8 text-center text-sm text-gray-500">
+                    <p>차트의 막대 위에 마우스를 올리면 정확한 함량을 확인할 수 있습니다.</p>
+                    <p class="mt-2 font-semibold">💡 팁: 일반적으로 홉을 많이 사용하고 밝은 색의 보리 맥아를 쓰는 '페일 에일'과 'IPA' 계열이 규소 함량이 높습니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-rules" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold">뼈를 지키는 현명한 음주 3단계 황금률</h2>
+                    <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">
+                        술을 완전히 끊을 수 없다면, 어떻게 마셔야 할까요? 과학적 근거에 기반한 3가지 원칙을 기억하고, 건강한 음주 습관을 만들어가세요.
+                    </p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white rounded-xl shadow-md p-8 text-center border-t-4 border-amber-500">
+                        <div class="text-5xl mb-4">👑</div>
+                        <h3 class="text-xl font-bold mb-2">1. 양이 왕이다 (Dose is King)</h3>
+                        <p class="text-gray-600">
+                            어떤 술이든 '적당량'(여성 1잔, 남성 2잔 이내)을 지키는 것이 최우선입니다. 규소가 아무리 많아도 과음의 해악을 덮을 수는 없습니다.
+                        </p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-md p-8 text-center border-t-4 border-teal-500">
+                         <div class="text-5xl mb-4">🧐</div>
+                        <h3 class="text-xl font-bold mb-2">2. 종류는 신중하게</h3>
+                        <p class="text-gray-600">
+                            굳이 술을 골라야 한다면, 증류주(소주, 위스키 등)보다는 규소가 풍부한 '에일 계열 맥주'나 폴리페놀이 풍부한 '와인'이 더 나은 선택일 수 있습니다.
+                        </p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-md p-8 text-center border-t-4 border-sky-500">
+                        <div class="text-5xl mb-4">💧</div>
+                        <h3 class="text-xl font-bold mb-2">3. 방법이 차이를 만든다</h3>
+                        <p class="text-gray-600">
+                            빈속에 마시지 않기, 물과 함께 천천히 마시기. 이 작은 습관들이 알코올의 부정적 영향을 최소화하는 데 큰 도움이 됩니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-stone-800 text-white py-8">
+        <div class="container mx-auto px-6 text-center text-sm text-stone-400">
+            <p>&copy; 2024 딥다이브: 맥주와 뼈 건강 인터랙티브 리포트.</p>
+            <p class="mt-2">본 콘텐츠는 제공된 리포트를 기반으로 제작되었으며, 교육 및 정보 제공을 목적으로 합니다. 의학적 조언을 대체할 수 없습니다.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const jCurveChartCtx = document.getElementById('jCurveChart').getContext('2d');
+            const beerSiliconChartCtx = document.getElementById('beerSiliconChart').getContext('2d');
+            const drinkSlider = document.getElementById('drinkSlider');
+            const drinkValueSpan = document.getElementById('drinkValue');
+            const riskLevelSpan = document.getElementById('riskLevel');
+            const riskDescriptionSpan = document.getElementById('riskDescription');
+            const riskAssessmentDiv = document.getElementById('riskAssessment');
+            
+            const jCurveData = {
+                labels: ['0', '0.5', '1', '1.5', '2', '2.5', '3', '3.5', '4'],
+                risks: [1.0, 0.9, 0.85, 0.88, 0.95, 1.1, 1.33, 1.5, 1.59]
+            };
+
+            const riskInfo = {
+                '0': { level: '기준 위험도', desc: '술을 마시지 않는 경우의 기준선입니다.', color: 'bg-gray-200', text: 'text-gray-800' },
+                '0.5': { level: '위험도 감소', desc: '골밀도에 긍정적 영향이 나타날 수 있습니다.', color: 'bg-teal-100', text: 'text-teal-800' },
+                '1': { level: '위험도 최저', desc: '연구에서 골밀도가 가장 높은 것으로 나타난 구간입니다.', color: 'bg-teal-100', text: 'text-teal-800' },
+                '1.5': { level: '위험도 소폭 감소', desc: '여전히 긍정적 효과가 있으나, 위험도 증가세로 전환되는 구간입니다.', color: 'bg-teal-100', text: 'text-teal-800' },
+                '2': { level: '기준 위험도 근접', desc: '남성 적정 섭취량의 상한선입니다. 이 이상은 주의가 필요합니다.', color: 'bg-yellow-100', text: 'text-yellow-800' },
+                '2.5': { level: '위험도 증가', desc: '골절 위험이 비음주자보다 높아지기 시작합니다.', color: 'bg-red-100', text: 'text-red-800' },
+                '3': { level: '위험도 뚜렷한 증가', desc: '고관절 골절 위험이 33%까지 증가할 수 있습니다.', color: 'bg-red-100', text: 'text-red-800' },
+                '3.5': { level: '위험도 급증', desc: '과음의 해악이 명백하게 나타나는 위험 구간입니다.', color: 'bg-red-100', text: 'text-red-800' },
+                '4': { level: '위험도 매우 높음', desc: '고관절 골절 위험이 59%까지 치솟을 수 있습니다.', color: 'bg-red-100', text: 'text-red-800' }
+            };
+
+            const jCurveChart = new Chart(jCurveChartCtx, {
+                type: 'line',
+                data: {
+                    labels: jCurveData.labels.map(l => `${l}잔`),
+                    datasets: [{
+                        label: '상대적 골절 위험도',
+                        data: jCurveData.risks,
+                        borderColor: '#0D9488',
+                        backgroundColor: 'rgba(13, 148, 136, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#0D9488',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `음주량 ${context.label}: 상대 위험도 ${context.raw}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: '상대적 골절 위험도 (비음주자 = 1.0)'
+                            }
+                        },
+                        x: {
+                           title: {
+                                display: true,
+                                text: '하루 음주량 (표준잔)'
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index',
+                    },
+                }
+            });
+            
+            function updateJCurve(value) {
+                const valueStr = Number(value).toString();
+                drinkValueSpan.textContent = valueStr;
+
+                const info = riskInfo[valueStr] || riskInfo['4'];
+                riskLevelSpan.textContent = info.level;
+                riskDescriptionSpan.textContent = info.desc;
+                riskAssessmentDiv.className = `mt-4 p-4 rounded-lg transition-colors duration-300 ${info.color} ${info.text}`;
+
+                const dataIndex = jCurveData.labels.indexOf(valueStr);
+
+                jCurveChart.data.datasets[0].pointRadius = jCurveData.labels.map((_, index) => index === dataIndex ? 8 : 4);
+                jCurveChart.data.datasets[0].pointBackgroundColor = jCurveData.labels.map((_, index) => index === dataIndex ? '#D97706' : '#0D9488');
+                jCurveChart.update();
+            }
+
+            drinkSlider.addEventListener('input', (e) => {
+                updateJCurve(e.target.value);
+            });
+
+            updateJCurve(drinkSlider.value);
+
+
+            const beerData = {
+                labels: ['인디아 페일 에일 (IPA)', '페일 에일 (Pale Ale)', '에일 (Ales)', '라거 (Lagers)', '밀맥주 (Wheat Beers)', '라이트 라거 (Light Lagers)', '무알코올 맥주'],
+                values: [41.2, 36.5, 32.8, 23.7, 18.9, 17.2, 16.3]
+            };
+
+            const beerSiliconChart = new Chart(beerSiliconChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: beerData.labels,
+                    datasets: [{
+                        label: '평균 규소 함량 (mg/L)',
+                        data: beerData.values,
+                        backgroundColor: [
+                            'rgba(217, 119, 6, 0.7)',
+                            'rgba(234, 179, 8, 0.7)',
+                            'rgba(245, 158, 11, 0.7)',
+                            'rgba(251, 191, 36, 0.7)',
+                            'rgba(20, 184, 166, 0.7)',
+                            'rgba(13, 148, 136, 0.7)',
+                            'rgba(15, 118, 110, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgb(217, 119, 6)',
+                            'rgb(234, 179, 8)',
+                             'rgb(245, 158, 11)',
+                            'rgb(251, 191, 36)',
+                            'rgb(20, 184, 166)',
+                            'rgb(13, 148, 136)',
+                            'rgb(15, 118, 110)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                         tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.dataset.label}: ${context.raw} mg/L`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '평균 규소 함량 (mg/L)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+                        });
+                    }
+                });
+            }, { rootMargin: "-50% 0px -50% 0px" });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    document.querySelector(targetId).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
