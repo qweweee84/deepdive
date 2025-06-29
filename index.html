@@ -11,10 +11,23 @@
 </head>
 <body>
 
+    <!-- 스크롤 진행 바 -->
+    <div class="scroll-progress">
+        <div class="progress-bar"></div>
+    </div>
+
     <div class="container">
         <header class="site-header">
             <h1>🌟 빛나는 미래를 위한 정보 가이드</h1>
             <p>건강, 자산 관리, 지혜로운 삶을 위한 다양한 정보를 만나보세요.</p>
+            
+            <!-- 카테고리 필터 -->
+            <div class="category-filter">
+                <button class="filter-btn active" data-category="all">전체</button>
+                <button class="filter-btn" data-category="health">건강</button>
+                <button class="filter-btn" data-category="finance">금융</button>
+                <button class="filter-btn" data-category="beauty">뷰티</button>
+            </div>
         </header>
 
         <main>
@@ -130,13 +143,13 @@
             </section>
 
             <!-- 향후 추가될 카테고리들을 위한 예시 섹션 -->
-            <!-- <section class="category-section lifestyle" style="display: none;">
+            <section class="category-section lifestyle" style="display: none;">
                 <div class="category-header">
                     <div class="category-icon">🌟</div>
                     <h2 class="category-title">라이프스타일</h2>
                 </div>
                 <ul class="infographic-list">
-                    
+                    <!-- 향후 라이프스타일 관련 콘텐츠가 여기에 추가됩니다 -->
                 </ul>
             </section>
 
@@ -146,7 +159,7 @@
                     <h2 class="category-title">교육</h2>
                 </div>
                 <ul class="infographic-list">
-                    
+                    <!-- 향후 교육 관련 콘텐츠가 여기에 추가됩니다 -->
                 </ul>
             </section>
 
@@ -156,7 +169,7 @@
                     <h2 class="category-title">부동산/홈 인테리어</h2>
                 </div>
                 <ul class="infographic-list">
-                    
+                    <!-- 향후 부동산 관련 콘텐츠가 여기에 추가됩니다 -->
                 </ul>
             </section>
 
@@ -166,7 +179,7 @@
                     <h2 class="category-title">비즈니스</h2>
                 </div>
                 <ul class="infographic-list">
-                    
+                    <!-- 향후 비즈니스 관련 콘텐츠가 여기에 추가됩니다 -->
                 </ul>
             </section>
 
@@ -176,7 +189,7 @@
                     <h2 class="category-title">여행 및 지역정보</h2>
                 </div>
                 <ul class="infographic-list">
-                    
+                    <!-- 향후 여행 관련 콘텐츠가 여기에 추가됩니다 -->
                 </ul>
             </section>
 
@@ -186,7 +199,7 @@
                     <h2 class="category-title">식음료</h2>
                 </div>
                 <ul class="infographic-list">
-                    
+                    <!-- 향후 식음료 관련 콘텐츠가 여기에 추가됩니다 -->
                 </ul>
             </section>
 
@@ -196,7 +209,7 @@
                     <h2 class="category-title">예술/디자인</h2>
                 </div>
                 <ul class="infographic-list">
-                    
+                    <!-- 향후 예술/디자인 관련 콘텐츠가 여기에 추가됩니다 -->
                 </ul>
             </section>
 
@@ -206,7 +219,7 @@
                     <h2 class="category-title">자동차</h2>
                 </div>
                 <ul class="infographic-list">
-
+                    <!-- 향후 자동차 관련 콘텐츠가 여기에 추가됩니다 -->
                 </ul>
             </section>
 
@@ -216,7 +229,7 @@
                     <h2 class="category-title">출산/육아</h2>
                 </div>
                 <ul class="infographic-list">
-                    
+                    <!-- 향후 출산/육아 관련 콘텐츠가 여기에 추가됩니다 -->
                 </ul>
             </section>
 
@@ -226,15 +239,107 @@
                     <h2 class="category-title">도서/참고자료</h2>
                 </div>
                 <ul class="infographic-list">
-                    
+                    <!-- 향후 도서 관련 콘텐츠가 여기에 추가됩니다 -->
                 </ul>
-            </section> -->
+            </section>
         </main>
 
         <footer class="site-footer">
             <p>&copy; DeepDive. All rights reserved.</p>
         </footer>
     </div>
+
+    <!-- 맨 위로 가기 버튼 -->
+    <button class="scroll-to-top" id="scrollToTop">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 19V5M5 12L12 5L19 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </button>
+
+    <!-- JavaScript -->
+    <script>
+        // 스크롤 진행 바
+        window.addEventListener('scroll', () => {
+            const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+            document.querySelector('.progress-bar').style.width = scrolled + '%';
+        });
+
+        // 맨 위로 가기 버튼
+        const scrollToTopBtn = document.getElementById('scrollToTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollToTopBtn.classList.add('visible');
+            } else {
+                scrollToTopBtn.classList.remove('visible');
+            }
+        });
+
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // 카테고리 필터
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const categorySections = document.querySelectorAll('.category-section');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // 활성 버튼 변경
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const category = btn.dataset.category;
+
+                // 카테고리 표시/숨김
+                categorySections.forEach(section => {
+                    if (category === 'all') {
+                        section.style.display = 'block';
+                        setTimeout(() => section.classList.add('fade-in'), 50);
+                    } else {
+                        if (section.classList.contains(category)) {
+                            section.style.display = 'block';
+                            setTimeout(() => section.classList.add('fade-in'), 50);
+                        } else {
+                            section.classList.remove('fade-in');
+                            setTimeout(() => section.style.display = 'none', 300);
+                        }
+                    }
+                });
+            });
+        });
+
+        // 카드 애니메이션 (스크롤 시)
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-in');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.category-section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // 터치 디바이스 감지 및 최적화
+        if ('ontouchstart' in window) {
+            document.body.classList.add('touch-device');
+        }
+
+        // 프리로더 (페이지 로딩 시)
+        window.addEventListener('load', () => {
+            document.body.classList.add('loaded');
+        });
+    </script>
 
 </body>
 </html>
