@@ -614,7 +614,7 @@ body.touch-device {
 }
 
 /* --- 다크 모드 지원 --- */
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
     body {
         background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
     }
@@ -638,7 +638,7 @@ body.touch-device {
         background-color: rgba(52, 73, 94, 0.8);
         border-color: rgba(255, 255, 255, 0.1);
     }
-}
+} */
 
 /* --- 접근성 개선 --- */
 @media (prefers-reduced-motion: reduce) {

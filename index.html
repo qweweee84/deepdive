@@ -21,16 +21,26 @@
             <h1>🌟 빛나는 미래를 위한 정보 가이드</h1>
             <p>건강, 자산 관리, 지혜로운 삶을 위한 다양한 정보를 만나보세요.</p>
             
-            <!-- 카테고리 필터 -->
+            <!-- 카테고리 필터 (가나다 순으로 정렬) -->
             <div class="category-filter">
                 <button class="filter-btn active" data-category="all">전체</button>
                 <button class="filter-btn" data-category="health">건강</button>
+                <button class="filter-btn" data-category="education" style="display: none;">교육</button>
                 <button class="filter-btn" data-category="finance">금융</button>
+                <button class="filter-btn" data-category="books" style="display: none;">도서</button>
+                <button class="filter-btn" data-category="lifestyle" style="display: none;">라이프스타일</button>
+                <button class="filter-btn" data-category="realestate" style="display: none;">부동산</button>
                 <button class="filter-btn" data-category="beauty">뷰티</button>
+                <button class="filter-btn" data-category="business" style="display: none;">비즈니스</button>
+                <button class="filter-btn" data-category="food" style="display: none;">식음료</button>
+                <button class="filter-btn" data-category="travel" style="display: none;">여행</button>
+                <button class="filter-btn" data-category="art" style="display: none;">예술/디자인</button>
+                <button class="filter-btn" data-category="automotive" style="display: none;">자동차</button>
+                <button class="filter-btn" data-category="parenting" style="display: none;">출산/육아</button>
             </div>
         </header>
 
-        <main>
+        <main id="main-content">
             <!-- 건강/운동 카테고리 -->
             <section class="category-section health">
                 <div class="category-header">
@@ -78,7 +88,7 @@
                         <a href="/infographics/panic_disorder.html" class="card-link" target="_blank">
                             <span class="title">공황장애 극복</span>
                         </a>
-                        <a href="https://youtu.be/YIGXoGnDw2I" class="youtube-link" target="_blank">
+                        <a href="https://youtu.be/YIGXoGnDwI" class="youtube-link" target="_blank">
                             <div class="play-icon"></div>
                             영상 보기
                         </a>
@@ -112,7 +122,18 @@
                     </li>
                 </ul>
             </section>
-
+            
+            <!-- 교육 카테고리 -->
+            <section class="category-section education">
+                <div class="category-header">
+                    <div class="category-icon">📚</div>
+                    <h2 class="category-title">교육</h2>
+                </div>
+                <ul class="infographic-list">
+                    <!-- 향후 교육 관련 콘텐츠가 여기에 추가됩니다 -->
+                </ul>
+            </section>
+            
             <!-- 금융 카테고리 -->
             <section class="category-section finance">
                 <div class="category-header">
@@ -129,6 +150,39 @@
                             영상 보기
                         </a>
                     </li>
+                </ul>
+            </section>
+
+            <!-- 도서/참고자료 카테고리 -->
+            <section class="category-section books">
+                <div class="category-header">
+                    <div class="category-icon">📖</div>
+                    <h2 class="category-title">도서/참고자료</h2>
+                </div>
+                <ul class="infographic-list">
+                    <!-- 향후 도서 관련 콘텐츠가 여기에 추가됩니다 -->
+                </ul>
+            </section>
+
+            <!-- 라이프스타일 카테고리 -->
+            <section class="category-section lifestyle">
+                <div class="category-header">
+                    <div class="category-icon">🌟</div>
+                    <h2 class="category-title">라이프스타일</h2>
+                </div>
+                <ul class="infographic-list">
+                    <!-- 향후 라이프스타일 관련 콘텐츠가 여기에 추가됩니다 -->
+                </ul>
+            </section>
+
+            <!-- 부동산/홈 인테리어 카테고리 -->
+            <section class="category-section realestate">
+                <div class="category-header">
+                    <div class="category-icon">🏠</div>
+                    <h2 class="category-title">부동산/홈 인테리어</h2>
+                </div>
+                <ul class="infographic-list">
+                    <!-- 향후 부동산 관련 콘텐츠가 여기에 추가됩니다 -->
                 </ul>
             </section>
 
@@ -151,38 +205,8 @@
                 </ul>
             </section>
 
-            <!-- 향후 추가될 카테고리들을 위한 예시 섹션 -->
-            <section class="category-section lifestyle" style="display: none;">
-                <div class="category-header">
-                    <div class="category-icon">🌟</div>
-                    <h2 class="category-title">라이프스타일</h2>
-                </div>
-                <ul class="infographic-list">
-                    <!-- 향후 라이프스타일 관련 콘텐츠가 여기에 추가됩니다 -->
-                </ul>
-            </section>
-
-            <section class="category-section education" style="display: none;">
-                <div class="category-header">
-                    <div class="category-icon">📚</div>
-                    <h2 class="category-title">교육</h2>
-                </div>
-                <ul class="infographic-list">
-                    <!-- 향후 교육 관련 콘텐츠가 여기에 추가됩니다 -->
-                </ul>
-            </section>
-
-            <section class="category-section realestate" style="display: none;">
-                <div class="category-header">
-                    <div class="category-icon">🏠</div>
-                    <h2 class="category-title">부동산/홈 인테리어</h2>
-                </div>
-                <ul class="infographic-list">
-                    <!-- 향후 부동산 관련 콘텐츠가 여기에 추가됩니다 -->
-                </ul>
-            </section>
-
-            <section class="category-section business" style="display: none;">
+            <!-- 비즈니스 카테고리 -->
+            <section class="category-section business">
                 <div class="category-header">
                     <div class="category-icon">💼</div>
                     <h2 class="category-title">비즈니스</h2>
@@ -192,17 +216,8 @@
                 </ul>
             </section>
 
-            <section class="category-section travel" style="display: none;">
-                <div class="category-header">
-                    <div class="category-icon">✈️</div>
-                    <h2 class="category-title">여행 및 지역정보</h2>
-                </div>
-                <ul class="infographic-list">
-                    <!-- 향후 여행 관련 콘텐츠가 여기에 추가됩니다 -->
-                </ul>
-            </section>
-
-            <section class="category-section food" style="display: none;">
+            <!-- 식음료 카테고리 -->
+            <section class="category-section food">
                 <div class="category-header">
                     <div class="category-icon">🍽️</div>
                     <h2 class="category-title">식음료</h2>
@@ -211,8 +226,20 @@
                     <!-- 향후 식음료 관련 콘텐츠가 여기에 추가됩니다 -->
                 </ul>
             </section>
-
-            <section class="category-section art" style="display: none;">
+            
+            <!-- 여행 및 지역정보 카테고리 -->
+            <section class="category-section travel">
+                <div class="category-header">
+                    <div class="category-icon">✈️</div>
+                    <h2 class="category-title">여행 및 지역정보</h2>
+                </div>
+                <ul class="infographic-list">
+                    <!-- 향후 여행 관련 콘텐츠가 여기에 추가됩니다 -->
+                </ul>
+            </section>
+            
+            <!-- 예술/디자인 카테고리 -->
+            <section class="category-section art">
                 <div class="category-header">
                     <div class="category-icon">🎨</div>
                     <h2 class="category-title">예술/디자인</h2>
@@ -222,7 +249,8 @@
                 </ul>
             </section>
 
-            <section class="category-section automotive" style="display: none;">
+            <!-- 자동차 카테고리 -->
+            <section class="category-section automotive">
                 <div class="category-header">
                     <div class="category-icon">🚗</div>
                     <h2 class="category-title">자동차</h2>
@@ -232,7 +260,8 @@
                 </ul>
             </section>
 
-            <section class="category-section parenting" style="display: none;">
+            <!-- 출산/육아 카테고리 -->
+            <section class="category-section parenting">
                 <div class="category-header">
                     <div class="category-icon">👶</div>
                     <h2 class="category-title">출산/육아</h2>
@@ -242,15 +271,6 @@
                 </ul>
             </section>
 
-            <section class="category-section books" style="display: none;">
-                <div class="category-header">
-                    <div class="category-icon">📖</div>
-                    <h2 class="category-title">도서/참고자료</h2>
-                </div>
-                <ul class="infographic-list">
-                    <!-- 향후 도서 관련 콘텐츠가 여기에 추가됩니다 -->
-                </ul>
-            </section>
         </main>
 
         <footer class="site-footer">
@@ -267,86 +287,128 @@
 
     <!-- JavaScript -->
     <script>
-        // 스크롤 진행 바
-        window.addEventListener('scroll', () => {
-            const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
-            document.querySelector('.progress-bar').style.width = scrolled + '%';
-        });
+        document.addEventListener('DOMContentLoaded', () => {
+            // === NEW: 콘텐츠 없는 카테고리 숨기기 로직 ===
+            const categorySections = document.querySelectorAll('.category-section');
+            const filterBtns = document.querySelectorAll('.filter-btn');
 
-        // 맨 위로 가기 버튼
-        const scrollToTopBtn = document.getElementById('scrollToTop');
-        
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                scrollToTopBtn.classList.add('visible');
-            } else {
-                scrollToTopBtn.classList.remove('visible');
-            }
-        });
-
-        scrollToTopBtn.addEventListener('click', () => {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-
-        // 카테고리 필터
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        const categorySections = document.querySelectorAll('.category-section');
-
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                // 활성 버튼 변경
-                filterBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-
-                const category = btn.dataset.category;
-
-                // 카테고리 표시/숨김
-                categorySections.forEach(section => {
-                    if (category === 'all') {
-                        section.style.display = 'block';
-                        setTimeout(() => section.classList.add('fade-in'), 50);
-                    } else {
-                        if (section.classList.contains(category)) {
-                            section.style.display = 'block';
-                            setTimeout(() => section.classList.add('fade-in'), 50);
-                        } else {
-                            section.classList.remove('fade-in');
-                            setTimeout(() => section.style.display = 'none', 300);
+            categorySections.forEach(section => {
+                const list = section.querySelector('.infographic-list');
+                const hasContent = list && list.children.length > 0;
+                
+                // 콘텐츠가 없으면 섹션 숨기기
+                if (!hasContent) {
+                    section.style.display = 'none';
+                    
+                    // 해당 카테고리 필터 버튼도 숨기기
+                    const categoryName = Array.from(section.classList).find(cls => cls !== 'category-section');
+                    if(categoryName) {
+                        const filterBtn = document.querySelector(`.filter-btn[data-category="${categoryName}"]`);
+                        if(filterBtn) {
+                           filterBtn.style.display = 'none';
                         }
                     }
-                });
-            });
-        });
-
-        // 카드 애니메이션 (스크롤 시)
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('animate-in');
+                } else {
+                     // 콘텐츠가 있으면 필터 버튼을 보여주기 (예: '건강' '금융' '뷰티')
+                    const categoryName = Array.from(section.classList).find(cls => cls !== 'category-section');
+                    if(categoryName) {
+                        const filterBtn = document.querySelector(`.filter-btn[data-category="${categoryName}"]`);
+                        if(filterBtn) {
+                           filterBtn.style.display = ''; // display를 기본값으로 되돌림
+                        }
+                    }
                 }
             });
-        }, observerOptions);
 
-        document.querySelectorAll('.category-section').forEach(section => {
-            observer.observe(section);
-        });
+            // 스크롤 진행 바
+            window.addEventListener('scroll', () => {
+                const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+                document.querySelector('.progress-bar').style.width = scrolled + '%';
+            });
 
-        // 터치 디바이스 감지 및 최적화
-        if ('ontouchstart' in window) {
-            document.body.classList.add('touch-device');
-        }
+            // 맨 위로 가기 버튼
+            const scrollToTopBtn = document.getElementById('scrollToTop');
+            
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) {
+                    scrollToTopBtn.classList.add('visible');
+                } else {
+                    scrollToTopBtn.classList.remove('visible');
+                }
+            });
 
-        // 프리로더 (페이지 로딩 시)
-        window.addEventListener('load', () => {
-            document.body.classList.add('loaded');
+            scrollToTopBtn.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            // 카테고리 필터
+            const activeCategorySections = document.querySelectorAll('.category-section');
+            const allFilterBtns = document.querySelectorAll('.filter-btn'); // 모든 필터 버튼을 다시 선택
+
+            allFilterBtns.forEach(btn => {
+                // 버튼에 대한 클릭 이벤트 리스너는 여전히 유지합니다.
+                if (btn.style.display !== 'none') { // 보이는 버튼에만 이벤트 리스너 추가
+                    btn.addEventListener('click', () => {
+                        // 활성 버튼 변경
+                        allFilterBtns.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+
+                        const category = btn.dataset.category;
+
+                        // 카테고리 표시/숨김
+                        activeCategorySections.forEach(section => {
+                           const list = section.querySelector('.infographic-list');
+                           const hasContent = list && list.children.length > 0;
+
+                           if(hasContent) { // 콘텐츠가 있는 섹션에 대해서만 필터링 로직 수행
+                                if (category === 'all') {
+                                    section.style.display = 'block';
+                                    setTimeout(() => section.classList.add('fade-in'), 50);
+                                } else {
+                                    if (section.classList.contains(category)) {
+                                        section.style.display = 'block';
+                                        setTimeout(() => section.classList.add('fade-in'), 50);
+                                    } else {
+                                        section.classList.remove('fade-in');
+                                        setTimeout(() => section.style.display = 'none', 300);
+                                    }
+                                }
+                           }
+                        });
+                    });
+                }
+            });
+
+            // 카드 애니메이션 (스크롤 시)
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-in');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.category-section').forEach(section => {
+                observer.observe(section);
+            });
+
+            // 터치 디바이스 감지 및 최적화
+            if ('ontouchstart' in window) {
+                document.body.classList.add('touch-device');
+            }
+
+            // 프리로더 (페이지 로딩 시)
+            window.addEventListener('load', () => {
+                document.body.classList.add('loaded');
+            });
         });
     </script>
 
