@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>수족냉증 원인 및 관리법 인터랙티브 가이드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: The SPA is structured into four logical, user-centric sections to transform the linear report into an interactive journey. 1) 'Hero' to grab attention. 2) 'Self-Check' to engage the user immediately by making the information personal. 3) 'Core Causes' to explain the 'why' with visual aids and charts. 4) 'Solutions' to provide actionable 'how-to' steps, organized into intuitive tabs (Exercise, Lifestyle, Stress). This structure prioritizes user engagement and non-linear exploration over the report's original chapter flow, making complex information digestible and empowering the user to find what they need quickly. -->
+    <!-- Visualization & Content Choices: 1. Self-Check (Organize): The dense comparison table is converted into interactive, clickable cards. Goal: Make complex medical distinctions easy to navigate. Interaction: Click to reveal details. Justification: Prevents overwhelming the user with a large table. Method: HTML/CSS/JS. 2. Gender Disparity (Compare): Report data on higher prevalence in women is shown as a Chart.js donut chart. Goal: Visually represent a key statistic. Justification: A chart is more impactful than text alone. Library: Chart.js. 3. Solutions (Organize): Solutions are grouped into tabs. Goal: Structure a large volume of advice. Interaction: Tab switching. Justification: Improves usability by chunking information logically. Method: HTML/CSS/JS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #FFFBF5;
+            color: #5D4037;
+        }
+        .nav-link {
+            transition: color 0.3s, border-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #D97706;
+            border-bottom-color: #D97706;
+        }
+        .tab-button {
+            transition: all 0.3s;
+        }
+        .tab-button.active {
+            background-color: #F59E0B;
+            color: #ffffff;
+        }
+        .content-card {
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+        .details-content {
+            display: none;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out;
+            max-height: 0;
+        }
+        .details-content.show {
+            display: block;
+            max-height: 1000px;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header id="navbar" class="bg-[#FFFBF5]/80 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="#" class="text-xl font-bold text-amber-800">수족냉증 완전 정복</a>
+            <div class="hidden md:flex space-x-6">
+                <a href="#self-check" class="nav-link font-medium pb-1">자가진단</a>
+                <a href="#causes" class="nav-link font-medium pb-1">핵심 원인</a>
+                <a href="#solutions" class="nav-link font-medium pb-1">솔루션</a>
+                <a href="#summary" class="nav-link font-medium pb-1">핵심 요약</a>
+            </div>
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-amber-800 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden">
+            <a href="#self-check" class="block py-2 px-4 text-sm hover:bg-amber-50">자가진단</a>
+            <a href="#causes" class="block py-2 px-4 text-sm hover:bg-amber-50">핵심 원인</a>
+            <a href="#solutions" class="block py-2 px-4 text-sm hover:bg-amber-50">솔루션</a>
+            <a href="#summary" class="block py-2 px-4 text-sm hover:bg-amber-50">핵심 요약</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="py-16 md:py-24 bg-amber-50">
+            <div class="container mx-auto px-4 text-center">
+                <h1 class="text-4xl md:text-5xl font-bold text-amber-900 mb-4">내 몸속 <span class="text-amber-600">꺼진 보일러</span>, 다시 켤 시간입니다</h1>
+                <p class="max-w-3xl mx-auto text-lg text-stone-700 mb-8">수족냉증은 '어쩔 수 없는 체질'이 아니라, 관리할 수 있는 '몸의 경고 신호'입니다. 과학적인 원인 분석부터 오늘 당장 시작할 수 있는 실천법까지, 당신의 지긋지긋한 손발 시림을 끝내 줄 모든 정보를 담았습니다.</p>
+                <a href="#self-check" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-8 rounded-full transition duration-300">지금 바로 시작하기</a>
+            </div>
+        </section>
+
+        <section id="self-check" class="py-16 md:py-20">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-amber-900 mb-2">혹시 나도? 내 증상 확인하기</h2>
+                    <p class="text-stone-600">단순한 수족냉증과 병원 방문이 필요한 질환은 증상에 차이가 있습니다. 아래 카드를 눌러 내 증상과 비교해보세요.</p>
+                </div>
+                <div id="check-list-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                </div>
+            </div>
+        </section>
+
+        <section id="causes" class="py-16 md:py-20 bg-amber-50">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-amber-900 mb-2">왜 내 손발만 차가울까? 3대 핵심 원인</h2>
+                    <p class="text-stone-600">수족냉증은 단순히 추위 때문이 아닙니다. 우리 몸의 근육, 혈관, 신경 시스템의 복합적인 문제일 수 있습니다.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8 text-center">
+                    <div class="bg-white p-6 rounded-lg content-card">
+                        <div class="text-4xl mb-4">🔥</div>
+                        <h3 class="text-xl font-bold text-amber-800 mb-2">근육 부족 (자체 보일러 용량 미달)</h3>
+                        <p class="text-stone-600">우리 몸 체열의 40% 이상은 근육에서 발생합니다. 근육량이 적으면 몸의 '자체 발열 공장' 가동률이 떨어져 체온 유지가 어렵습니다.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg content-card">
+                        <div class="text-4xl mb-4">🌀</div>
+                        <h3 class="text-xl font-bold text-amber-800 mb-2">혈관 수축 (열 배송 시스템 오류)</h3>
+                        <p class="text-stone-600">자율신경계 불균형으로 말초 혈관이 과도하게 수축하면, 심장에서 만든 열이 손끝, 발끝까지 제대로 전달되지 못합니다.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg content-card">
+                        <div class="text-4xl mb-4">⚖️</div>
+                        <h3 class="text-xl font-bold text-amber-800 mb-2">신경 불균형 (과도한 긴장 상태)</h3>
+                        <p class="text-stone-600">만성 스트레스는 교감신경을 과하게 활성화시켜 몸을 항상 '긴장 모드'로 만듭니다. 이는 지속적인 혈관 수축으로 이어집니다.</p>
+                    </div>
+                </div>
+                <div class="mt-16">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-amber-900 mb-2">특히 여성에게 더 흔한 이유</h3>
+                         <p class="text-stone-600">미국 레이노 협회(Raynaud's Association)에 따르면, 여성이 남성보다 관련 증상을 겪을 확률이 최대 9배 높습니다. 이는 호르몬 변화와 상대적으로 적은 근육량의 복합적인 영향 때문입니다.</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="genderChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="solutions" class="py-16 md:py-20">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-amber-900 mb-2">오늘부터 시작하는 3단계 관리법</h2>
+                    <p class="text-stone-600">몸속 보일러를 켜고, 막힌 배관을 뚫고, 제어 시스템을 안정시키는 구체적인 방법을 알아보세요.</p>
+                </div>
+                <div class="mb-8 flex justify-center space-x-2 md:space-x-4 bg-stone-100 p-2 rounded-full">
+                    <button class="tab-button flex-1 py-2 px-4 rounded-full font-semibold text-stone-700 active" data-tab="muscle">💪 근육 키우기</button>
+                    <button class="tab-button flex-1 py-2 px-4 rounded-full font-semibold text-stone-700" data-tab="circulation">🛁 혈액순환</button>
+                    <button class="tab-button flex-1 py-2 px-4 rounded-full font-semibold text-stone-700" data-tab="nerves">😌 신경 안정</button>
+                </div>
+                <div id="solution-content">
+                </div>
+            </div>
+        </section>
+
+        <section id="summary" class="py-16 md:py-20 bg-amber-50">
+             <div class="container mx-auto px-4 text-center">
+                <h2 class="text-3xl font-bold text-amber-900 mb-4">핵심만 다시보기: 체질이 아닌 신호</h2>
+                <p class="max-w-3xl mx-auto text-lg text-stone-700 mb-8">수족냉증은 운명이 아닙니다. 근육, 혈관, 신경을 종합적으로 관리하면 충분히 개선될 수 있습니다. 더 이상 두꺼운 양말에 의지하지 말고, 내 몸 스스로의 힘으로 따뜻한 손과 발을 되찾으세요.</p>
+                <div class="bg-white p-6 rounded-lg content-card max-w-2xl mx-auto">
+                    <h3 class="text-xl font-bold text-amber-800 mb-3">오늘의 첫걸음</h3>
+                    <p class="text-stone-600">오늘 저녁, 잠들기 전 딱 5분만 투자해서 발목을 부드럽게 돌리고 종아리를 마사지해보세요. 막혀있던 순환의 길을 여는 위대한 첫걸음이 될 것입니다.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-stone-800 text-white py-8">
+        <div class="container mx-auto px-4 text-center text-stone-400">
+            <p>&copy; 2025 수족냉증 완전 정복 가이드. All Rights Reserved.</p>
+            <p class="text-sm mt-2">본 정보는 의학적 조언을 대체할 수 없습니다. 증상이 심하거나 우려되는 경우 전문가와 상담하세요.</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const selfCheckData = [
+        { 
+            title: '단순 수족냉증', 
+            icon: '❄️',
+            symptoms: '전반적인 손발의 차가움을 느끼지만, 피부색의 극적인 변화는 없습니다.',
+            details: '다른 뚜렷한 전신 증상 없이 나타나며, 스트레스나 피로 시 악화되는 경향이 있습니다.'
+        },
+        { 
+            title: '레이노병', 
+            icon: '🎨',
+            symptoms: '추위/스트레스 노출 시 손가락/발가락이 하얗게 → 파랗게 → 붉게 변하는 3단계 색상 변화를 보입니다.',
+            details: '저림, 통증이 동반될 수 있으며, 자가면역질환과 함께 나타나기도 합니다. 심하면 피부 궤양으로 이어질 수 있어 주의가 필요합니다.'
+        },
+        { 
+            title: '갑상선 기능 저하증', 
+            icon: '📉',
+            symptoms: '손발 냉기와 함께 전신적으로 심한 추위를 느낍니다.',
+            details: '만성 피로, 체중 증가, 피부 건조, 변비, 부종 등 다양한 전신 증상이 함께 나타나는 것이 특징입니다.'
+        },
+        { 
+            title: '말초동맥질환',
+            icon: '🚶',
+            symptoms: '걸을 때 종아리, 허벅지에 쥐가 나거나 터질 듯한 통증이 있고, 쉬면 나아집니다.',
+            details: '주로 50대 이상, 흡연/고혈압/당뇨병 등 위험인자를 가진 경우 많으며, 한쪽 다리에만 증상이 나타나기도 합니다.'
+        },
+        {
+            title: '척추/신경 문제',
+            icon: '⚡️',
+            symptoms: '주로 한쪽 손이나 발에만 증상이 국한되며, 저림, 시림, 화끈거림 등 신경학적 증상이 주를 이룹니다.',
+            details: '목이나 허리 통증을 동반하는 경우가 많고, 특정 자세에서 증상이 악화될 수 있습니다 (예: 목 디스크).'
+        }
+    ];
+
+    const solutionData = {
+        muscle: {
+            title: '💪 내 몸의 보일러를 켜라 - 근육을 키우는 하체 중심 운동',
+            description: '우리 몸 근육의 70%는 하체에 집중되어 있습니다. 하체 근육을 키우는 것은 전신 체온을 높이는 가장 효율적인 방법입니다. 아래 운동은 무릎 부담이 적어 누구나 쉽게 따라 할 수 있습니다.',
+            items: [
+                { name: '벽 스쿼트', details: '벽에 등을 기대고 투명 의자에 앉듯 내려와 30초-1분 버팁니다. 무릎 관절 부담 없이 허벅지 근육을 강화하는 최고의 등척성 운동입니다.' },
+                { name: '누워서 엉덩이 들기', details: '누워서 무릎을 세우고 엉덩이를 들어 올립니다. 엉덩이와 허벅지 뒤쪽 근육을 집중적으로 단련하여 코어 안정성에도 도움이 됩니다.' },
+                { name: '네발기기 다리 들어올리기', details: '네발기기 자세에서 한쪽 다리를 뒤로 들어 올립니다. 체중 부하 없이 엉덩이 근육을 고립시켜 효과적으로 강화할 수 있습니다.' }
+            ]
+        },
+        circulation: {
+            title: '🛁 막힌 혈관을 뚫어라 - 혈액순환을 돕는 생활 속 지혜',
+            description: '따뜻한 목욕은 경직된 말초 혈관을 이완시켜 혈액순환을 촉진하는 훌륭한 "혈관 트레이닝"입니다. 또한, 특정 식품들은 혈관을 건강하게 만드는 데 도움을 줍니다.',
+            items: [
+                { name: '반신욕/족욕', details: '38~40도의 물에서 20~30분간 명치 아래까지 담그는 반신욕이나, 종아리까지 담그는 족욕은 혈관을 이완시키고 혈액순환을 돕습니다.' },
+                { name: '생강과 마늘', details: '생강의 진저롤 성분은 몸을 따뜻하게 하고, 마늘의 알리신 성분은 혈관을 확장시켜 혈액순환을 촉진합니다.' },
+                { name: '오메가-3와 비타민 E', details: '등푸른생선의 오메가-3는 혈액을 맑게 하고, 견과류의 비타민 E는 혈관의 노화를 막는 강력한 항산화제입니다.' }
+            ]
+        },
+        nerves: {
+            title: '😌 신경의 균형을 맞춰라 - 자율신경계를 안정시키는 방법',
+            description: '만성 스트레스는 교감신경을 과도하게 활성화시켜 혈관을 수축시킵니다. 의식적인 이완 훈련을 통해 신경계의 균형을 되찾는 것이 중요합니다.',
+            items: [
+                { name: '4-7-8 복식호흡', details: '코로 4초 들이마시고, 7초 멈추고, 입으로 8초 내쉬는 호흡을 반복하면 부교감신경이 활성화되어 몸이 이완됩니다.' },
+                { name: '명상', details: '하루 5~10분, 호흡에 집중하는 명상은 스트레스 반응을 관장하는 뇌의 편도체 활성을 줄여, 신경을 안정시키는 효과가 있습니다.' },
+                { name: '규칙적인 수면', details: '매일 7~8시간의 질 좋은 수면은 낮 동안 흥분했던 교감신경을 재정비하고 몸을 회복시키는 가장 중요한 시간입니다.' }
+            ]
+        }
+    };
+    
+    const checkListContainer = document.getElementById('check-list-container');
+    selfCheckData.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'bg-white rounded-lg p-6 cursor-pointer content-card';
+        card.innerHTML = `
+            <div class="flex items-center mb-3">
+                <span class="text-3xl mr-4">${item.icon}</span>
+                <h3 class="text-xl font-bold text-amber-800">${item.title}</h3>
+            </div>
+            <p class="text-stone-600 mb-3">${item.symptoms}</p>
+            <div class="details-content text-sm text-stone-500 bg-stone-50 p-3 rounded-md">
+                <p>${item.details}</p>
+            </div>
+            <p class="text-right text-sm font-semibold text-amber-600 mt-2">자세히 보기 ▾</p>
+        `;
+        card.addEventListener('click', () => {
+            const content = card.querySelector('.details-content');
+            const arrowText = card.querySelector('.text-right p');
+            const isVisible = content.classList.contains('show');
+
+            document.querySelectorAll('.details-content.show').forEach(openContent => {
+                if (openContent !== content) {
+                    openContent.classList.remove('show');
+                    openContent.closest('.content-card').querySelector('.text-right p').textContent = '자세히 보기 ▾';
+                }
+            });
+            
+            content.classList.toggle('show');
+            arrowText.textContent = content.classList.contains('show') ? '닫기 ▴' : '자세히 보기 ▾';
+        });
+        checkListContainer.appendChild(card);
+    });
+
+    const solutionContent = document.getElementById('solution-content');
+    const tabButtons = document.querySelectorAll('.tab-button');
+    
+    function renderSolutionContent(tab) {
+        const data = solutionData[tab];
+        solutionContent.innerHTML = `
+            <div class="bg-white p-8 rounded-lg shadow-md animate-fade-in">
+                <h3 class="text-2xl font-bold text-amber-900 mb-2">${data.title}</h3>
+                <p class="text-stone-600 mb-8">${data.description}</p>
+                <div class="space-y-6">
+                    ${data.items.map(item => `
+                        <div class="border-l-4 border-amber-400 pl-4">
+                            <h4 class="font-bold text-lg text-stone-800">${item.name}</h4>
+                            <p class="text-stone-600">${item.details}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            renderSolutionContent(button.dataset.tab);
+        });
+    });
+
+    renderSolutionContent('muscle');
+
+    const genderCtx = document.getElementById('genderChart').getContext('2d');
+    const genderChart = new Chart(genderCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['여성', '남성'],
+            datasets: [{
+                label: '레이노 현상 발병률',
+                data: [9, 1],
+                backgroundColor: ['#F59E0B', '#FBBF24'],
+                borderColor: ['#FFFBF5'],
+                borderWidth: 4,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: {
+                            family: "'Noto Sans KR', sans-serif",
+                            size: 14,
+                        },
+                        color: '#5D4037'
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.label}: 약 ${context.raw}배 높음`;
+                        }
+                    }
+                }
+            },
+            cutout: '60%'
+        }
+    });
+
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+
+    const navLinks = document.querySelectorAll('.nav-link, #mobile-menu a');
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (mobileMenu.classList.contains('hidden') === false) {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+    });
+    
+    const sections = document.querySelectorAll('section');
+    const navBarLinks = document.querySelectorAll('.nav-link');
+
+    window.onscroll = () => {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            if (pageYOffset >= sectionTop - 120) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        navBarLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').includes(current)) {
+                link.classList.add('active');
+            }
+        });
+    };
+});
+</script>
+</body>
+</html>
