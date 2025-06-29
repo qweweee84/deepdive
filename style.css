@@ -10,13 +10,14 @@
 
 body {
     font-family: 'Noto Sans KR', sans-serif;
-    background-color: #f4f7f6;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
     color: #333;
     line-height: 1.6;
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 2rem;
 }
@@ -25,33 +26,257 @@ body {
 .site-header {
     text-align: center;
     margin-bottom: 3rem;
+    padding: 3rem 2rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
 .site-header h1 {
     font-size: 2.5rem;
-    color: #2c3e50;
     font-weight: 700;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .site-header p {
-    font-size: 1.1rem;
-    color: #7f8c8d;
+    font-size: 1.2rem;
+    color: #666;
+    line-height: 1.6;
 }
 
 .site-footer {
     text-align: center;
     margin-top: 4rem;
-    padding-top: 2rem;
-    border-top: 1px solid #e0e0e0;
-    color: #95a5a6;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    color: #666;
+    font-weight: 500;
 }
 
-/* --- Infographic Card List (Grid Layout) --- */
+/* --- Category Sections --- */
+.category-section {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 2.5rem;
+    margin-bottom: 3rem;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-left: 6px solid;
+}
+
+.category-section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+.category-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid;
+}
+
+.category-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-size: 1.8rem;
+    color: white;
+}
+
+.category-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+/* --- Category-specific colors --- */
+.health {
+    border-color: #2ECC71;
+}
+.health .category-header {
+    border-color: #2ECC71;
+}
+.health .category-icon {
+    background: linear-gradient(135deg, #2ECC71, #27AE60);
+}
+.health .category-title {
+    color: #2ECC71;
+}
+
+.finance {
+    border-color: #F1C40F;
+}
+.finance .category-header {
+    border-color: #F1C40F;
+}
+.finance .category-icon {
+    background: linear-gradient(135deg, #F1C40F, #E67E22);
+}
+.finance .category-title {
+    color: #F1C40F;
+}
+
+.beauty {
+    border-color: #E91E63;
+}
+.beauty .category-header {
+    border-color: #E91E63;
+}
+.beauty .category-icon {
+    background: linear-gradient(135deg, #E91E63, #C2185B);
+}
+.beauty .category-title {
+    color: #E91E63;
+}
+
+.lifestyle {
+    border-color: #3498DB;
+}
+.lifestyle .category-header {
+    border-color: #3498DB;
+}
+.lifestyle .category-icon {
+    background: linear-gradient(135deg, #3498DB, #2980B9);
+}
+.lifestyle .category-title {
+    color: #3498DB;
+}
+
+.education {
+    border-color: #9B59B6;
+}
+.education .category-header {
+    border-color: #9B59B6;
+}
+.education .category-icon {
+    background: linear-gradient(135deg, #9B59B6, #8E44AD);
+}
+.education .category-title {
+    color: #9B59B6;
+}
+
+.realestate {
+    border-color: #A0522D;
+}
+.realestate .category-header {
+    border-color: #A0522D;
+}
+.realestate .category-icon {
+    background: linear-gradient(135deg, #A0522D, #8B4513);
+}
+.realestate .category-title {
+    color: #A0522D;
+}
+
+.business {
+    border-color: #566573;
+}
+.business .category-header {
+    border-color: #566573;
+}
+.business .category-icon {
+    background: linear-gradient(135deg, #566573, #34495E);
+}
+.business .category-title {
+    color: #566573;
+}
+
+.travel {
+    border-color: #5DADE2;
+}
+.travel .category-header {
+    border-color: #5DADE2;
+}
+.travel .category-icon {
+    background: linear-gradient(135deg, #5DADE2, #3498DB);
+}
+.travel .category-title {
+    color: #5DADE2;
+}
+
+.food {
+    border-color: #1ABC9C;
+}
+.food .category-header {
+    border-color: #1ABC9C;
+}
+.food .category-icon {
+    background: linear-gradient(135deg, #1ABC9C, #16A085);
+}
+.food .category-title {
+    color: #1ABC9C;
+}
+
+.art {
+    border-color: #2C3E50;
+}
+.art .category-header {
+    border-color: #2C3E50;
+}
+.art .category-icon {
+    background: linear-gradient(135deg, #2C3E50, #34495E);
+}
+.art .category-title {
+    color: #2C3E50;
+}
+
+.automotive {
+    border-color: #BDC3C7;
+}
+.automotive .category-header {
+    border-color: #BDC3C7;
+}
+.automotive .category-icon {
+    background: linear-gradient(135deg, #BDC3C7, #95A5A6);
+}
+.automotive .category-title {
+    color: #7F8C8D;
+}
+
+.parenting {
+    border-color: #F9E79F;
+}
+.parenting .category-header {
+    border-color: #F9E79F;
+}
+.parenting .category-icon {
+    background: linear-gradient(135deg, #F9E79F, #F4D03F);
+}
+.parenting .category-title {
+    color: #F1C40F;
+}
+
+.books {
+    border-color: #800000;
+}
+.books .category-header {
+    border-color: #800000;
+}
+.books .category-icon {
+    background: linear-gradient(135deg, #800000, #600000);
+}
+.books .category-title {
+    color: #800000;
+}
+
+/* --- Infographic Card List --- */
 .infographic-list {
     list-style: none;
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     gap: 1.5rem;
 }
 
@@ -62,10 +287,63 @@ body {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
     transition: all 0.3s ease;
     overflow: hidden;
+    border-left: 4px solid;
+}
+
+.health .infographic-list li {
+    border-color: #2ECC71;
+}
+
+.finance .infographic-list li {
+    border-color: #F1C40F;
+}
+
+.beauty .infographic-list li {
+    border-color: #E91E63;
+}
+
+.lifestyle .infographic-list li {
+    border-color: #3498DB;
+}
+
+.education .infographic-list li {
+    border-color: #9B59B6;
+}
+
+.realestate .infographic-list li {
+    border-color: #A0522D;
+}
+
+.business .infographic-list li {
+    border-color: #566573;
+}
+
+.travel .infographic-list li {
+    border-color: #5DADE2;
+}
+
+.food .infographic-list li {
+    border-color: #1ABC9C;
+}
+
+.art .infographic-list li {
+    border-color: #2C3E50;
+}
+
+.automotive .infographic-list li {
+    border-color: #BDC3C7;
+}
+
+.parenting .infographic-list li {
+    border-color: #F9E79F;
+}
+
+.books .infographic-list li {
+    border-color: #800000;
 }
 
 .infographic-list li:hover {
-    transform: translateY(-8px);
+    transform: translateY(-8px) translateX(5px);
     box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
 }
 
@@ -91,7 +369,7 @@ body {
     line-height: 1.4;
 }
 
-/* --- YouTube Link Styling (Improved Button Design) --- */
+/* --- YouTube Link Styling --- */
 .youtube-link {
     display: flex;
     align-items: center;
@@ -127,7 +405,7 @@ body {
 }
 
 .youtube-link:hover {
-    transform: translateY(-2px);
+    transform: translateY(-2px) scale(1.05);
     box-shadow: 0 8px 25px rgba(238, 90, 82, 0.4);
     background: linear-gradient(135deg, #ff5252 0%, #d32f2f 100%);
 }
@@ -163,26 +441,59 @@ body {
     opacity: 1;
 }
 
-/* --- Responsive Design (Media Queries) --- */
+/* --- Responsive Design --- */
 @media (min-width: 768px) {
     .site-header h1 {
         font-size: 3rem;
     }
-
-    .infographic-list {
-        grid-template-columns: repeat(2, 1fr);
+    
+    .container {
+        padding: 2.5rem;
     }
 }
 
 @media (min-width: 1024px) {
     .infographic-list {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    }
+    
+    .category-section {
+        padding: 3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .category-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .category-icon {
+        margin-right: 0;
+        margin-bottom: 0.5rem;
+    }
+    
+    .infographic-list {
+        grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 480px) {
     .container {
         padding: 1rem;
+    }
+    
+    .site-header {
+        padding: 2rem 1.5rem;
+    }
+    
+    .site-header h1 {
+        font-size: 2rem;
+    }
+    
+    .category-section {
+        padding: 1.5rem;
     }
     
     .card-link {
@@ -197,5 +508,15 @@ body {
         margin: 1rem 0.5rem 1rem 0.5rem;
         padding: 0.75rem 1.25rem;
         font-size: 0.9rem;
+    }
+    
+    .category-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+    }
+    
+    .category-title {
+        font-size: 1.4rem;
     }
 }
