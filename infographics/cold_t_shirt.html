@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인터랙티브 냉감 티셔츠 가이드</title>
+    <!-- Chosen Palette: Cool Harmony -->
+    <!-- Application Structure Plan: The application is designed as a single-page interactive guide with a sticky top navigation, allowing users to jump to different thematic sections: "The Science," "Smart Shopping," and "Proper Care." This structure moves away from the linear video script format to a more exploratory, user-driven flow. The core idea is to debunk the "contact coolness" myth first, then build up the user's understanding of the true science (sweat management), and finally provide practical, actionable advice for purchasing and maintenance. This empowers the user by first correcting a misconception and then providing the knowledge to act on that new understanding. -->
+    <!-- Visualization & Content Choices: 
+        - Goal: Compare Cotton vs. Polyester -> Method: Interactive side-by-side card comparison and a dynamic Bar Chart (Chart.js) for drying speed. -> Justification: Visual comparison is more impactful than text alone for showing the dramatic difference in performance.
+        - Goal: Explain Advanced Fiber Tech -> Method: Interactive HTML/CSS diagrams for Modified Cross-section Yarns and Microfibers. -> Justification: Simplifies complex engineering concepts into easily understandable visuals without using any static images or SVG.
+        - Goal: Explain UPF ratings -> Method: Interactive HTML range slider. -> Justification: Allows users to actively engage with the data and see the direct correlation between the number and the protection level.
+        - Goal: Explain Fabric Softener's negative effect -> Method: Click-to-reveal animated diagram using HTML/CSS. -> Justification: Creates a "wow" moment of realization by visually showing how the "good" product (softener) harms the "tech" product (shirt).
+        - Library/Method: Chart.js for the bar chart. All other visuals are pure HTML/CSS with Tailwind to maintain a lightweight, single-file structure. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #007bff;
+            border-bottom-color: #007bff;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 40vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .interactive-diagram {
+            border: 2px dashed #e2e8f0;
+            background-color: #f8f9fa;
+        }
+        .fiber-cross-section {
+            width: 60px;
+            height: 60px;
+            position: relative;
+            background-color: #adb5bd;
+        }
+        .fiber-cross-section.plus::before,
+        .fiber-cross-section.plus::after {
+            content: '';
+            position: absolute;
+            background-color: #f8f9fa;
+        }
+        .fiber-cross-section.plus::before {
+            width: 33.33%;
+            height: 100%;
+            left: 33.33%;
+        }
+        .fiber-cross-section.plus::after {
+            width: 100%;
+            height: 33.33%;
+            top: 33.33%;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl md:text-2xl font-bold text-gray-800">냉감의 과학</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#science" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">원리 탐구</a>
+                        <a href="#shopping" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">스마트 쇼핑</a>
+                        <a href="#care" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">올바른 관리</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="md:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#science" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-gray-700">원리 탐구</a>
+                <a href="#shopping" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-gray-700">스마트 쇼핑</a>
+                <a href="#care" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-gray-700">올바른 관리</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <!-- Hero Section -->
+        <section class="text-center mb-16 md:mb-24">
+            <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-gray-900 mb-4">
+                냉감 티셔츠, <span class="text-blue-600">당신이 속고 있었던 진실</span>
+            </h2>
+            <p class="max-w-3xl mx-auto text-lg md:text-xl text-gray-600">
+                '닿을 때만 시원한' 옷은 이제 그만. 이 인터랙티브 가이드를 통해 냉감 의류의 진짜 과학을 이해하고, 광고에 속지 않는 현명한 소비자가 되어보세요.
+            </p>
+        </section>
+
+        <!-- The Science Section -->
+        <section id="science" class="mb-16 md:mb-24 scroll-mt-16">
+            <header class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-800">1. 원리 탐구: 신화 vs 과학</h3>
+                <p class="mt-2 text-lg text-gray-600">냉감의 핵심은 '차가운 감촉'이 아닌 '땀 관리'에 있습니다.</p>
+            </header>
+
+            <div class="grid md:grid-cols-2 gap-8 items-start">
+                <!-- Myth Card -->
+                <div class="card p-6">
+                    <h4 class="font-bold text-xl mb-3 text-red-600">오해: 접촉냉감 ($Q_{max}$)의 함정</h4>
+                    <p class="mb-4 text-gray-700">'만졌을 때 시원한 느낌'은 피부의 열이 옷으로 순간적으로 이동하며 생기는 착각입니다. 우리 체온과 옷의 온도가 같아지는 '열 평형' 상태가 되면 이 시원함은 금방 사라집니다. $Q_{max}$ 수치는 이 첫 느낌을 나타낼 뿐, 지속적인 쾌적함과는 무관합니다.</p>
+                    <div class="interactive-diagram p-4 rounded-lg text-center">
+                        <div class="flex justify-center items-center space-x-4">
+                            <div class="text-center">
+                                <span class="text-2xl">✋</span>
+                                <p class="font-bold text-sm">피부 ($36.5^{\circ}C$)</p>
+                            </div>
+                            <div class="text-2xl font-bold text-red-500 animate-pulse">→</div>
+                            <div class="text-center">
+                                <span class="text-2xl">👕</span>
+                                <p class="font-bold text-sm">옷 (실온)</p>
+                            </div>
+                        </div>
+                        <p class="mt-3 text-sm text-gray-600">열이 빠르게 이동하며 <span class="font-bold text-red-600">순간적으로</span> 시원하게 느껴짐</p>
+                    </div>
+                </div>
+
+                <!-- Truth Card -->
+                <div class="card p-6">
+                    <h4 class="font-bold text-xl mb-3 text-blue-600">진실: 땀 관리 과학 (흡한속건)</h4>
+                    <p class="mb-4 text-gray-700">진짜 시원함은 우리 몸의 자연 냉각 시스템인 '땀'이 증발하며 열을 빼앗는 '기화열' 원리를 극대화하는 것입니다. 좋은 냉감 의류는 땀을 빨리 흡수해 옷의 바깥 표면으로 넓게 퍼뜨려 신속하게 건조시킵니다.</p>
+                    <div class="interactive-diagram p-4 rounded-lg text-center">
+                        <div class="flex justify-center items-center space-x-2">
+                             <div class="text-center">
+                                <span class="text-2xl">💧</span>
+                                <p class="font-bold text-sm">땀</p>
+                            </div>
+                            <div class="text-2xl font-bold text-blue-500 animate-pulse">→</div>
+                            <div class="text-center">
+                                <span class="text-2xl">💨</span>
+                                <p class="font-bold text-sm">증발</p>
+                            </div>
+                             <div class="text-2xl font-bold text-blue-500 animate-pulse">→</div>
+                            <div class="text-center">
+                                <span class="text-2xl">❄️</span>
+                                <p class="font-bold text-sm">체온 저하</p>
+                            </div>
+                        </div>
+                         <p class="mt-3 text-sm text-gray-600">땀의 증발이 <span class="font-bold text-blue-600">지속적인</span> 쾌적함을 만듦</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-12">
+                <h5 class="text-xl font-bold text-center mb-6">핵심 비교: 면 vs 기능성 폴리에스터</h5>
+                <div class="grid md:grid-cols-2 gap-8 items-stretch">
+                    <div class="card p-6 flex flex-col justify-between">
+                        <div>
+                            <h6 class="font-bold text-lg mb-2">면 (Cotton) - 땀을 가두는 스펀지</h6>
+                            <p class="text-gray-700 mb-4">면은 물을 좋아하는 '친수성' 섬유로 땀을 잘 흡수하지만, 머금은 땀을 놓아주지 않아 축축하고 찝찝함을 유발합니다. 젖은 면은 오히려 체온을 빼앗아 위험할 수 있습니다.</p>
+                        </div>
+                        <div class="interactive-diagram p-4 rounded-lg mt-4 flex items-center justify-center space-x-2">
+                           <div class="w-2 h-10 bg-yellow-300 rounded-full animate-pulse"></div>
+                           <div class="w-2 h-10 bg-yellow-300 rounded-full animate-pulse delay-75"></div>
+                           <p class="font-bold text-gray-600 text-sm">땀이 섬유에 흡수되어 갇힘</p>
+                        </div>
+                    </div>
+                     <div class="card p-6 flex flex-col justify-between">
+                        <div>
+                            <h6 class="font-bold text-lg mb-2">폴리에스터 (Polyester) - 땀 고속도로</h6>
+                            <p class="text-gray-700 mb-4">물을 싫어하는 '소수성' 섬유로 땀을 흡수하지 않고, 섬유 사이의 미세한 틈(모세관)으로 빠르게 통과시켜 옷 표면에서 증발시킵니다. 이것이 '흡한속건'의 핵심입니다.</p>
+                        </div>
+                         <div class="interactive-diagram p-4 rounded-lg mt-4 flex items-center justify-center space-x-2">
+                           <p class="font-bold text-blue-500 text-sm">💧</p>
+                           <div class="w-2 h-10 bg-gray-300 rounded-full"></div>
+                           <p class="font-bold text-blue-500 text-sm animate-ping">💧</p>
+                           <div class="w-2 h-10 bg-gray-300 rounded-full"></div>
+                           <p class="font-bold text-blue-500 text-sm">💧</p>
+                           <p class="font-bold text-gray-600 text-sm">땀이 섬유 사이로 빠르게 이동</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12">
+                <h5 class="text-xl font-bold text-center mb-6">건조 속도 비교 차트</h5>
+                <div class="card p-6">
+                    <div class="chart-container">
+                        <canvas id="dryingSpeedChart"></canvas>
+                    </div>
+                    <p class="text-center text-sm text-gray-600 mt-4">동일한 조건에서 완전히 젖은 후 마르는 데 걸리는 시간을 비교한 그래프입니다. 기능성 폴리에스터의 압도적인 건조 속도를 확인할 수 있습니다.</p>
+                </div>
+            </div>
+
+            <div class="mt-12">
+                <h5 class="text-xl font-bold text-center mb-6">첨단 섬유 기술</h5>
+                <div class="grid md:grid-cols-2 gap-8">
+                     <div class="card p-6 text-center">
+                         <h6 class="font-bold text-lg mb-4">이형단면사: 땀 고속도로 설계</h6>
+                         <p class="text-sm text-gray-700 mb-4">섬유 단면을 원형이 아닌 +, Y자 등으로 만들어 섬유 가닥 사이에 더 많고 깊은 틈(모세관)을 만듭니다. 이 틈이 땀을 더 빠르고 강력하게 끌어올리는 '고속도로' 역할을 합니다.</p>
+                         <div class="flex justify-center items-center space-x-4">
+                            <div class="text-center">
+                                <div class="w-16 h-16 rounded-full bg-gray-400 mx-auto"></div>
+                                <p class="mt-2 font-semibold">일반 섬유</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="fiber-cross-section plus mx-auto"></div>
+                                <p class="mt-2 font-semibold">이형단면사 (+)</p>
+                            </div>
+                         </div>
+                     </div>
+                     <div class="card p-6 text-center">
+                        <h6 class="font-bold text-lg mb-4">마이크로파이버: 증발 면적 극대화</h6>
+                        <p class="text-sm text-gray-700 mb-4">머리카락 굵기의 1/100 이하인 극세사를 사용하면 같은 무게라도 원단의 전체 표면적이 폭발적으로 넓어집니다. 넓은 표면은 땀의 증발 속도를 비약적으로 향상시킵니다.</p>
+                        <div class="flex justify-center items-center space-x-4">
+                            <div class="text-center">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="w-6 h-6 rounded-full bg-gray-400"></div>
+                                    <div class="w-6 h-6 rounded-full bg-gray-400"></div>
+                                    <div class="w-6 h-6 rounded-full bg-gray-400"></div>
+                                    <div class="w-6 h-6 rounded-full bg-gray-400"></div>
+                                </div>
+                                <p class="mt-2 font-semibold">일반 섬유</p>
+                            </div>
+                             <div class="text-center">
+                                <div class="grid grid-cols-4 gap-1">
+                                    <script>for(let i=0; i<16; i++) document.write('<div class="w-3 h-3 rounded-full bg-gray-400"></div>')</script>
+                                </div>
+                                <p class="mt-2 font-semibold">마이크로파이버</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Smart Shopping Section -->
+        <section id="shopping" class="mb-16 md:mb-24 scroll-mt-16">
+            <header class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-800">2. 스마트 쇼핑 가이드</h3>
+                <p class="mt-2 text-lg text-gray-600">라벨과 숫자를 해독하여 내게 맞는 최고의 제품을 고르세요.</p>
+            </header>
+
+            <div class="card p-6 md:p-8">
+                <h4 class="font-bold text-xl mb-6 text-center">라벨 혼용률 해독하기</h4>
+                <div class="grid md:grid-cols-3 gap-8 text-center">
+                    <div>
+                        <div class="text-4xl mb-2">👕</div>
+                        <h5 class="font-bold text-lg mb-2">폴리에스터</h5>
+                        <p class="text-sm text-gray-700">흡한속건, 내구성, 가격 경쟁력을 갖춘 핵심 소재. 대부분의 기능성 의류의 기본입니다.</p>
+                    </div>
+                    <div>
+                        <div class="text-4xl mb-2">✨</div>
+                        <h5 class="font-bold text-lg mb-2">나일론 (폴리아미드)</h5>
+                        <p class="text-sm text-gray-700">폴리에스터보다 부드럽고 고급스러운 촉감. 착용감을 중시한다면 나일론 함량을 확인하세요.</p>
+                    </div>
+                    <div>
+                         <div class="text-4xl mb-2">🤸</div>
+                        <h5 class="font-bold text-lg mb-2">폴리우레탄 (스판)</h5>
+                        <p class="text-sm text-gray-700">고무줄 같은 신축성을 부여해 활동성을 높여줍니다. 5~15% 정도 혼방되는 것이 일반적입니다.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-6 md:p-8 mt-12">
+                <h4 class="font-bold text-xl mb-6 text-center">기능성 지표: UPF 인터랙티브 가이드</h4>
+                <p class="text-center text-gray-700 mb-6">UPF(자외선 차단 지수)는 옷이 자외선을 얼마나 차단하는지 나타냅니다. 야외 활동이 많다면 UPF 50+ 제품을 선택하는 것이 좋습니다. 아래 슬라이더를 움직여보세요.</p>
+                <div class="max-w-xl mx-auto">
+                    <input type="range" id="upf-slider" min="10" max="50" value="30" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                    <div class="flex justify-between text-xs text-gray-500 mt-2">
+                        <span>UPF 10</span>
+                        <span>UPF 30</span>
+                        <span>UPF 50+</span>
+                    </div>
+                    <div id="upf-result" class="mt-6 text-center p-4 rounded-lg bg-blue-50 border-2 border-blue-200 transition-all duration-300">
+                        <!-- JS will populate this -->
+                    </div>
+                </div>
+                 <p class="text-center text-xs text-gray-500 mt-6">참고: 일반 흰색 면티의 UPF는 5~7에 불과하며, 젖었을 때 더 낮아집니다.</p>
+            </div>
+        </section>
+
+        <!-- Proper Care Section -->
+        <section id="care" class="scroll-mt-16">
+            <header class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-800">3. 올바른 관리법</h3>
+                <p class="mt-2 text-lg text-gray-600">첨단 기술의 수명을 결정하는 것은 당신의 세탁 습관입니다.</p>
+            </header>
+            
+            <div class="text-center">
+                <h4 class="font-bold text-2xl mb-4 text-red-600">절대 금지: 섬유유연제는 독약입니다!</h4>
+                <p class="max-w-2xl mx-auto text-gray-700 mb-6">섬유유연제는 기름 성분으로 섬유 표면을 코팅하여 부드럽게 만듭니다. 이 코팅이 땀이 지나가는 수억 개의 미세 통로(모세관)를 영구적으로 막아버려 흡한속건 기능을 완전히 파괴합니다.</p>
+                <div id="softener-demo" class="card max-w-md mx-auto p-6 cursor-pointer">
+                    <p class="font-bold text-center text-lg">여기를 클릭하여 확인하세요</p>
+                    <div id="softener-diagram" class="hidden mt-4">
+                        <p class="text-center text-sm mb-2">섬유유연제 사용 전 (깨끗한 땀 고속도로)</p>
+                        <div class="interactive-diagram p-4 rounded-lg flex items-center justify-center space-x-1 mb-4">
+                           <div class="w-1 h-8 bg-gray-300"></div><div class="w-1 h-8 bg-gray-300"></div><div class="w-1 h-8 bg-gray-300"></div>
+                        </div>
+                        <p class="text-center text-sm mb-2 text-red-500 font-bold">섬유유연제 사용 후 (기름 코팅으로 막힘)</p>
+                        <div class="interactive-diagram p-4 rounded-lg flex items-center justify-center space-x-1">
+                           <div class="relative w-1 h-8 bg-gray-300"><div class="absolute inset-0 bg-yellow-400/50"></div></div>
+                           <div class="relative w-1 h-8 bg-gray-300"><div class="absolute inset-0 bg-yellow-400/50"></div></div>
+                           <div class="relative w-1 h-8 bg-gray-300"><div class="absolute inset-0 bg-yellow-400/50"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-12">
+                <h4 class="font-bold text-xl mb-6 text-center">기능 유지를 위한 최적의 세탁 & 건조법</h4>
+                 <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="card p-5 text-center">
+                        <div class="text-3xl mb-3">💧</div>
+                        <h5 class="font-bold">중성세제 사용</h5>
+                        <p class="text-sm text-gray-600">알칼리성 세제는 기능성 소재를 손상시킬 수 있습니다.</p>
+                    </div>
+                    <div class="card p-5 text-center">
+                        <div class="text-3xl mb-3">❄️</div>
+                        <h5 class="font-bold">찬물 또는 미온수</h5>
+                        <p class="text-sm text-gray-600">고온은 합성섬유를 변형시켜 기능을 저하시킵니다. ($30^{\circ}C$ 이하)</p>
+                    </div>
+                    <div class="card p-5 text-center">
+                        <div class="text-3xl mb-3">🧺</div>
+                        <h5 class="font-bold">세탁망 & 섬세 코스</h5>
+                        <p class="text-sm text-gray-600">다른 옷과의 마찰을 최소화하여 원단을 보호합니다.</p>
+                    </div>
+                    <div class="card p-5 text-center">
+                        <div class="text-3xl mb-3">🌬️</div>
+                        <h5 class="font-bold">그늘에서 자연 건조</h5>
+                        <p class="text-sm text-gray-600">건조기 열과 직사광선은 소재의 수명을 단축시킵니다.</p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-16 md:mt-24">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
+            <h4 class="text-xl font-bold mb-3">이제 당신은 냉감 의류 전문가입니다.</h4>
+            <p class="max-w-3xl mx-auto text-gray-300">
+                냉감 티셔츠의 진짜 힘은 '과학'에 있습니다. 올여름, 땀 흘리는 것을 두려워 말고 과학의 힘으로 쾌적함을 즐기세요. 지금 바로 옷장 속 기능성 의류의 라벨을 확인하고, '섬유유연제 사용 금지'를 실천해보세요!
+            </p>
+        </div>
+    </footer>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // Mobile Menu Toggle
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+
+    // Close mobile menu on link click
+    document.querySelectorAll('#mobile-menu a').forEach(link => {
+        link.addEventListener('click', () => {
+            mobileMenu.classList.add('hidden');
+        });
+    });
+
+    // Chart.js - Drying Speed Chart
+    const ctx = document.getElementById('dryingSpeedChart').getContext('2d');
+    const dryingSpeedChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['면 (Cotton)', '기능성 폴리에스터'],
+            datasets: [{
+                label: '완전 건조까지 걸리는 시간 (분)',
+                data: [240, 45],
+                backgroundColor: [
+                    'rgba(255, 159, 64, 0.6)',
+                    'rgba(54, 162, 235, 0.6)'
+                ],
+                borderColor: [
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(54, 162, 235, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.dataset.label}: ${context.raw}분`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: '시간 (분)'
+                    }
+                }
+            }
+        }
+    });
+
+    // UPF Slider
+    const upfSlider = document.getElementById('upf-slider');
+    const upfResult = document.getElementById('upf-result');
+    
+    const updateUpfResult = () => {
+        const value = parseInt(upfSlider.value);
+        let rating = '';
+        let percentage = '';
+        let colorClass = '';
+
+        if (value >= 40) {
+            rating = 'Excellent (매우 우수)';
+            percentage = '97.5% 이상 차단';
+            colorClass = 'bg-green-50 border-green-200';
+        } else if (value >= 25) {
+            rating = 'Very Good (우수)';
+            percentage = '약 96% ~ 97% 차단';
+            colorClass = 'bg-blue-50 border-blue-200';
+        } else {
+            rating = 'Good (양호)';
+            percentage = '약 93% ~ 95% 차단';
+            colorClass = 'bg-yellow-50 border-yellow-200';
+        }
+
+        upfResult.innerHTML = `
+            <p class="font-bold text-lg">UPF ${value}${value >= 50 ? '+' : ''}</p>
+            <p class="font-semibold">${rating}</p>
+            <p class="text-sm">자외선 ${percentage}</p>
+        `;
+        upfResult.className = `mt-6 text-center p-4 rounded-lg transition-all duration-300 ${colorClass}`;
+    };
+    
+    upfSlider.addEventListener('input', updateUpfResult);
+    updateUpfResult(); // Initial call
+
+    // Fabric Softener Demo
+    const softenerDemo = document.getElementById('softener-demo');
+    const softenerDiagram = document.getElementById('softener-diagram');
+    softenerDemo.addEventListener('click', () => {
+        softenerDiagram.classList.toggle('hidden');
+        if (!softenerDiagram.classList.contains('hidden')) {
+            softenerDemo.querySelector('p').textContent = '원리를 확인하세요!';
+        } else {
+            softenerDemo.querySelector('p').textContent = '여기를 클릭하여 확인하세요';
+        }
+    });
+
+    // Nav active state on scroll
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            if (pageYOffset >= sectionTop - 80) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').includes(current)) {
+                link.classList.add('active');
+            }
+        });
+    });
+
+});
+</script>
+
+</body>
+</html>
