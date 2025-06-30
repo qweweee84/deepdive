@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSR 완전 정복: 대화형 가이드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutral (Stone) with Teal Accent -->
+    <!-- Application Structure Plan: A multi-section single-page application (SPA) navigated by a top bar. This structure was chosen to break down the complex DSR topic into four digestible, task-oriented parts: 1) 'What is DSR?' for basic understanding, 2) 'My DSR Calculator' for personal, interactive engagement, 3) 'Management Strategies' for actionable advice, and 4) 'Stress DSR' for future planning. This non-linear, user-driven approach is superior to a simple report scroll-through, allowing users to directly access the information most relevant to them, enhancing usability and learning. -->
+    <!-- Visualization & Content Choices: 
+        - DSR vs DTI Comparison: Goal: Compare -> Viz: Styled HTML Table -> Interaction: Static -> Justification: Provides a clear, direct comparison of the two key regulations. Method: HTML/Tailwind.
+        - DSR Calculator: Goal: Relate/Organize -> Viz: Donut Chart + Input Form -> Interaction: User inputs data, clicks a button, chart and text results update dynamically. -> Justification: This is the core interactive element, providing personalized, immediate feedback and high user value. Library: Chart.js.
+        - Management Strategies: Goal: Inform/Organize -> Viz: 3-column card layout -> Interaction: Static informational cards -> Justification: Presents actionable strategies in a visually organized and easy-to-scan format. Method: HTML/Tailwind.
+        - Stress DSR Timeline: Goal: Change/Inform -> Viz: Horizontal timeline -> Interaction: Static visual + an interactive toggle in the calculator -> Justification: Clearly illustrates the phased rollout and allows users to simulate its future impact on their own finances. Method: HTML/Tailwind, JS for toggle.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #F5F5F4; }
+        .tab-button { transition: all 0.3s ease; }
+        .tab-button.active { background-color: #14B8A6; color: white; }
+        .tab-button:not(.active) { background-color: #D6D3D1; color: #57534E; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .form-input {
+            border: 1px solid #D6D3D1; background-color: #FAFAF9;
+            padding: 0.75rem; border-radius: 0.5rem; width: 100%;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .form-input:focus {
+            border-color: #14B8A6; outline: none;
+            box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.2);
+        }
+        .calc-button {
+            background-color: #0D9488; color: white;
+            padding: 0.75rem 1.5rem; border-radius: 0.5rem;
+            font-weight: 700; width: 100%;
+            transition: background-color 0.3s;
+        }
+        .calc-button:hover { background-color: #0F766E; }
+        #dsrResultDonutContainer {
+            position: relative; width: 100%; max-width: 320px;
+            margin-left: auto; margin-right: auto;
+            height: 320px;
+        }
+        .result-text-overlay {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        .switch { position: relative; display: inline-block; width: 60px; height: 34px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px;}
+        .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #14B8A6; }
+        input:checked + .slider:before { transform: translateX(26px); }
+    </style>
+</head>
+<body class="text-stone-800">
+
+    <div class="container mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-teal-700 mb-2">DSR 완전 정복 가이드</h1>
+            <p class="text-stone-600">내 대출의 모든 것을 결정하는 DSR, 대화형 가이드로 쉽게 이해하고 직접 계산해보세요.</p>
+        </header>
+
+        <nav class="flex flex-wrap justify-center gap-2 mb-8">
+            <button class="tab-button active text-sm sm:text-base font-bold py-2 px-4 rounded-full" data-tab="intro">DSR 이란?</button>
+            <button class="tab-button text-sm sm:text-base font-bold py-2 px-4 rounded-full" data-tab="calculator">내 DSR 계산기</button>
+            <button class="tab-button text-sm sm:text-base font-bold py-2 px-4 rounded-full" data-tab="strategy">DSR 관리 전략</button>
+            <button class="tab-button text-sm sm:text-base font-bold py-2 px-4 rounded-full" data-tab="stress">스트레스 DSR</button>
+        </nav>
+
+        <main>
+            <!-- Section 1: Introduction -->
+            <section id="intro" class="content-section active">
+                <div class="bg-white p-6 sm:p-8 rounded-xl shadow-md space-y-6">
+                    <h2 class="text-2xl font-bold text-teal-600 border-b-2 border-teal-100 pb-2">1. 대출의 최종 관문, DSR이란 무엇인가?</h2>
+                    
+                    <div class="bg-stone-50 p-6 rounded-lg border border-stone-200">
+                        <h3 class="text-xl font-semibold mb-2 text-stone-700">개념: 개인을 위한 '부채 샐러리캡'</h3>
+                        <p class="text-stone-600">
+                            DSR(총부채원리금상환비율)은 어려운 용어지만 개념은 간단합니다. **'내가 1년 동안 갚아야 할 모든 대출의 원금과 이자가, 내 연봉의 특정 비율(현재 은행권 40%)을 넘지 못하게 하는 규칙'**입니다. 스포츠 구단의 샐러리캡처럼, 개인이 감당할 수 있는 빚의 총량에 상한선을 두어 가계와 금융 시스템을 보호하는 '안전장치' 역할을 합니다.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-semibold mb-3 text-stone-700">DSR vs DTI: 무엇이 더 강력할까?</h3>
+                        <p class="text-stone-600 mb-4">DSR과 DTI는 비슷해 보이지만, DSR이 훨씬 더 강력한 규제입니다. 핵심 차이는 **'기존 대출의 원금'**을 포함하는지 여부입니다. DSR은 숨어있는 모든 빚의 원금까지 계산하여 차주의 '진짜 상환 능력'을 평가합니다.</p>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="bg-teal-50">
+                                    <tr>
+                                        <th class="p-3 font-semibold text-teal-800 border-b-2 border-teal-200">구분</th>
+                                        <th class="p-3 font-semibold text-teal-800 border-b-2 border-teal-200">DTI (총부채상환비율)</th>
+                                        <th class="p-3 font-semibold text-teal-800 border-b-2 border-teal-200">DSR (총부채원리금상환비율)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-stone-200">
+                                        <td class="p-3 font-medium">분자 (부채)</td>
+                                        <td class="p-3">신규 주담대 원리금 + <span class="font-bold text-red-600">기타 대출의 '이자'</span></td>
+                                        <td class="p-3">신규 주담대 원리금 + <span class="font-bold text-blue-600">기타 대출의 '원리금'</span></td>
+                                    </tr>
+                                    <tr class="border-b border-stone-200">
+                                        <td class="p-3 font-medium">핵심</td>
+                                        <td class="p-3">주담대 중심 규제</td>
+                                        <td class="p-3">차주의 모든 빚을 보는 총량 규제</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-semibold mb-3 text-stone-700">DSR 계산: 포함되는 빚 vs 제외되는 빚</h3>
+                         <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                                <h4 class="font-bold text-red-700 mb-2">🔴 포함되는 대출 (거의 모든 빚)</h4>
+                                <ul class="list-disc list-inside text-stone-600 space-y-1">
+                                    <li>주택담보대출, 신용대출, 마이너스 통장</li>
+                                    <li>자동차 할부, 학자금 대출</li>
+                                    <li>카드론, 비주택 담보대출 등</li>
+                                </ul>
+                            </div>
+                            <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                                <h4 class="font-bold text-green-700 mb-2">🟢 제외되는 대출 (예외)</h4>
+                                <ul class="list-disc list-inside text-stone-600 space-y-1">
+                                    <li>전세자금대출 (향후 포함 가능성 있음)</li>
+                                    <li>디딤돌/보금자리론 등 서민금융상품</li>
+                                    <li>중도금/이주비 대출, 300만원 이하 소액대출</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: Calculator -->
+            <section id="calculator" class="content-section">
+                <div class="bg-white p-6 sm:p-8 rounded-xl shadow-md">
+                     <h2 class="text-2xl font-bold text-teal-600 border-b-2 border-teal-100 pb-2 mb-6">2. 내 DSR 직접 계산해보기</h2>
+                     <p class="text-stone-600 mb-6">
+                        DSR 계산의 핵심은 '모든 대출의 연간 원리금 상환액'을 '연간 소득'으로 나누는 것입니다. 아래 계산기를 통해 현재 나의 DSR을 확인하고 대출 가능성을 점검해보세요. 특히 신용대출은 실제 만기와 상관없이 **5년 만기**로, 마이너스 통장은 **한도 전체**를 대출 원금으로 간주하여 보수적으로 계산됩니다.
+                    </p>
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <!-- Input Form -->
+                        <div class="space-y-4">
+                            <div>
+                                <label for="annualIncome" class="font-semibold text-stone-700 block mb-1">연간 소득 (세전)</label>
+                                <div class="relative">
+                                    <input type="number" id="annualIncome" class="form-input pl-4 pr-12" placeholder="6000" value="6000">
+                                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-stone-500">만원</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="creditLoanAmount" class="font-semibold text-stone-700 block mb-1">기존 신용대출 총액 (마이너스 통장 한도 포함)</label>
+                                 <div class="relative">
+                                    <input type="number" id="creditLoanAmount" class="form-input pl-4 pr-12" placeholder="3000" value="3000">
+                                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-stone-500">만원</span>
+                                </div>
+                            </div>
+                             <div>
+                                <label for="creditLoanRate" class="font-semibold text-stone-700 block mb-1">기존 신용대출 평균 금리</label>
+                                <div class="relative">
+                                    <input type="number" id="creditLoanRate" class="form-input pl-4 pr-12" step="0.1" placeholder="5.2" value="5.2">
+                                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-stone-500">%</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="newLoanAmount" class="font-semibold text-stone-700 block mb-1">신규 주택담보대출 신청액</label>
+                                <div class="relative">
+                                    <input type="number" id="newLoanAmount" class="form-input pl-4 pr-12" placeholder="30000" value="30000">
+                                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-stone-500">만원</span>
+                                 </div>
+                            </div>
+                            <div>
+                                <label for="newLoanRate" class="font-semibold text-stone-700 block mb-1">신규 주택담보대출 금리</label>
+                                <div class="relative">
+                                    <input type="number" id="newLoanRate" class="form-input pl-4 pr-12" step="0.1" placeholder="3.9" value="3.9">
+                                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-stone-500">%</span>
+                                 </div>
+                            </div>
+                            <div>
+                                <label for="newLoanTerm" class="font-semibold text-stone-700 block mb-1">신규 주택담보대출 만기</label>
+                                <div class="relative">
+                                    <input type="number" id="newLoanTerm" class="form-input pl-4 pr-12" placeholder="30" value="30">
+                                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-stone-500">년</span>
+                                 </div>
+                            </div>
+                             <div class="flex items-center justify-between pt-2">
+                                <label for="stressDsrToggle" class="font-semibold text-stone-700">스트레스 DSR (2단계) 적용</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="stressDsrToggle">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <button id="calculateBtn" class="calc-button">DSR 계산하기</button>
+                        </div>
+                        <!-- Result and Chart -->
+                        <div class="bg-stone-50 p-6 rounded-lg border border-stone-200 flex flex-col justify-center items-center">
+                            <h3 class="text-xl font-semibold text-stone-700 mb-4">계산 결과</h3>
+                            <div id="dsrResultDonutContainer">
+                                <canvas id="dsrResultDonut"></canvas>
+                                <div id="resultText" class="result-text-overlay">
+                                    <span class="text-4xl font-bold text-stone-800">0.00%</span>
+                                    <p class="font-semibold text-lg mt-2 text-stone-600">결과 대기중</p>
+                                </div>
+                            </div>
+                            <p id="resultDescription" class="mt-4 text-center text-stone-600">위의 정보를 입력하고 '계산하기' 버튼을 눌러주세요.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3: Strategy -->
+            <section id="strategy" class="content-section">
+                 <div class="bg-white p-6 sm:p-8 rounded-xl shadow-md space-y-6">
+                    <h2 class="text-2xl font-bold text-teal-600 border-b-2 border-teal-100 pb-2">3. DSR 한도를 늘리는 3가지 현실적 전략</h2>
+                     <p class="text-stone-600 mb-6">DSR 때문에 대출이 막혔다고 좌절할 필요는 없습니다. DSR 공식의 구조를 이해하면 합법적으로 한도를 늘릴 방법이 보입니다. DSR = (연간 원리금) / (연간 소득) 공식을 기억하고, 분자를 줄이거나 분모를 늘리는 전략을 사용해보세요.</p>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <!-- Strategy 1 -->
+                        <div class="bg-stone-50 p-6 rounded-lg border border-stone-200 text-center">
+                            <div class="text-4xl mb-3">💰</div>
+                            <h3 class="text-xl font-bold text-stone-800 mb-2">전략 1: 분자 줄이기</h3>
+                            <p class="text-stone-600">
+                                '어떤 빚'부터 갚느냐가 핵심입니다. 금리가 높고 DSR 계산 시 만기가 짧게 잡히는 **카드론, 신용대출**부터 상환하는 것이 가장 효과적입니다. 만기가 긴 주담대 원금을 일부 갚는 것보다 훨씬 효율적입니다.
+                            </p>
+                        </div>
+                        <!-- Strategy 2 -->
+                        <div class="bg-stone-50 p-6 rounded-lg border border-stone-200 text-center">
+                            <div class="text-4xl mb-3">👨‍👩‍👧‍👦</div>
+                            <h3 class="text-xl font-bold text-stone-800 mb-2">전략 2: 분모 늘리기</h3>
+                            <p class="text-stone-600">
+                                당장 연봉을 올릴 수 없다면, **부부소득 합산**을 활용하세요. 분모(소득)가 커져 대출 한도가 극적으로 늘어납니다. 단, 배우자의 부채도 함께 합산되므로 유불리를 꼭 따져봐야 합니다.
+                            </p>
+                        </div>
+                        <!-- Strategy 3 -->
+                        <div class="bg-stone-50 p-6 rounded-lg border border-stone-200 text-center">
+                            <div class="text-4xl mb-3">⏳</div>
+                            <h3 class="text-xl font-bold text-stone-800 mb-2">전략 3: 만기 늘리기</h3>
+                            <p class="text-stone-600">
+                                대출 만기를 30년에서 40년, 50년으로 늘리면 매년 상환할 원금이 줄어 DSR이 낮아집니다. 총 이자 부담은 늘지만, 당장 DSR 규제를 통과하는 것이 목표일 때 매우 유용한 전략입니다.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Section 4: Stress DSR -->
+            <section id="stress" class="content-section">
+                <div class="bg-white p-6 sm:p-8 rounded-xl shadow-md space-y-6">
+                    <h2 class="text-2xl font-bold text-teal-600 border-b-2 border-teal-100 pb-2">특별 부록: 스트레스 DSR 완벽 해부</h2>
+                    <p class="text-stone-600">
+                        스트레스 DSR은 DSR의 '끝판왕' 버전입니다. 현재 금리뿐만 아니라 **'미래에 금리가 오를 가능성'까지 미리 반영**하여 대출 한도를 더욱 보수적으로 산정하는 방식입니다. 실제 대출 금리에 '스트레스 금리'라는 가산금리를 더해 DSR을 계산하므로, 대출 한도는 기존보다 줄어들게 됩니다. 미래의 대출 계획이 있다면 반드시 알아야 할 개념입니다.
+                    </p>
+                    
+                    <div class="bg-stone-50 p-6 rounded-lg border border-stone-200">
+                        <h3 class="text-xl font-semibold mb-4 text-stone-700 text-center">스트레스 DSR 점진적 확대 적용 계획</h3>
+                        <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                            <!-- Step 1 -->
+                            <div class="flex-1 text-center">
+                                <div class="bg-teal-100 text-teal-800 font-bold rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-2">1단계</div>
+                                <p class="font-semibold">2024년 2월~</p>
+                                <p class="text-sm text-stone-600">은행권 주담대</p>
+                            </div>
+                            <div class="w-full sm:w-16 h-1 bg-stone-300 sm:h-1 sm:flex-1 rounded"></div>
+                             <!-- Step 2 -->
+                            <div class="flex-1 text-center">
+                                <div class="bg-teal-200 text-teal-800 font-bold rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-2">2단계</div>
+                                <p class="font-semibold">2024년 9월~</p>
+                                <p class="text-sm text-stone-600">은행 신용대출<br/>+ 2금융권 주담대</p>
+                            </div>
+                            <div class="w-full sm:w-16 h-1 bg-stone-300 sm:h-1 sm:flex-1 rounded"></div>
+                             <!-- Step 3 -->
+                            <div class="flex-1 text-center">
+                                <div class="bg-teal-300 text-teal-800 font-bold rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-2">3단계</div>
+                                <p class="font-semibold">2025년 7월~</p>
+                                <p class="text-sm text-stone-600">모든 가계대출<br/>(전세대출 등 일부 제외)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center pt-4">
+                        <p class="text-stone-700">이 제도가 100% 적용되면 대출 한도가 크게 줄어들 수 있습니다.</p>
+                        <p class="text-stone-600">'내 DSR 계산기'에서 <span class="font-bold text-teal-600">'스트레스 DSR 적용'</span>을 켜고 미래의 내 대출 한도를 직접 확인해보세요.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="text-center mt-12 text-stone-500 text-sm">
+            <p>&copy; 2024 DSR Interactive Guide. 본 애플리케이션은 정보 제공을 목적으로 하며, 실제 대출 심사 결과와 다를 수 있습니다.</p>
+            <p>정확한 내용은 반드시 해당 금융기관에 문의하시기 바랍니다.</p>
+        </footer>
+    </div>
+
+    <script>
+        const tabs = document.querySelectorAll('.tab-button');
+        const contents = document.querySelectorAll('.content-section');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(item => item.classList.remove('active'));
+                tab.classList.add('active');
+                
+                const targetId = tab.getAttribute('data-tab');
+                contents.forEach(content => {
+                    content.classList.remove('active');
+                    if (content.id === targetId) {
+                        content.classList.add('active');
+                    }
+                });
+            });
+        });
+        
+        const calculateBtn = document.getElementById('calculateBtn');
+        const resultText = document.getElementById('resultText');
+        const resultDescription = document.getElementById('resultDescription');
+
+        const ctx = document.getElementById('dsrResultDonut').getContext('2d');
+        let dsrChart;
+
+        function createOrUpdateChart(dsrValue) {
+            const displayValue = Math.min(dsrValue, 100);
+            const remaining = 100 - displayValue;
+            
+            const dsrColor = dsrValue > 40 ? '#EF4444' : '#14B8A6'; // Red if > 40%, else Teal
+            const dsrLimitColor = dsrValue > 40 ? 'rgba(239, 68, 68, 0.2)' : 'rgba(20, 184, 166, 0.2)';
+            const remainingColor = '#E7E5E4'; // Stone 200
+
+            if (dsrChart) {
+                dsrChart.data.datasets[0].data = [displayValue, remaining];
+                dsrChart.data.datasets[0].backgroundColor = [dsrColor, remainingColor];
+                dsrChart.options.plugins.annotation.annotations.line1.label.content = `${dsrValue.toFixed(2)}%`;
+                dsrChart.options.plugins.annotation.annotations.line1.label.color = dsrColor;
+                dsrChart.update();
+            } else {
+                 Chart.register({
+                    id: 'customAnnotation',
+                    afterDraw: (chart) => {
+                        const { ctx, chartArea: { top, right, bottom, left, width, height } } = chart;
+                        const dsrVal = chart.config.options.plugins.customAnnotation.dsrValue;
+                        const status = chart.config.options.plugins.customAnnotation.status;
+                        const statusColor = chart.config.options.plugins.customAnnotation.statusColor;
+
+                        ctx.save();
+                        ctx.font = 'bold 2.25rem Noto Sans KR';
+                        ctx.fillStyle = statusColor;
+                        ctx.textAlign = 'center';
+                        ctx.fillText(`${dsrVal.toFixed(2)}%`, width / 2 + left, height / 2 + top - 10);
+                        
+                        ctx.font = '600 1.125rem Noto Sans KR';
+                        ctx.fillStyle = statusColor;
+                        ctx.fillText(status, width / 2 + left, height / 2 + top + 25);
+                        ctx.restore();
+                    }
+                });
+
+
+                dsrChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        datasets: [{
+                            data: [displayValue, remaining],
+                            backgroundColor: [dsrColor, remainingColor],
+                            borderColor: '#F5F5F4',
+                            borderWidth: 4,
+                            cutout: '80%',
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            tooltip: { enabled: false },
+                            legend: { display: false },
+                             customAnnotation: {
+                                dsrValue: dsrValue,
+                                status: dsrValue > 40 ? '대출 불가' : '대출 가능',
+                                statusColor: dsrColor
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        
+        function calculateDsr() {
+            const annualIncome = parseFloat(document.getElementById('annualIncome').value) * 10000;
+            const creditLoanAmount = parseFloat(document.getElementById('creditLoanAmount').value) * 10000;
+            const creditLoanRate = parseFloat(document.getElementById('creditLoanRate').value) / 100;
+            const newLoanAmount = parseFloat(document.getElementById('newLoanAmount').value) * 10000;
+            let newLoanRate = parseFloat(document.getElementById('newLoanRate').value) / 100;
+            const newLoanTerm = parseFloat(document.getElementById('newLoanTerm').value);
+            const stressDsrToggle = document.getElementById('stressDsrToggle').checked;
+
+            if ([annualIncome, creditLoanAmount, creditLoanRate, newLoanAmount, newLoanRate, newLoanTerm].some(isNaN)) {
+                alert('모든 필드에 유효한 숫자를 입력해주세요.');
+                return;
+            }
+
+            // 스트레스 금리 적용 (2024년 9월 2단계 기준: 하한 1.5%, 상한 3.0%, 스트레스 금리의 50% 반영)
+            if (stressDsrToggle) {
+                const stressRate = 0.015 * 0.50; // 스트레스 금리 1.5%의 50% 반영
+                newLoanRate += stressRate;
+            }
+
+            let totalAnnualRepayment = 0;
+
+            // 1. 기존 신용대출 연간 원리금 계산 (만기 5년 고정)
+            if (creditLoanAmount > 0) {
+                const annualPrincipal = creditLoanAmount / 5;
+                const annualInterest = creditLoanAmount * creditLoanRate;
+                totalAnnualRepayment += annualPrincipal + annualInterest;
+            }
+
+            // 2. 신규 주담대 연간 원리금 계산 (원리금균등상환)
+            if (newLoanAmount > 0) {
+                const monthlyRate = newLoanRate / 12;
+                const numberOfPayments = newLoanTerm * 12;
+                if (monthlyRate > 0) {
+                    const monthlyPayment = newLoanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+                    totalAnnualRepayment += monthlyPayment * 12;
+                } else { // 0% 금리일 경우
+                    totalAnnualRepayment += newLoanAmount / newLoanTerm;
+                }
+            }
+
+            const dsr = (totalAnnualRepayment / annualIncome) * 100;
+            
+            const dsrResult = isNaN(dsr) ? 0 : dsr;
+
+            // Update result text and chart
+            const dsrColor = dsrResult > 40 ? '#EF4444' : '#14B8A6';
+            const status = dsrResult > 40 ? '대출 불가' : '대출 가능';
+            
+            resultText.innerHTML = `
+                <span class="text-4xl font-bold" style="color:${dsrColor}">${dsrResult.toFixed(2)}%</span>
+                <p class="font-semibold text-lg mt-2" style="color:${dsrColor}">${status}</p>
+            `;
+
+            if(dsrResult > 40) {
+                resultDescription.innerHTML = `DSR <span class="font-bold text-red-600">${dsrResult.toFixed(2)}%</span>로 규제 한도(40%)를 초과하여 대출이 거절될 가능성이 높습니다. 'DSR 관리 전략' 탭을 확인해보세요.`;
+            } else {
+                resultDescription.innerHTML = `DSR <span class="font-bold text-teal-600">${dsrResult.toFixed(2)}%</span>로 규제 한도(40%) 이내이므로 대출 신청이 가능합니다.`;
+            }
+            
+            if (dsrChart) {
+                dsrChart.options.plugins.customAnnotation.dsrValue = dsrResult;
+                dsrChart.options.plugins.customAnnotation.status = status;
+                dsrChart.options.plugins.customAnnotation.statusColor = dsrColor;
+            }
+
+            createOrUpdateChart(dsrResult);
+        }
+
+        calculateBtn.addEventListener('click', calculateDsr);
+
+        // Initial chart rendering
+        window.addEventListener('load', () => {
+             createOrUpdateChart(0);
+             // Hide the default text overlay after the chart is initialized
+            resultText.innerHTML = '';
+        });
+    </script>
+</body>
+</html>
