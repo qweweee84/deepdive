@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>일회용 vs 다회용 렌즈: 대화형 안전 가이드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Clarity -->
+    <!-- Application Structure Plan: 사용자가 정보를 능동적으로 선택하고 탐색할 수 있도록 탭 기반의 비선형 구조를 채택했습니다. '핵심 비교' 탭으로 시작하여 주요 차이점을 즉시 파악하게 하고, '과학적 원리' 탭에서는 데이터 기반의 깊이 있는 정보를, '위험성과 관리' 탭에서는 실질적인 위협과 해결책을 제시합니다. 이러한 구조는 복잡한 의료 정보를 주제별로 명확히 분리하여 사용자의 이해도를 높이고, 필요한 정보에 빠르게 접근할 수 있도록 설계되었습니다. 마지막 '최종 권고'는 강력한 행동 촉구로 마무리합니다. -->
+    <!-- Visualization & Content Choices: 보고서의 정보를 효과적으로 전달하기 위해 다양한 시각화 방식을 선택했습니다. '핵심 비교'는 아이콘과 카드를 활용한 직관적 비교를, '산소투과율'은 Chart.js를 이용한 대화형 막대 차트로 제품별 차이를 명확히 보여줍니다. '바이오필름 형성' 과정은 CSS와 JS를 이용한 단계별 애니메이션으로 시각적 경각심을 극대화했고, '가시아메바 각막염 위험도'는 통계 수치를 Chart.js 수평 막대 차트로 변환하여 위험 증가율을 즉각적으로 인지하게 했습니다. 모든 시각화는 사용자의 이해를 돕고 상호작용을 유도하는 데 초점을 맞췄으며, SVG나 Mermaid JS는 사용하지 않았습니다. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F8F7F4;
+            color: #4A4A4A;
+        }
+        .tab-button {
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+        .tab-button.active {
+            color: #0B749B;
+            border-bottom-color: #0B749B;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .card {
+            background-color: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 40vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .biofilm-step {
+            opacity: 0.3;
+            transition: opacity 0.5s ease-in-out;
+            border-left: 3px solid #E0E0E0;
+        }
+        .biofilm-step.visible {
+            opacity: 1;
+            border-left: 3px solid #EF4444;
+        }
+        .btn-final {
+            background: linear-gradient(90deg, #EF4444, #DC2626);
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+        .btn-final:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto px-4 py-8 md:py-12">
+        <header class="text-center mb-8 md:mb-12">
+            <h1 class="text-3xl md:text-5xl font-bold text-gray-800 mb-2">일회용 vs 다회용 렌즈</h1>
+            <p class="text-lg md:text-xl text-cyan-700 font-medium">당신의 눈을 위한 대화형 안전 가이드</p>
+        </header>
+
+        <div class="bg-white rounded-xl shadow-lg p-2 mb-8 sticky top-4 z-10">
+            <nav id="tabs" class="flex justify-around">
+                <button data-tab="compare" class="tab-button w-full py-3 px-2 text-sm md:text-base font-bold active">핵심 비교</button>
+                <button data-tab="science" class="tab-button w-full py-3 px-2 text-sm md:text-base font-bold">과학적 원리</button>
+                <button data-tab="risk" class="tab-button w-full py-3 px-2 text-sm md:text-base font-bold">위험성과 관리</button>
+                <button data-tab="final" class="tab-button w-full py-3 px-2 text-sm md:text-base font-bold">최종 권고</button>
+            </nav>
+        </div>
+
+        <main id="tab-content">
+            <!-- 1. 핵심 비교 -->
+            <section id="compare" class="content-section active">
+                <div class="text-center mb-8">
+                     <h2 class="text-2xl md:text-3xl font-bold text-gray-800">무엇이 다를까요?</h2>
+                     <p class="mt-2 text-gray-600">일회용 렌즈와 다회용 렌즈의 핵심적인 차이점을 한눈에 비교해 보세요.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold text-cyan-600 mb-4 flex items-center"><span class="text-2xl mr-3">🗑️</span> 일회용 렌즈 (Daily Disposable)</h3>
+                        <ul class="space-y-3 text-gray-700">
+                            <li class="flex"><span class="font-bold mr-2">✔️ 목적:</span> 단 하루의 완벽한 착용감과 위생</li>
+                            <li class="flex"><span class="font-bold mr-2">✔️ 재질:</span> 주로 얇고 부드러운 하이드로겔 소재</li>
+                            <li class="flex"><span class="font-bold mr-2">✔️ 내구성:</span> 약함. 세척 시 손상 위험 매우 높음</li>
+                            <li class="flex"><span class="font-bold mr-2">✔️ 표면처리:</span> 이물질 방지 코팅이 없는 경우가 많음</li>
+                            <li class="flex"><span class="font-bold mr-2">✔️ 장점:</span> 가장 위생적, 관리가 필요 없음, 매일 새 렌즈의 편안함</li>
+                            <li class="flex"><span class="font-bold mr-2">❌ 절대금지:</span> <span class="font-bold text-red-600">단 한 번이라도 재사용 금지!</span></li>
+                        </ul>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold text-teal-600 mb-4 flex items-center"><span class="text-2xl mr-3">🗓️</span> 다회용 렌즈 (Reusable)</h3>
+                        <ul class="space-y-3 text-gray-700">
+                            <li class="flex"><span class="font-bold mr-2">✔️ 목적:</span> 정해진 기간(2주/1달) 동안 반복 사용</li>
+                            <li class="flex"><span class="font-bold mr-2">✔️ 재질:</span> 주로 내구성 강한 실리콘 하이드로겔</li>
+                            <li class="flex"><span class="font-bold mr-2">✔️ 내구성:</span> 강함. 매일 세척 및 소독을 견디도록 설계</li>
+                            <li class="flex"><span class="font-bold mr-2">✔️ 표면처리:</span> 이물질 침착을 막는 특수 코팅 적용</li>
+                            <li class="flex"><span class="font-bold mr-2">✔️ 장점:</span> 경제적, 다양한 제품 선택 가능</li>
+                            <li class="flex"><span class="font-bold mr-2">⚠️ 필수사항:</span> <span class="font-bold text-blue-600">매일 올바른 세척 및 소독 필수</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. 과학적 원리 -->
+            <section id="science" class="content-section">
+                 <div class="text-center mb-8">
+                     <h2 class="text-2xl md:text-3xl font-bold text-gray-800">렌즈 속 숨겨진 과학</h2>
+                     <p class="mt-2 text-gray-600">렌즈의 성능을 결정하는 핵심 기술, 소재와 산소투과율에 대해 알아보세요.</p>
+                </div>
+                <div class="card p-6 md:p-8 mb-8">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">재질의 차이: 스펀지 vs 기능성 섬유</h3>
+                    <div class="grid md:grid-cols-2 gap-6 text-sm">
+                        <div class="border-l-4 border-cyan-400 pl-4">
+                            <h4 class="font-bold">하이드로겔 (Hydrogel)</h4>
+                            <p>물을 머금어 산소를 전달하는 '스펀지'와 같습니다. 함수율이 높을수록 산소 공급이 원활하지만, 시간이 지나 수분이 증발하면 성능이 급격히 저하됩니다. 주로 일회용 렌즈에 사용됩니다.</p>
+                        </div>
+                        <div class="border-l-4 border-teal-400 pl-4">
+                             <h4 class="font-bold">실리콘 하이드로겔 (Silicone Hydrogel)</h4>
+                             <p>물과 함께 실리콘이라는 '산소 고속도로'를 가진 기능성 섬유입니다. 함수율이 낮아도 높은 산소 공급이 가능해 장시간 착용에 유리하며, 주로 다회용 렌즈에 사용됩니다.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card p-6 md:p-8">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">각막의 생명줄: 산소투과율 (Dk/t)</h3>
+                    <p class="text-gray-600 text-sm mb-4 text-center">렌즈를 통해 각막에 실제 전달되는 산소의 양을 나타내는 수치입니다. Dk/t 값이 높을수록 눈이 편안합니다.<br>아래 차트의 막대를 클릭하여 렌즈 정보를 확인해 보세요.</p>
+                    <div class="chart-container">
+                        <canvas id="dktChart"></canvas>
+                    </div>
+                     <p class="text-xs text-gray-500 mt-4 text-center">참고: 위 Dk/t 값은 제조사에서 제공하는 일반적인 수치이며 제품마다 차이가 있을 수 있습니다. <span class="font-bold">이 값은 오염되지 않은 새 렌즈 기준입니다.</span></p>
+                </div>
+            </section>
+
+            <!-- 3. 위험성과 관리 -->
+            <section id="risk" class="content-section">
+                <div class="text-center mb-8">
+                     <h2 class="text-2xl md:text-3xl font-bold text-red-600">위험한 통념, 치명적 결과</h2>
+                     <p class="mt-2 text-gray-600">일회용 렌즈 재사용이 왜 위험한지, 그리고 다회용 렌즈는 어떻게 관리해야 하는지 알아보세요.</p>
+                </div>
+
+                <div class="card p-6 md:p-8 mb-8">
+                    <h3 class="text-xl font-bold text-red-700 mb-4">눈 속의 세균 배양기: 바이오필름 형성 과정</h3>
+                    <p class="text-gray-600 text-sm mb-6">일회용 렌즈를 재사용하면 하룻밤 사이 렌즈 표면에 '바이오필름'이라는 세균들의 요새가 건설됩니다. 아래 버튼을 눌러 단계별 과정을 확인해보세요.</p>
+                    <div id="biofilm-steps" class="space-y-4">
+                        <div class="biofilm-step p-4 rounded-r-lg">
+                            <h4 class="font-bold">1단계: 초기 부착</h4>
+                            <p class="text-sm">눈물 속 단백질로 코팅된 렌즈에 세균이 내려앉습니다.</p>
+                        </div>
+                        <div class="biofilm-step p-4 rounded-r-lg">
+                            <h4 class="font-bold">2단계: 고정</h4>
+                            <p class="text-sm">세균이 표면에 완전히 뿌리내립니다.</p>
+                        </div>
+                        <div class="biofilm-step p-4 rounded-r-lg">
+                            <h4 class="font-bold">3단계: 군집 형성</h4>
+                            <p class="text-sm">세균이 분열하며 끈적한 점액질로 요새의 기초를 다집니다.</p>
+                        </div>
+                        <div class="biofilm-step p-4 rounded-r-lg">
+                            <h4 class="font-bold">4단계: 성숙</h4>
+                            <p class="text-sm">수많은 세균이 3차원 구조의 완벽한 요새를 구축해 소독액을 막아냅니다.</p>
+                        </div>
+                        <div class="biofilm-step p-4 rounded-r-lg">
+                            <h4 class="font-bold">5단계: 분산 및 감염</h4>
+                            <p class="text-sm">요새의 세균들이 떨어져 나와 각막을 침략하며 감염을 일으킵니다.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="card p-6 md:p-8">
+                         <h3 class="text-xl font-bold text-gray-800 mb-4">가시아메바 각막염 위험도</h3>
+                         <p class="text-gray-600 text-sm mb-4">UCL & 무어필드 안과병원 연구에 따르면, 특정 행동은 실명에 이를 수 있는 가시아메바 각막염의 위험을 극적으로 높입니다.</p>
+                         <div class="chart-container" style="height:250px; max-height:30vh;">
+                            <canvas id="riskChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card p-6 md:p-8">
+                        <h3 class="text-xl font-bold text-blue-700 mb-4">다회용 렌즈: 올바른 관리법</h3>
+                        <p class="text-gray-600 text-sm mb-4">하루 단 5분의 투자로 눈 건강을 지킬 수 있습니다. '문지르고 헹구기'는 절대 타협해서는 안 되는 황금률입니다.</p>
+                        <ol class="list-decimal list-inside space-y-2 text-gray-700">
+                           <li>손을 비누로 깨끗이 씻고 완전히 건조합니다.</li>
+                           <li>렌즈를 빼서 깨끗한 손바닥 위에 놓습니다.</li>
+                           <li>다목적용액을 몇 방울 떨어뜨립니다.</li>
+                           <li>손가락으로 렌즈의 양면을 각각 20초 이상 부드럽게 문지릅니다.</li>
+                           <li>용액으로 렌즈를 5초 이상 충분히 헹굽니다.</li>
+                           <li>렌즈 케이스에 새 용액을 채우고 렌즈를 보관합니다. (최소 4-6시간)</li>
+                           <li>렌즈 케이스는 매일 세척하고, 최소 3개월마다 교체합니다.</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 4. 최종 권고 -->
+            <section id="final" class="content-section">
+                <div class="text-center py-12">
+                    <div class="card max-w-2xl mx-auto p-8">
+                         <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-4">당신의 눈, 당신의 선택에 달려있습니다</h2>
+                         <p class="text-gray-600 mb-6">일회용 렌즈 재사용은 단돈 몇천 원을 아끼려다 수백만 원짜리 눈 건강을 해치는 위험한 도박입니다. 이것은 의견이 아니라, 수많은 연구가 증명하는 과학적 사실입니다.</p>
+                         <p class="font-bold text-lg text-red-600 bg-red-50 p-4 rounded-lg mb-8">"일회용 렌즈를 단 하루라도 재사용하는 것은, 눈에 세균 배양기를 넣는 것과 같습니다."</p>
+                         <p class="text-gray-600 mb-8">오늘 배운 정확한 지식으로 당신의 소중한 눈을 지켜주세요. 지금 바로, 혹시 모를 유혹을 막기 위해 사용하고 남은 일회용 렌즈가 있다면 쓰레기통에 버리십시오.</p>
+                         <button id="final-action" class="btn-final font-bold py-4 px-8 rounded-full text-lg shadow-lg">
+                            🗑️ 지금 바로 사용한 렌즈 버리기 (실천하기)
+                         </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabs = document.querySelectorAll('.tab-button');
+            const contents = document.querySelectorAll('.content-section');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const target = tab.dataset.tab;
+                    
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    contents.forEach(content => {
+                        if (content.id === target) {
+                            content.classList.add('active');
+                        } else {
+                            content.classList.remove('active');
+                        }
+                    });
+                });
+            });
+            
+            // Dk/t Chart
+            const dktData = {
+                labels: ['원데이 아큐브 모이스트', '데일리스 토탈원', '바이오피니티 (한달용)'],
+                datasets: [{
+                    label: '산소투과율 (Dk/t)',
+                    data: [33, 156, 160],
+                    backgroundColor: [
+                        'rgba(2, 132, 199, 0.6)', // Hydrogel - Daily
+                        'rgba(20, 184, 166, 0.6)', // SiHy - Daily
+                        'rgba(13, 148, 136, 0.8)', // SiHy - Reusable
+                    ],
+                    borderColor: [
+                        'rgba(2, 132, 199, 1)',
+                        'rgba(20, 184, 166, 1)',
+                        'rgba(13, 148, 136, 1)',
+                    ],
+                    borderWidth: 1
+                }]
+            };
+            const dktConfig = {
+                type: 'bar',
+                data: dktData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: function(context) {
+                                    const lensInfo = [
+                                        '종류: 일회용 / 소재: 하이드로겔',
+                                        '종류: 일회용 / 소재: 실리콘 하이드로겔',
+                                        '종류: 다회용 / 소재: 실리콘 하이드로겔'
+                                    ];
+                                    return lensInfo[context.dataIndex];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Dk/t 값'
+                            }
+                        }
+                    }
+                }
+            };
+            const dktChart = new Chart(document.getElementById('dktChart'), dktConfig);
+
+            // Risk Chart
+            const riskData = {
+                labels: ['렌즈 착용 후 수면', '렌즈 착용 후 샤워', '다회용 렌즈 착용', '일회용 렌즈 재사용'],
+                datasets: [{
+                    label: '위험도 증가 배수',
+                    data: [3.9, 3.3, 3.8, 5.4],
+                    backgroundColor: [
+                        'rgba(251, 146, 60, 0.7)',
+                        'rgba(251, 146, 60, 0.7)',
+                        'rgba(239, 68, 68, 0.7)',
+                        'rgba(220, 38, 38, 0.9)'
+                    ],
+                     borderColor: [
+                        'rgba(251, 146, 60, 1)',
+                        'rgba(251, 146, 60, 1)',
+                        'rgba(239, 68, 68, 1)',
+                        'rgba(220, 38, 38, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            };
+            const riskConfig = {
+                type: 'bar',
+                data: riskData,
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: '가시아메바 각막염 위험도 증가율',
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '배'
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            const riskChart = new Chart(document.getElementById('riskChart'), riskConfig);
+            
+            // Biofilm animation
+            const biofilmSteps = document.querySelectorAll('.biofilm-step');
+            let currentStep = 0;
+            const observer = new IntersectionObserver((entries) => {
+                if(entries[0].isIntersecting) {
+                    const interval = setInterval(() => {
+                        if (currentStep < biofilmSteps.length) {
+                            biofilmSteps[currentStep].classList.add('visible');
+                            currentStep++;
+                        } else {
+                            clearInterval(interval);
+                        }
+                    }, 800);
+                    observer.disconnect();
+                }
+            }, { threshold: 0.5 });
+            
+            observer.observe(document.getElementById('biofilm-steps'));
+        });
+    </script>
+</body>
+</html>
