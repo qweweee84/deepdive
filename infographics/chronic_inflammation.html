@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>만성염증 대화형 가이드: 내 몸의 불을 끄는 방법</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: A user-centric, modular guide structure. The app starts with a problem hook (Hero), then uses a sticky navigation to allow users to explore non-linearly through key themes: Definition ('What is it?'), Self-Check ('Check Yourself'), Dangers ('The Dangers'), Causes ('The Causes'), and Solutions ('The Solution'). This structure prioritizes user-driven exploration over the report's linear script format. It breaks down complex information into digestible, interactive modules (side-by-side comparisons, interactive charts, tabs, accordion cards) to maintain engagement and facilitate understanding, guiding the user from awareness to actionable steps. -->
+    <!-- Visualization & Content Choices: 
+        - Acute vs. Chronic Inflammation: Goal(Compare) -> Viz(Side-by-side card layout with icons) -> Interaction(Static display) -> Justification(Clear, immediate visual distinction between the two concepts). Method(HTML/Tailwind).
+        - Blood Test Indicators (hs-CRP, Homocysteine): Goal(Inform/Compare) -> Viz(Horizontal Bar Chart) -> Interaction(Visualizes risk levels with color-coding) -> Justification(More intuitive and engaging than a static table, helps users quickly assess risk levels). Library(Chart.js).
+        - Disease Links (Cancer, Dementia, etc.): Goal(Organize/Inform) -> Viz(Tabbed content interface) -> Interaction(Click tabs to reveal content) -> Justification(Prevents information overload by chunking related content, allows focused exploration). Method(JS/HTML/Tailwind).
+        - Omega-3/6 Ratio: Goal(Compare/Inform) -> Viz(Visual seesaw diagram) -> Interaction(Static visual metaphor) -> Justification(A powerful and instant way to communicate the concept of balance and imbalance). Method(HTML/Tailwind).
+        - Causes & Solutions: Goal(Organize/Engage) -> Viz(Interactive card grids and tabs) -> Interaction(Click to reveal detailed info) -> Justification(Keeps the UI clean and encourages user discovery of actionable advice). Method(JS/HTML/Tailwind).
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F8F7F4;
+            color: #383838;
+        }
+        .nav-active {
+            color: #E87A5D;
+            font-weight: 700;
+        }
+        .nav-item {
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .nav-item:hover {
+            color: #E87A5D;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .tab-button.active {
+            background-color: #4A6C6F;
+            color: white;
+        }
+        .lifestyle-tab-button.active {
+            border-bottom: 2px solid #E87A5D;
+            color: #E87A5D;
+            font-weight: 700;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 200px;
+            max-height: 250px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 250px;
+                max-height: 300px;
+            }
+        }
+        .seesaw {
+            width: 100%;
+            max-width: 400px;
+            height: 150px;
+            position: relative;
+            margin: 2rem auto;
+        }
+        .seesaw-plank {
+            width: 100%;
+            height: 10px;
+            background-color: #4A6C6F;
+            border-radius: 5px;
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transition: transform 0.5s ease-in-out;
+        }
+        .seesaw-fulcrum {
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-bottom: 30px solid #a0aec0;
+            position: absolute;
+            bottom: 35px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .seesaw-weight {
+            position: absolute;
+            bottom: 20px;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            color: white;
+            text-align: center;
+        }
+        .imbalanced .seesaw-plank {
+            transform: rotate(-15deg);
+        }
+        .balanced .seesaw-plank {
+             transform: rotate(0deg);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-[#F8F7F4] sticky top-0 z-50 shadow-md">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-[#4A6C6F]">만성염증 완전정복</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a onclick="showSection('intro')" class="nav-item nav-active px-3 py-2 rounded-md text-sm font-medium">소개</a>
+                        <a onclick="showSection('definition')" class="nav-item px-3 py-2 rounded-md text-sm font-medium">염증이란?</a>
+                        <a onclick="showSection('check')" class="nav-item px-3 py-2 rounded-md text-sm font-medium">내 몸의 신호</a>
+                        <a onclick="showSection('dangers')" class="nav-item px-3 py-2 rounded-md text-sm font-medium">위험성</a>
+                        <a onclick="showSection('causes')" class="nav-item px-3 py-2 rounded-md text-sm font-medium">4대 원인</a>
+                        <a onclick="showSection('solutions')" class="nav-item px-3 py-2 rounded-md text-sm font-medium">해결책</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <select onchange="showSection(this.value)" class="bg-white border border-gray-300 rounded-md py-2 px-3 text-sm">
+                        <option value="intro">소개</option>
+                        <option value="definition">염증이란?</option>
+                        <option value="check">내 몸의 신호</option>
+                        <option value="dangers">위험성</option>
+                        <option value="causes">4대 원인</option>
+                        <option value="solutions">해결책</option>
+                    </select>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <section id="intro" class="content-section active text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">내 몸을 공격하는 <span class="text-[#E87A5D]">조용한 암살자</span>, 만성염증</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600 mb-6">이유 없이 피곤하고, 몸 여기저기가 쑤시고, 살도 잘 빠지지 않나요?<br>단순한 나이 탓이 아닐 수 있습니다. 우리 몸속에서 암, 치매, 당뇨를 키우는 만성염증의 정체를 파헤치고, 내 몸의 불을 끄는 확실한 방법을 알아보세요.</p>
+            <div class="p-6 bg-white rounded-xl shadow-lg">
+                <p class="text-lg font-semibold text-[#4A6C6F]">이 가이드는 만성염증에 대한 모든 것을 알려드립니다.</p>
+                <p class="mt-2 text-gray-700">각 섹션을 클릭하여 염증의 정의부터 원인, 그리고 약보다 강력한 '항염증 라이프스타일'까지 단계별로 탐색해 보세요.</p>
+            </div>
+        </section>
+
+        <section id="definition" class="content-section">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-2">염증: 우리 몸의 양날의 검</h2>
+                <p class="text-lg text-gray-600">모든 염증이 나쁜 것은 아닙니다. 우리 몸의 필수 방어 시스템인 '착한 염증'과 건강을 파괴하는 '나쁜 염증'의 차이를 알아보세요.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-green-500">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center"><span class="text-3xl mr-3">👨‍🚒</span> 착한 염증 (급성)</h3>
+                    <p class="font-semibold text-lg text-green-600 mb-2">"유능하고 효율적인 소방수"</p>
+                    <p class="text-gray-700">상처가 나거나 세균이 침입했을 때, 우리 몸을 보호하기 위해 신속하게 출동하여 문제를 해결하고 깔끔하게 철수합니다. 며칠 내로 사라지는 정상적인 치유 과정입니다.</p>
+                    <ul class="mt-4 space-y-2 text-gray-600">
+                        <li class="flex items-start"><span class="mr-2 text-green-500">✔</span> <strong class="w-16">원인:</strong> 외상, 감염</li>
+                        <li class="flex items-start"><span class="mr-2 text-green-500">✔</span> <strong class="w-16">기간:</strong> 짧음 (수일)</li>
+                        <li class="flex items-start"><span class="mr-2 text-green-500">✔</span> <strong class="w-16">결과:</strong> 회복 및 치유</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-red-500">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center"><span class="text-3xl mr-3">🚨</span> 나쁜 염증 (만성)</h3>
+                    <p class="font-semibold text-lg text-red-600 mb-2">"고장나서 꺼지지 않는 화재경보기"</p>
+                    <p class="text-gray-700">뚜렷한 원인 없이 낮은 강도의 염증이 장기간 지속됩니다. 목표를 잃은 면역세포가 정상 세포를 공격하며 전신에 걸쳐 시스템을 서서히 파괴합니다.</p>
+                     <ul class="mt-4 space-y-2 text-gray-600">
+                        <li class="flex items-start"><span class="mr-2 text-red-500">✔</span> <strong class="w-16">원인:</strong> 식습관, 스트레스 등</li>
+                        <li class="flex items-start"><span class="mr-2 text-red-500">✔</span> <strong class="w-16">기간:</strong> 김 (수개월~수년)</li>
+                        <li class="flex items-start"><span class="mr-2 text-red-500">✔</span> <strong class="w-16">결과:</strong> 질병 유발</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="check" class="content-section">
+             <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-2">내 몸의 염증 신호 확인하기</h2>
+                <p class="text-lg text-gray-600">만성염증은 조용히 진행되지만, 간단한 혈액 검사를 통해 그 위험 신호를 감지할 수 있습니다.<br>대표적인 두 가지 지표의 의미를 확인해보세요.</p>
+            </div>
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg space-y-8">
+                <div>
+                    <h3 class="text-xl font-bold text-[#4A6C6F] mb-2">1. 고감도 C-반응성 단백질 (hs-CRP)</h3>
+                    <p class="text-gray-700 mb-4">전신에 퍼진 미세한 염증 수준을 측정하며, 미래의 심혈관 질환 위험을 예측하는 '염증 성적표'입니다.</p>
+                    <div class="chart-container"><canvas id="hsCrpChart"></canvas></div>
+                </div>
+                <hr class="my-8">
+                <div>
+                    <h3 class="text-xl font-bold text-[#4A6C6F] mb-2">2. 호모시스테인 (Homocysteine)</h3>
+                    <p class="text-gray-700 mb-4">'제2의 콜레스테롤'이라 불리며, 혈관 내벽을 손상시키는 직접적인 원인이 될 수 있습니다. 비타민 B군 부족과 관련이 깊습니다.</p>
+                    <div class="chart-container"><canvas id="homocysteineChart"></canvas></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="dangers" class="content-section">
+             <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-2">만성염증이 부르는 4대 질병</h2>
+                <p class="text-lg text-gray-600">만성염증은 암, 치매, 당뇨, 심혈관 질환의 공통된 뿌리입니다.<br>각 질병의 탭을 클릭하여 염증이 어떻게 질병을 유발하는지 그 과학적 원리를 확인해보세요.</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-2 md:p-4">
+                <div class="flex flex-wrap justify-center border-b border-gray-200">
+                    <button class="tab-button active py-2 px-4 text-sm md:text-base font-medium rounded-t-lg" onclick="showDisease('cancer', this)">암</button>
+                    <button class="tab-button py-2 px-4 text-sm md:text-base font-medium rounded-t-lg" onclick="showDisease('dementia', this)">치매</button>
+                    <button class="tab-button py-2 px-4 text-sm md:text-base font-medium rounded-t-lg" onclick="showDisease('diabetes', this)">당뇨병</button>
+                    <button class="tab-button py-2 px-4 text-sm md:text-base font-medium rounded-t-lg" onclick="showDisease('heart', this)">심혈관질환</button>
+                </div>
+                <div id="disease-content" class="p-4 md:p-6">
+                </div>
+            </div>
+        </section>
+
+        <section id="causes" class="content-section">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-2">누가 내 몸에 불을 지르는가?</h2>
+                <p class="text-lg text-gray-600">만성염증의 불씨는 바로 우리의 일상 속에 있습니다. 4가지 핵심 원인을 알아보고 내 습관을 점검해보세요.</p>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                 <div class="bg-white p-6 rounded-xl shadow-lg text-center">
+                    <div class="text-4xl mb-4">🍔</div>
+                    <h3 class="text-xl font-bold mb-2">나쁜 식단</h3>
+                    <p class="text-gray-600">설탕, 가공식품, 트랜스지방은 염증을 폭발적으로 증가시키는 주범입니다.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg text-center">
+                    <div class="text-4xl mb-4">🤯</div>
+                    <h3 class="text-xl font-bold mb-2">만성 스트레스</h3>
+                    <p class="text-gray-600">스트레스 호르몬 '코르티솔' 시스템을 망가뜨려 염증 조절 능력을 상실시킵니다.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg text-center">
+                    <div class="text-4xl mb-4">😴</div>
+                    <h3 class="text-xl font-bold mb-2">수면 부족</h3>
+                    <p class="text-gray-600">몸의 청소 및 복구 시간을 빼앗아 염증 물질 분비를 촉진합니다.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg text-center">
+                    <div class="text-4xl mb-4">🛋️</div>
+                    <h3 class="text-xl font-bold mb-2">운동 부족</h3>
+                    <p class="text-gray-600">내장지방을 '염증 물질 생산 공장'으로 만들어 전신에 염증을 퍼뜨립니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="solutions" class="content-section">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-2">내 몸의 불을 끄는 항염증 라이프스타일</h2>
+                <p class="text-lg text-gray-600">약보다 강력한 최고의 소방수는 바로 당신의 일상입니다. 식단과 생활습관을 개선하여 염증을 잠재우세요.</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-2 md:p-4">
+                <div class="flex justify-center border-b border-gray-200">
+                    <button class="lifestyle-tab-button active py-3 px-6 font-medium" onclick="showLifestyle('diet')">식단 관리</button>
+                    <button class="lifestyle-tab-button py-3 px-6 font-medium" onclick="showLifestyle('habits')">생활 습관</button>
+                </div>
+                <div class="p-4 md:p-8">
+                    <div id="lifestyle-diet" class="lifestyle-content active">
+                        <h3 class="text-2xl font-bold text-[#4A6C6F] mb-4 text-center">핵심 원칙: 오메가-6와 오메가-3의 균형 맞추기</h3>
+                        <p class="text-center text-gray-700 mb-6">현대인의 식단은 염증을 촉진하는 오메가-6(가속 페달)가 염증을 억제하는 오메가-3(브레이크)보다 압도적으로 많습니다. 이 불균형을 바로잡는 것이 항염증 식단의 시작입니다.</p>
+                        <div class="grid md:grid-cols-2 gap-8 items-center">
+                            <div class="imbalanced">
+                                <p class="text-center font-bold text-red-500 mb-2">현대인의 식단 (20:1)</p>
+                                <div class="seesaw">
+                                    <div class="seesaw-plank">
+                                        <div class="seesaw-weight" style="left: 5%; background-color: #68D391;">오메가-3</div>
+                                        <div class="seesaw-weight" style="right: 5%; background-color: #FC8181; transform: translateY(50px);">오메가-6</div>
+                                    </div>
+                                    <div class="seesaw-fulcrum"></div>
+                                </div>
+                            </div>
+                            <div class="balanced">
+                                <p class="text-center font-bold text-green-500 mb-2">이상적인 식단 (4:1 이하)</p>
+                                 <div class="seesaw">
+                                    <div class="seesaw-plank">
+                                         <div class="seesaw-weight" style="left: 20%; background-color: #68D391;">오메가-3</div>
+                                        <div class="seesaw-weight" style="right: 20%; background-color: #FC8181;">오메가-6</div>
+                                    </div>
+                                    <div class="seesaw-fulcrum"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="my-8 md:my-12">
+                        <h3 class="text-2xl font-bold text-[#4A6C6F] mb-6 text-center">최고의 항염증 식품 5가지</h3>
+                        <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 text-center">
+                            <div class="p-4 bg-gray-50 rounded-lg">🐟<p class="font-bold mt-1">등푸른 생선</p><p class="text-xs text-gray-500">EPA & DHA</p></div>
+                            <div class="p-4 bg-gray-50 rounded-lg">🌿<p class="font-bold mt-1">강황</p><p class="text-xs text-gray-500">커큐민</p></div>
+                            <div class="p-4 bg-gray-50 rounded-lg">🥬<p class="font-bold mt-1">녹색 잎채소</p><p class="text-xs text-gray-500">폴리페놀</p></div>
+                            <div class="p-4 bg-gray-50 rounded-lg">🧅<p class="font-bold mt-1">마늘/양파</p><p class="text-xs text-gray-500">알리신/케르세틴</p></div>
+                            <div class="p-4 bg-gray-50 rounded-lg">🍵<p class="font-bold mt-1">녹차</p><p class="text-xs text-gray-500">EGCG</p></div>
+                        </div>
+                    </div>
+                    <div id="lifestyle-habits" class="lifestyle-content hidden">
+                        <div class="space-y-10">
+                            <div>
+                                <h4 class="text-xl font-bold text-[#4A6C6F] mb-3 flex items-center"><span class="text-2xl mr-2">🏃‍♂️</span>염증 낮추는 운동법: 골디락스 원칙</h4>
+                                <p class="text-gray-700 mb-4">너무 적지도, 너무 과하지도 않은 '딱 적당한' 운동이 중요합니다. 꾸준한 중강도 운동으로 근육을 '항염증 기관'으로 만드세요.</p>
+                                <ul class="list-none space-y-2 pl-0">
+                                    <li><span class="font-bold text-green-600">종류:</span> 유산소 운동(걷기, 수영) + 근력 운동(주 2~3회)</li>
+                                    <li><span class="font-bold text-green-600">강도:</span> 옆 사람과 대화가 가능한 수준의 '중강도'</li>
+                                    <li><span class="font-bold text-green-600">시간/빈도:</span> 주 3~5회, 매회 30분 이상</li>
+                                </ul>
+                            </div>
+                             <div>
+                                <h4 class="text-xl font-bold text-[#4A6C6F] mb-3 flex items-center"><span class="text-2xl mr-2">🌙</span>숙면을 위한 4가지 규칙</h4>
+                                <p class="text-gray-700 mb-4">수면은 몸의 복구와 청소를 위한 필수 의료 행위입니다. 수면의 질을 높여 염증 스위치를 끄세요.</p>
+                                <ol class="list-decimal list-inside space-y-2 text-gray-700">
+                                    <li>일정한 시간에 잠들고 일어나기</li>
+                                    <li>침실은 시원하고(약 20°C) 어둡고 조용하게 만들기</li>
+                                    <li>잠들기 1시간 전 블루라이트(스마트폰 등) 차단하기</li>
+                                    <li>늦은 오후 카페인 섭취 및 자기 전 음주 피하기</li>
+                                </ol>
+                            </div>
+                             <div>
+                                <h4 class="text-xl font-bold text-[#4A6C6F] mb-3 flex items-center"><span class="text-2xl mr-2">🧘‍♀️</span>스트레스 관리: 심호흡의 과학</h4>
+                                 <p class="text-gray-700">스트레스는 염증 조절 시스템을 망가뜨립니다. 하루 10분, 의식적인 심호흡은 이완을 담당하는 '부교감신경'을 활성화하여 코르티솔 분비를 멈추고 우리 몸의 염증 브레이크를 복구하는 가장 강력한 방법입니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-[#4A6C6F] text-white mt-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
+            <p class="text-2xl font-bold mb-2">당신의 일상이 최고의 소방수입니다.</p>
+            <p>오늘 저녁, 가공식품 대신 채소 하나를 더하는 작은 실천이<br>내 몸의 불을 끄는 가장 위대한 첫걸음입니다.</p>
+        </div>
+    </footer>
+
+    <script>
+        const sections = document.querySelectorAll('.content-section');
+        const navItems = document.querySelectorAll('.nav-item');
+
+        const diseaseContent = {
+            cancer: {
+                title: '암: 암세포가 자라기 좋은 기름진 토양',
+                icon: '🌱',
+                text: '만성염증은 1) 활성산소로 정상 세포의 DNA를 손상시키고, 2) 세포의 무한 증식을 촉진하며, 3) 암세포에 영양을 공급하는 새 혈관을 만들어 암이 자라기 최적의 환경을 제공합니다. 실제 염증 수치가 높은 사람은 암 발생 위험이 남성 38%, 여성 29% 더 높습니다.'
+            },
+            dementia: {
+                title: '치매: 뇌 속의 아군에 의한 오인 사격',
+                icon: '🧠',
+                text: '만성염증은 뇌의 면역세포(미세아교세포)를 과도하게 활성화시킵니다. 청소부 역할을 해야 할 이 세포들이 오히려 폭도로 변해 건강한 신경세포를 무차별 공격하고 파괴하여, 기억력과 인지 기능을 돌이킬 수 없이 손상시킵니다.'
+            },
+            diabetes: {
+                title: '제2형 당뇨병: 인슐린 저항성이라는 빗장',
+                icon: '🔒',
+                text: '만성염증은 혈당을 조절하는 인슐린이 세포에 작용하는 것을 방해합니다. 열쇠(인슐린)가 열쇠 구멍(세포)에 들어가지 못하게 막는 것과 같습니다. 그 결과 혈당이 처리되지 못하고, 결국 췌장이 지쳐 당뇨병으로 발전합니다.'
+            },
+            heart: {
+                title: '심혈관 질환: 염증성 기름때 축적',
+                icon: '❤️',
+                text: '동맥경화는 염증으로 시작됩니다. 혈관 내벽에 상처가 나고, 그 틈으로 LDL 콜레스테롤이 침투하여 산화됩니다. 면역세포가 이를 처리하다가 기름때 덩어리(플라크)를 형성하고, 이 플라크가 터지면 혈전이 생겨 심근경색, 뇌졸중을 유발합니다.'
+            }
+        };
+
+        function showSection(id) {
+            sections.forEach(section => {
+                section.classList.remove('active');
+                if (section.id === id) {
+                    section.classList.add('active');
+                }
+            });
+
+            navItems.forEach(item => {
+                item.classList.remove('nav-active');
+                if(item.textContent.trim() === document.querySelector(`select option[value=${id}]`).textContent.trim()) {
+                     item.classList.add('nav-active');
+                }
+            });
+             if (window.innerWidth < 768) {
+                document.querySelector(`select`).value = id;
+            }
+        }
+        
+        function showDisease(disease, el = null) {
+            const contentDiv = document.getElementById('disease-content');
+            const data = diseaseContent[disease];
+            contentDiv.innerHTML = `
+                <h4 class="text-xl md:text-2xl font-bold text-[#4A6C6F] mb-4 flex items-center">
+                    <span class="text-3xl mr-3">${data.icon}</span>
+                    ${data.title}
+                </h4>
+                <p class="text-gray-700 leading-relaxed">${data.text}</p>
+            `;
+
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+
+            if (el) {
+                el.classList.add('active');
+            }
+        }
+        
+        function showLifestyle(tab) {
+             document.querySelectorAll('.lifestyle-content').forEach(content => {
+                content.classList.add('hidden');
+                content.classList.remove('active');
+            });
+            document.getElementById(`lifestyle-${tab}`).classList.remove('hidden');
+            document.getElementById(`lifestyle-${tab}`).classList.add('active');
+
+            document.querySelectorAll('.lifestyle-tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+        }
+
+        window.onload = function() {
+            showSection('intro');
+            showDisease('cancer');
+
+            const commonChartOptions = {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ` ${context.raw} ${context.dataset.unit}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: { display: false },
+                    },
+                    y: {
+                        grid: { display: false }
+                    }
+                }
+            };
+            
+            new Chart(document.getElementById('hsCrpChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['높은 위험', '평균 위험', '낮은 위험'],
+                    datasets: [{
+                        label: 'hs-CRP (mg/L)',
+                        data: [3.0, 1.0, 0], 
+                        backgroundColor: ['#FC8181', '#F6E05E', '#68D391'],
+                        borderColor: ['#FC8181', '#F6E05E', '#68D391'],
+                        borderWidth: 1,
+                        unit: 'mg/L',
+                        barThickness: 30,
+                    }]
+                },
+                options: { ...commonChartOptions,
+                    scales: {
+                        x: { ...commonChartOptions.scales.x, max: 4},
+                         y: { ...commonChartOptions.scales.y }
+                    },
+                    plugins: {
+                         ...commonChartOptions.plugins,
+                         tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.dataIndex === 0) return '> 3.0 mg/L';
+                                    if (context.dataIndex === 1) return '1.0 - 3.0 mg/L';
+                                    return '< 1.0 mg/L';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('homocysteineChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['높은 위험', '경계 위험', '최적'],
+                    datasets: [{
+                        label: '호모시스테인 (μmol/L)',
+                        data: [15.0, 9.0, 0],
+                        backgroundColor: ['#FC8181', '#F6E05E', '#68D391'],
+                        borderColor: ['#FC8181', '#F6E05E', '#68D391'],
+                        borderWidth: 1,
+                        unit: 'μmol/L',
+                        barThickness: 30,
+                    }]
+                },
+                options: { ...commonChartOptions,
+                    scales: {
+                        x: { ...commonChartOptions.scales.x, max: 20 },
+                         y: { ...commonChartOptions.scales.y }
+                    },
+                     plugins: {
+                         ...commonChartOptions.plugins,
+                         tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.dataIndex === 0) return '> 15.0 μmol/L';
+                                    if (context.dataIndex === 1) return '9.0 - 15.0 μmol/L';
+                                    return '< 9.0 μmol/L';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        };
+    </script>
+</body>
+</html>
