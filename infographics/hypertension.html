@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>고혈압 근본 원인 및 비약물적 관리법</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals & Calming Blue -->
+    <!-- Application Structure Plan: A thematic, dashboard-style single-page application was designed for non-linear exploration. The structure is: 1. Hero section with core message. 2. Sticky navigation for quick access. 3. 'What is Hypertension?' section with an interactive diagram of affected organs. 4. '3 Main Causes' section using a tabbed interface for clarity. 5. 'DASH Diet' section featuring an interactive bar chart to visualize clinical study data, making the benefits tangible. 6. 'Lifestyle Solutions' section with clear, actionable cards. 7. A final summary and call-to-action. This structure was chosen to transform a linear report into an engaging, user-driven experience, allowing users to jump directly to the content most relevant to them, thereby enhancing comprehension and engagement. -->
+    <!-- Visualization & Content Choices: 1. Organ Damage (Report Info) -> Goal: Inform/Engage -> Viz: Interactive diagram with HTML/CSS hotspots (Heart, Brain, Kidneys, Eyes) -> Interaction: Click hotspots to reveal details -> Justification: More engaging and memorable than a text list. 2. DASH Study Data (Report Info) -> Goal: Compare/Persuade -> Viz: Bar Chart (Chart.js) -> Interaction: Hover tooltips show precise mmHg reduction -> Justification: Visually proves the diet's effectiveness, making the "numbers" impactful. 3. 3 Causes (Report Info) -> Goal: Organize -> Viz: Tabbed layout (HTML/CSS/JS) -> Interaction: Click tabs to switch content -> Justification: Prevents information overload and improves focus. 4. DASH Minerals & Foods (Report Info) -> Goal: Inform -> Viz: Grid of cards with icons -> Justification: Scannable and visually appealing. All visualizations are implemented using HTML/CSS/JS and Chart.js, strictly avoiding SVG and Mermaid JS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F8F7F4;
+            color: #3D405B;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #3B82F6;
+            border-bottom-color: #3B82F6;
+        }
+        .tab-button.active {
+            background-color: #3B82F6;
+            color: white;
+        }
+        .tab-button {
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .organ-hotspot {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(59, 130, 246, 0.5);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            border: 2px solid white;
+        }
+        .organ-hotspot:hover {
+            background-color: rgba(59, 130, 246, 0.8);
+            transform: scale(1.1);
+        }
+        .organ-info-card {
+            transition: opacity 0.3s, transform 0.3s;
+        }
+    </style>
+</head>
+<body class="scroll-smooth">
+
+    <header id="top" class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <h1 class="font-bold text-xl text-blue-600">혈압 주도권 되찾기</h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#intro" class="nav-link">고혈압이란?</a>
+                <a href="#causes" class="nav-link">3대 원인</a>
+                <a href="#dash" class="nav-link">DASH 식단</a>
+                <a href="#lifestyle" class="nav-link">생활 습관</a>
+                <a href="#summary" class="nav-link">핵심 요약</a>
+            </div>
+            <div class="md:hidden">
+                <select onchange="window.location.href=this.value" class="bg-gray-200 border border-gray-300 rounded-md p-2">
+                    <option value="#top">메뉴 선택</option>
+                    <option value="#intro">고혈압이란?</option>
+                    <option value="#causes">3대 원인</option>
+                    <option value="#dash">DASH 식단</option>
+                    <option value="#lifestyle">생활 습관</option>
+                    <option value="#summary">핵심 요약</option>
+                </select>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        <section class="text-center mb-16">
+            <h2 class="text-4xl font-bold mb-4">그 약, 정말로 괜찮으신가요?</h2>
+            <p class="text-lg max-w-3xl mx-auto text-gray-600">
+                혈압약은 중요한 안전벨트이지만, 질병의 방향을 바꾸는 운전대는 아닙니다. 약에만 의존하는 사이, 우리 몸속 혈관은 계속 망가지고 있을 수 있습니다. 이젠, 혈압의 진짜 뿌리를 뽑고 내 몸의 주도권을 되찾을 때입니다.
+            </p>
+        </section>
+
+        <section id="intro" class="mb-20 pt-16">
+            <h3 class="text-3xl font-bold text-center mb-10">1. 소리 없는 암살자, 고혈압</h3>
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <p class="text-center text-lg mb-8">고혈압은 증상이 없지만 우리 몸의 핵심 장기를 서서히 파괴합니다. 아래 그림의 파란 점을 클릭하여 각 장기가 어떻게 손상되는지 확인해보세요.</p>
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="relative w-full max-w-xs mx-auto">
+                        <img src="https://placehold.co/400x600/E0E7FF/3B82F6?text=+" alt="인체 실루엣" class="rounded-lg w-full">
+                        <div class="organ-hotspot" style="top: 15%; left: 45%;" data-organ="brain">🧠</div>
+                        <div class="organ-hotspot" style="top: 25%; left: 70%;" data-organ="eye">👁️</div>
+                        <div class="organ-hotspot" style="top: 35%; left: 45%;" data-organ="heart">❤️</div>
+                        <div class="organ-hotspot" style="top: 55%; left: 35%;" data-organ="kidney">💧</div>
+                    </div>
+                    <div id="organ-info-container">
+                        <div id="organ-info-initial" class="text-center text-gray-500">
+                            <p>궁금한 장기를 클릭해 보세요.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="causes" class="mb-20 pt-16">
+            <h3 class="text-3xl font-bold text-center mb-10">2. 진짜 범인은 누구인가? 내 혈압을 높이는 3대 메커니즘</h3>
+             <div class="bg-white rounded-xl shadow-lg p-8">
+                <div class="flex justify-center mb-6 border-b">
+                    <button class="tab-button py-2 px-6 font-bold text-lg active" data-tab="vascular">① 혈관 문제</button>
+                    <button class="tab-button py-2 px-6 font-bold text-lg" data-tab="volume">② 혈액량 문제</button>
+                    <button class="tab-button py-2 px-6 font-bold text-lg" data-tab="nervous">③ 신경계 문제</button>
+                </div>
+                <div id="tab-content" class="text-lg leading-relaxed">
+                </div>
+            </div>
+        </section>
+        
+        <section id="dash" class="mb-20 pt-16">
+            <h3 class="text-3xl font-bold text-center mb-2">3. 약보다 강력한 치료제 ①: 항고혈압 식단 'DASH'</h3>
+            <p class="text-center text-gray-600 mb-10">DASH 식단의 놀라운 혈압 강하 효과를 숫자로 직접 확인해보세요.</p>
+
+            <div class="bg-white rounded-xl shadow-lg p-8 mb-10">
+                <h4 class="text-2xl font-bold text-center mb-4">DASH 임상 연구 혈압 감소 효과</h4>
+                <p class="text-center mb-6">고혈압 환자 그룹이 DASH 식단과 저염식을 병행했을 때, 수축기 혈압이 혈압약 한 알과 맞먹는 수준인 평균 <span class="text-blue-600 font-bold">11.5mmHg</span> 감소했습니다.</p>
+                <div class="chart-container">
+                    <canvas id="dashChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <h4 class="text-2xl font-bold text-center mb-6">DASH 식단의 핵심: 3대 미네랄</h4>
+                 <div class="grid md:grid-cols-3 gap-6 text-center">
+                    <div class="bg-green-100 p-6 rounded-lg">
+                        <h5 class="font-bold text-xl mb-2">칼륨 (K)</h5>
+                        <p class="mb-3 text-green-800">나트륨 저격수</p>
+                        <p>나트륨 배출을 돕고 혈관을 이완시킵니다.</p>
+                        <p class="font-bold mt-3">대표 식품: 시금치, 바나나, 토마토, 아보카도</p>
+                    </div>
+                    <div class="bg-blue-100 p-6 rounded-lg">
+                        <h5 class="font-bold text-xl mb-2">칼슘 (Ca)</h5>
+                        <p class="mb-3 text-blue-800">이완의 파트너</p>
+                        <p>혈관 근육의 정상적인 수축에 기여합니다.</p>
+                        <p class="font-bold mt-3">대표 식품: 저지방 유제품, 멸치, 녹색 채소</p>
+                    </div>
+                    <div class="bg-yellow-100 p-6 rounded-lg">
+                        <h5 class="font-bold text-xl mb-2">마그네슘 (Mg)</h5>
+                        <p class="mb-3 text-yellow-800">천연 이완제</p>
+                        <p>혈관을 이완시켜 혈압을 안정시킵니다.</p>
+                        <p class="font-bold mt-3">대표 식품: 아몬드, 녹색 잎채소, 콩류</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="lifestyle" class="mb-20 pt-16">
+            <h3 class="text-3xl font-bold text-center mb-10">4. 약보다 강력한 치료제 ②: 최고의 생활 습관</h3>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <h4 class="text-2xl font-bold mb-4">🏃‍♂️ 혈압 낮추는 최고의 운동</h4>
+                    <p class="mb-4">규칙적인 운동은 혈압을 평균 <span class="font-bold text-blue-600">5~8 mmHg</span> 낮출 수 있습니다. 이는 일부 혈압약의 효과와 비슷합니다.</p>
+                    <div class="space-y-4">
+                        <div class="bg-orange-100 p-4 rounded-lg">
+                            <h5 class="font-bold">유산소 운동</h5>
+                            <p>주 150분 이상, 중강도 (약간 숨찰 정도)<br>예: 빠르게 걷기, 조깅, 자전거, 수영</p>
+                        </div>
+                         <div class="bg-teal-100 p-4 rounded-lg">
+                            <h5 class="font-bold">근력 운동</h5>
+                            <p>주 2회 이상, 주요 근육 그룹 모두 사용<br>예: 스쿼트, 팔굽혀펴기, 가벼운 아령</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <h4 class="text-2xl font-bold mb-4">🧘‍♀️ 스트레스 반응 줄이기</h4>
+                    <p class="mb-4">고장 난 '흥분 스위치(교감신경)'를 끄고 '안정 스위치(부교감신경)'를 켜야 합니다.</p>
+                    <div class="space-y-4">
+                        <div class="bg-indigo-100 p-4 rounded-lg">
+                            <h5 class="font-bold">충분한 수면</h5>
+                            <p>하루 7~8시간, 잠자는 동안 혈압이 10~20% 감소하며 혈관이 회복됩니다.</p>
+                        </div>
+                        <div class="bg-purple-100 p-4 rounded-lg">
+                            <h5 class="font-bold">규칙적인 명상</h5>
+                            <p>하루 10분, 깊고 느린 호흡은 '미주신경'을 자극해 혈관을 직접 이완시킵니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="summary" class="pt-16">
+            <div class="bg-blue-600 text-white rounded-xl shadow-2xl p-10 text-center">
+                <h3 class="text-3xl font-bold mb-4">이제, 운전대를 직접 잡으세요</h3>
+                <p class="text-lg mb-6">혈압약은 '안전벨트'일 뿐, 질병의 방향을 바꾸는 것은 당신의 '건강한 생활 습관'입니다. 불안감에서 벗어나 내 건강의 온전한 주인이 되는 경험을 시작하세요.</p>
+                <div class="bg-white text-blue-800 rounded-lg p-6 inline-block">
+                    <p class="font-bold text-xl">가장 쉽고 위대한 첫걸음</p>
+                    <p class="text-lg">오늘 저녁, 국물 딱 세 숟가락만 덜 마시기</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="text-center py-6 bg-gray-100 mt-12">
+        <p>본 콘텐츠는 '고혈압의 근본 원인 및 비약물적 관리법' 보고서를 기반으로 제작된 교육용 애플리케이션입니다.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const organData = {
+                brain: {
+                    title: '뇌 (압력에 짓눌리는 관제탑)',
+                    content: '고혈압은 뇌졸중 위험을 4~5배 높입니다. 높은 압력으로 뇌혈관이 막히거나(뇌경색) 터지면(뇌출혈) 돌이킬 수 없는 손상과 혈관성 치매로 이어질 수 있습니다.',
+                    emoji: '🧠'
+                },
+                eye: {
+                    title: '눈 (긴장에 뒤틀리는 창문)',
+                    content: '망막의 미세 혈관이 높은 압력에 터지거나(망막 출혈) 혈액 성분이 새어 나와 시야를 흐리게 하고, 심하면 실명에 이를 수 있습니다.',
+                    emoji: '👁️'
+                },
+                heart: {
+                    title: '심장 (과로에 시달리는 펌프)',
+                    content: '높은 압력에 맞서 일하느라 심장 근육이 비정상적으로 두꺼워지고(좌심실 비대) 뻣뻣해집니다. 결국 펌프 기능을 상실(심부전)하거나 협심증, 심근경색 위험이 폭발적으로 증가합니다.',
+                    emoji: '❤️'
+                },
+                kidney: {
+                    title: '신장 (막혀버린 필터)',
+                    content: '혈액을 거르는 미세 혈관 필터(사구체)가 손상되어 노폐물을 거르지 못하고 단백질이 소변으로 빠져나갑니다(단백뇨). 결국 투석이 필요한 말기 신부전으로 진행될 수 있습니다.',
+                    emoji: '💧'
+                }
+            };
+            
+            const tabData = {
+                vascular: {
+                    title: '딱딱해지는 혈관의 비극',
+                    content: '젊은 혈관은 유연한 고무호스 같지만, 나이가 들고 염증이 반복되면 뻣뻣한 쇠 파이프처럼 변합니다. 딱딱해진 혈관은 압력을 흡수하지 못해 수축기 혈압을 더욱 높이고, 이는 다시 혈관을 손상시키는 악순환을 만듭니다.'
+                },
+                volume: {
+                    title: '소금에 납치된 생존 시스템',
+                    content: '짠 음식을 먹으면 혈중 나트륨 농도를 희석시키기 위해 혈관 안으로 수분이 몰려들어 전체 혈액량이 늘어납니다. 늘어난 혈액량은 혈관이 받는 압력, 즉 혈압을 직접적으로 높입니다. 또한 생존을 위한 혈압 상승 시스템(RAAS)을 불필요하게 계속 작동시켜 우리 몸을 공격하게 만듭니다.'
+                },
+                nervous: {
+                    title: '고장 난 액셀러레이터',
+                    content: '현대 사회의 만성적인 심리적 스트레스는 우리 몸의 흥분 스위치인 \'교감신경\'을 24시간 켜놓는 것과 같습니다. 지속적으로 흥분된 교감신경은 혈관을 수축시키고 심장을 과로하게 만들어 혈압을 높이며, 혈관 경직성과 RAAS 시스템을 부추기는 마스터 스위치 역할을 합니다.'
+                }
+            };
+
+            const organHotspots = document.querySelectorAll('.organ-hotspot');
+            const organInfoContainer = document.getElementById('organ-info-container');
+
+            function displayOrganInfo(organ) {
+                const data = organData[organ];
+                organInfoContainer.innerHTML = `
+                    <div class="organ-info-card bg-blue-50 p-6 rounded-lg shadow-inner opacity-0 transform -translate-y-2">
+                        <h4 class="text-2xl font-bold mb-3 flex items-center"><span class="text-3xl mr-3">${data.emoji}</span>${data.title}</h4>
+                        <p class="text-gray-700 leading-relaxed">${data.content}</p>
+                    </div>
+                `;
+                setTimeout(() => {
+                    const card = organInfoContainer.querySelector('.organ-info-card');
+                    card.classList.remove('opacity-0', '-translate-y-2');
+                    card.classList.add('opacity-100', 'translate-y-0');
+                }, 10);
+            }
+
+            organHotspots.forEach(spot => {
+                spot.addEventListener('click', () => {
+                    displayOrganInfo(spot.dataset.organ);
+                });
+            });
+
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContentEl = document.getElementById('tab-content');
+
+            function displayTabContent(tab) {
+                 const data = tabData[tab];
+                tabContentEl.innerHTML = `
+                    <div class="opacity-0 transition-opacity duration-300">
+                        <h4 class="text-2xl font-bold mb-3">${data.title}</h4>
+                        <p>${data.content}</p>
+                    </div>
+                `;
+                setTimeout(() => {
+                    tabContentEl.querySelector('div').classList.remove('opacity-0');
+                }, 10);
+            }
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    displayTabContent(button.dataset.tab);
+                });
+            });
+
+            displayOrganInfo('heart');
+            displayTabContent('vascular');
+
+            const dashCtx = document.getElementById('dashChart').getContext('2d');
+            new Chart(dashCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['일반 식단', 'DASH 식단', 'DASH+저염식'],
+                    datasets: [{
+                        label: '고혈압 환자 수축기 혈압 감소량 (mmHg)',
+                        data: [0, 11.4, 11.5],
+                        backgroundColor: [
+                            'rgba(255, 159, 64, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(75, 192, 192, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 159, 64, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'DASH 식단과 저염식의 혈압 강하 시너지 효과'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += `-${Math.abs(context.parsed.y)} mmHg`;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '수축기 혈압 감소량 (mmHg)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 60) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
