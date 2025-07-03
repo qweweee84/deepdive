@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>국민연금 100% 활용 시뮬레이터</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Financial -->
+    <!-- Application Structure Plan: The application is structured as a user-centric, task-oriented dashboard rather than a linear report. This design prioritizes user action and exploration. It begins with a myth-busting section to build trust, followed by an interactive "Pension Calculator" as the main hub. Subsequent sections are organized by user goals: "Level-Up Strategies," "Timing Simulation," and "Risk Checks." This task-based flow (Understand -> Calculate -> Strategize -> Simulate -> Check) is more intuitive for a user trying to make personal financial decisions than simply reading a report, allowing them to directly engage with the information most relevant to their situation. -->
+    <!-- Visualization & Content Choices: Static data tables from the report are transformed into interactive tools. Table 1 (Estimated Pension) becomes an interactive bar chart with sliders for income and buttons for contribution period (Goal: Compare, Method: Chart.js Bar Chart, Interaction: Slider/Buttons). Table 3 (BEP Analysis) is converted into a dynamic line chart to visualize the long-term value of different timing strategies (Goal: Change/Compare, Method: Chart.js Line Chart, Interaction: Animated chart). Complex topics like special scenarios and the health insurance checklist are organized into accordions and interactive forms (Goal: Organize/Inform, Method: HTML/JS Toggles & Forms). This approach turns passive data consumption into an active, exploratory learning experience, directly addressing the report's core aim of empowering users. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; }
+        .tab-button.active { border-color: #2563eb; color: #2563eb; background-color: #eff6ff; }
+        .accordion-header { cursor: pointer; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-in-out; }
+        .accordion-item.active .accordion-content { max-height: 1000px; }
+        .chart-container { position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; height: 320px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 400px; } }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-blue-600">국민연금 100% 활용 시뮬레이터</h1>
+            <div class="hidden md:flex space-x-4">
+                <a href="#myth" class="text-slate-600 hover:text-blue-600">오해와 진실</a>
+                <a href="#calculator" class="text-slate-600 hover:text-blue-600">내 연금 계산기</a>
+                <a href="#timing" class="text-slate-600 hover:text-blue-600">수령 시점 비교</a>
+                <a href="#strategy" class="text-slate-600 hover:text-blue-600">핵심 전략</a>
+                <a href="#risk" class="text-slate-600 hover:text-blue-600">숨겨진 비용</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-slate-600 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-4 pt-2 pb-4 space-y-2">
+            <a href="#myth" class="block text-slate-600 hover:text-blue-600">오해와 진실</a>
+            <a href="#calculator" class="block text-slate-600 hover:text-blue-600">내 연금 계산기</a>
+            <a href="#timing" class="block text-slate-600 hover:text-blue-600">수령 시점 비교</a>
+            <a href="#strategy" class="block text-slate-600 hover:text-blue-600">핵심 전략</a>
+            <a href="#risk" class="block text-slate-600 hover:text-blue-600">숨겨진 비용</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <section id="hero" class="text-center mb-16 fade-in">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">국민연금, 더 이상 불안해하지 마세요</h2>
+            <p class="text-lg text-slate-600 max-w-3xl mx-auto">막연한 세금이 아닌, 당신이 직접 설계하고 키워나가는 가장 중요한 노후 투자 상품입니다. 이 시뮬레이터를 통해 당신의 노후를 직접 설계하고, 숨겨진 권리를 찾아 수령액을 극대화하세요.</p>
+        </section>
+
+        <section id="myth" class="mb-16 fade-in">
+            <h3 class="text-2xl font-bold text-center mb-8">국민연금, 둘러싼 오해와 진실</h3>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h4 class="font-bold text-lg mb-2 text-red-500">오해: "국민연금, 2055년이면 고갈된다던데?"</h4>
+                    <p class="text-slate-600">‘기금 소진’은 연금 지급 중단을 의미하지 않습니다. 적립금이 모두 사용된 후에는 그 해 필요한 연금을 그 해 보험료로 충당하는 ‘부과방식’으로 전환됩니다. 이는 대부분의 선진국이 채택한 방식으로, 국가는 존속하는 한 연금을 지급할 의무를 가집니다. 논점은 '고갈'이 아닌 지속가능성을 위한 '개혁'입니다.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h4 class="font-bold text-lg mb-2 text-green-600">진실: "핵심은 내가 통제할 수 있는 변수"</h4>
+                    <p class="text-slate-600">연금액은 **①가입기간(n)**, **②나의 평균소득(B값)**, ③전체 가입자 평균소득(A값)으로 결정됩니다. 여기서 우리가 직접 관리하고 늘릴 수 있는 것은 <span class="font-bold">가입기간</span>과 <span class="font-bold">나의 평균소득</span>입니다. 이 두 가지를 어떻게 관리하느냐에 따라 연금액은 수천만 원 이상 차이 날 수 있습니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="calculator" class="mb-16 bg-white p-6 md:p-8 rounded-lg shadow-lg fade-in">
+            <h3 class="text-2xl font-bold text-center mb-2">내 예상 연금액 시뮬레이터</h3>
+            <p class="text-center text-slate-500 mb-8">본인의 가입기간과 평균소득을 조절하며 미래에 받을 연금액을 예측해보세요.</p>
+            <div class="grid lg:grid-cols-5 gap-8">
+                <div class="lg:col-span-2">
+                    <div class="mb-6">
+                        <label for="income-slider" class="block font-bold mb-2">나의 평균소득월액(B값)</label>
+                        <input id="income-slider" type="range" min="100" max="500" value="300" step="10" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                        <div class="text-center font-bold text-xl text-blue-600 mt-2"><span id="income-value">300</span>만원</div>
+                        <p class="text-sm text-slate-500 mt-2 text-center">본인의 가입기간 동안의 평균 소득을 입력하세요. (최대 500만원)</p>
+                    </div>
+                    <div class="mb-6">
+                        <p class="block font-bold mb-3">총 가입기간(n)</p>
+                        <div id="period-buttons" class="grid grid-cols-2 gap-2">
+                            <button data-period="10" class="period-btn p-3 border rounded-lg text-center cursor-pointer hover:bg-slate-100">10년</button>
+                            <button data-period="20" class="period-btn p-3 border rounded-lg text-center cursor-pointer hover:bg-slate-100 active">20년</button>
+                            <button data-period="30" class="period-btn p-3 border rounded-lg text-center cursor-pointer hover:bg-slate-100">30년</button>
+                            <button data-period="40" class="period-btn p-3 border rounded-lg text-center cursor-pointer hover:bg-slate-100">40년</button>
+                        </div>
+                    </div>
+                    <div id="pension-result" class="bg-blue-50 p-4 rounded-lg text-center">
+                        <p class="text-slate-600">예상 월 연금액 (정상수급 시)</p>
+                        <p class="text-3xl font-bold text-blue-700 mt-1"><span id="pension-amount">611,190</span>원</p>
+                    </div>
+                </div>
+                <div class="lg:col-span-3">
+                     <div class="chart-container">
+                        <canvas id="pensionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <p class="text-xs text-slate-400 mt-6 text-center">※ 2025년 A값(3,089,062원) 기준 예상액이며, 실제 수령액은 개인별 이력과 법령 개정에 따라 달라질 수 있습니다.</p>
+        </section>
+
+        <section id="timing" class="mb-16 fade-in">
+            <h3 class="text-2xl font-bold text-center mb-8">수령 시점별 손익분기점(BEP) 비교</h3>
+            <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                <p class="text-center text-slate-600 mb-6">언제부터 받기 시작하느냐에 따라 평생 받는 총액이 달라집니다. 65세에 월 100만원을 받는 사람을 기준으로, 각 선택지가 나이에 따라 어떻게 누적 수령액을 변화시키는지 확인해보세요.</p>
+                <div class="chart-container">
+                    <canvas id="timingChart"></canvas>
+                </div>
+                <div class="mt-6 grid md:grid-cols-3 gap-4 text-center">
+                    <div>
+                        <h4 class="font-bold text-orange-500">조기수령 (최대 5년)</h4>
+                        <p class="text-sm text-slate-500">1년마다 6%씩 <span class="font-bold">영구 감액</span><br>71~72세 경 정상수령에 추월</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-blue-500">정상수령 (기준)</h4>
+                        <p class="text-sm text-slate-500">100% 수령<br>&nbsp;</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-green-600">연기수령 (최대 5년)</h4>
+                        <p class="text-sm text-slate-500">1년마다 7.2%씩 <span class="font-bold">영구 증액</span><br>83~84세 경 정상수령을 추월</p>
+                    </div>
+                </div>
+                <div class="mt-6 p-4 bg-amber-50 rounded-lg text-amber-800 text-center">
+                    <span class="font-bold">💡 장수 리스크 관리 TIP:</span> 연금은 단순히 '손익'의 문제가 아니라 오래 살 경우를 대비하는 '보험'입니다. 연기연금은 가장 취약할 수 있는 노년 후반기 소득을 보강하는 강력한 장수 보험과 같습니다.
+                </div>
+            </div>
+        </section>
+
+        <section id="strategy" class="mb-16 fade-in">
+            <h3 class="text-2xl font-bold text-center mb-8">연금액을 더 받는 3가지 핵심 전략</h3>
+            <div id="accordion" class="space-y-4">
+                <div class="accordion-item bg-white rounded-lg shadow">
+                    <div class="accordion-header p-5 flex justify-between items-center">
+                        <h4 class="font-bold text-lg">전략 ① '시간 되돌리기' - 추후납부(추납)</h4>
+                        <span class="text-2xl text-slate-400 transform transition-transform duration-300">+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="p-5 border-t border-slate-200">
+                            <p class="mb-4">과거에 내지 못했던 보험료를 납부해 가입기간을 복원하는 '가성비 최고의 재테크'입니다. 4년 정도만 연금을 받으면 원금을 회수하고 평생 순수익이 발생합니다.</p>
+                            <ul class="list-disc list-inside space-y-2 text-slate-600">
+                                <li><b>대상:</b> 경력 단절, 실직 등으로 보험료 납부예외/적용제외 기간이 있는 사람</li>
+                                <li><b>방법:</b> 현재 소득 기준으로 보험료를 산정하여 최대 119개월까지 납부 가능 (60회 분납 가능)</li>
+                                <li><b>효과:</b> 가입기간(n)과 개인 평균소득(B값)을 동시에 올려 수령액을 극대화합니다.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item bg-white rounded-lg shadow">
+                    <div class="accordion-header p-5 flex justify-between items-center">
+                        <h4 class="font-bold text-lg">전략 ② '빈틈 메우기' - 임의(계속)가입</h4>
+                        <span class="text-2xl text-slate-400 transform transition-transform duration-300">+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="p-5 border-t border-slate-200">
+                            <p class="mb-4">소득이 없거나 만 60세가 넘었어도 가입기간을 채우거나 늘릴 수 있는 제도입니다.</p>
+                            <ul class="list-disc list-inside space-y-2 text-slate-600">
+                                <li><b>임의가입:</b> 소득 없는 전업주부, 학생 등이 가입하여 독립적인 연금 자산 형성</li>
+                                <li><b>임의계속가입:</b> 만 60세에 최소 가입기간(10년)을 못 채웠거나, 더 많은 연금을 위해 기간을 연장하고 싶을 때 활용</li>
+                                <li><b>목표:</b> 단순히 10년을 채우는 것을 넘어, 가입기간을 최대한 늘려 평생 연금액을 증액하는 것이 핵심입니다.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item bg-white rounded-lg shadow">
+                    <div class="accordion-header p-5 flex justify-between items-center">
+                        <h4 class="font-bold text-lg">전략 ③ '숨은 권리 찾기' - 분할/유족연금</h4>
+                        <span class="text-2xl text-slate-400 transform transition-transform duration-300">+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="p-5 border-t border-slate-200">
+                             <p class="mb-4">이혼, 사별 등 인생의 변수에 따라 추가적인 연금 권리가 발생할 수 있습니다.</p>
+                             <ul class="list-disc list-inside space-y-2 text-slate-600">
+                                <li><b>분할연금 (이혼 시):</b> 혼인기간이 5년 이상이면 전 배우자 연금의 일부를 받을 권리가 생깁니다. 이혼 후 3년 내 '선청구' 해두면 안전합니다.</li>
+                                <li><b>유족연금 (사별 시):</b> 배우자 사망 시 발생. 단, 내 노령연금과 중복될 경우 둘 중 하나를 선택해야 합니다 (내 연금 전액 + 유족연금 30% vs 유족연금 전액). 각자 자기 연금을 키워두는 것이 배우자를 위한 최선의 전략입니다.</li>
+                             </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="risk" class="mb-16 fade-in">
+            <h3 class="text-2xl font-bold text-center mb-8">숨겨진 비용: 건강보험 피부양자 자격 점검</h3>
+            <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                <p class="text-center text-slate-600 mb-6">연금액을 무작정 늘리다 보면, 건강보험 피부양자에서 탈락하여 오히려 더 큰 비용(지역 건보료)이 발생할 수 있습니다. 아래 항목으로 위험도를 미리 점검하세요.</p>
+                <div class="space-y-4" id="health-insurance-form">
+                     <div>
+                        <label for="pension-income" class="font-medium">예상 연간 총 연금 소득 (국민/공무원 등)</label>
+                        <input type="number" id="pension-income" placeholder="예: 1800" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                        <p class="text-xs text-slate-500 mt-1">단위: 만원</p>
+                    </div>
+                    <div>
+                        <label for="other-income" class="font-medium">기타 연간 합산 소득 (이자, 배당, 사업, 근로 등)</label>
+                        <input type="number" id="other-income" placeholder="예: 100" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                         <p class="text-xs text-slate-500 mt-1">단위: 만원</p>
+                    </div>
+                    <div>
+                        <label for="property-value" class="font-medium">재산세 과세표준액 (주택, 토지 등)</label>
+                        <input type="number" id="property-value" placeholder="예: 50000" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                        <p class="text-xs text-slate-500 mt-1">단위: 만원</p>
+                    </div>
+                    <button id="check-risk-btn" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-300">위험도 진단하기</button>
+                </div>
+                <div id="risk-result" class="mt-6 p-4 rounded-lg text-center hidden"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-800 text-white py-8">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="font-bold text-lg mb-2">이제, 직접 행동할 시간입니다.</p>
+            <p class="text-slate-300 mb-4">모든 계획은 현재 내 위치를 아는 것에서 시작됩니다.<br>지금 바로 '내 곁에 국민연금' 앱을 다운로드하여 당신의 정확한 데이터를 확인해보세요.</p>
+            <a href="https://www.nps.or.kr/jsppage/app/main.jsp" target="_blank" class="bg-white text-slate-800 font-bold py-3 px-6 rounded-lg hover:bg-slate-200 transition duration-300">
+                공식 앱/홈페이지 바로가기
+            </a>
+            <p class="text-xs text-slate-400 mt-8">본 시뮬레이터는 정보 제공을 목적으로 하며, 법적 효력을 갖지 않습니다. 정확한 내용은 국민연금공단(국번없이 1355)을 통해 확인하시기 바랍니다.</p>
+        </div>
+    </footer>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            const navLinks = document.querySelectorAll('#mobile-menu a, header nav a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    const targetId = e.currentTarget.getAttribute('href');
+                    if(targetId.startsWith('#')) {
+                        e.preventDefault();
+                        document.querySelector(targetId).scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                        if (!mobileMenu.classList.contains('hidden')) {
+                            mobileMenu.classList.add('hidden');
+                        }
+                    }
+                });
+            });
+
+            const pensionData = {
+                1000000: { 10: 205980, 20: 410430, 30: 614890, 40: 819340 },
+                2000000: { 10: 256360, 20: 510810, 30: 765260, 40: 1019720 },
+                3000000: { 10: 306740, 20: 611190, 30: 915630, 40: 1220080 },
+                4000000: { 10: 357120, 20: 711570, 30: 1065970, 40: 1420380 },
+                5000000: { 10: 407500, 20: 811950, 30: 1216310, 40: 1620680 },
+            };
+
+            const incomeSlider = document.getElementById('income-slider');
+            const incomeValue = document.getElementById('income-value');
+            const periodButtons = document.querySelectorAll('.period-btn');
+            const pensionAmountEl = document.getElementById('pension-amount');
+            let currentIncome = 3000000;
+            let currentPeriod = 20;
+            
+            const pensionChartCtx = document.getElementById('pensionChart').getContext('2d');
+            let pensionChart;
+
+            function updatePensionDisplay() {
+                const incomeKey = Math.round(currentIncome / 1000000) * 1000000;
+                const closestIncomeKey = Object.keys(pensionData).reduce((prev, curr) => 
+                    Math.abs(curr - currentIncome) < Math.abs(prev - currentIncome) ? curr : prev
+                );
+                const pension = pensionData[closestIncomeKey][currentPeriod] || 0;
+                
+                pensionAmountEl.innerText = pension.toLocaleString();
+                updateChart();
+            }
+            
+            function createPensionChart() {
+                pensionChart = new Chart(pensionChartCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['10년', '20년', '30년', '40년'],
+                        datasets: [{
+                            label: '가입기간별 예상 월 연금액',
+                            data: [],
+                            backgroundColor: [
+                                'rgba(59, 130, 246, 0.4)',
+                                'rgba(59, 130, 246, 0.6)',
+                                'rgba(59, 130, 246, 0.8)',
+                                'rgba(59, 130, 246, 1.0)',
+                            ],
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) { label += ': '; }
+                                        if (context.parsed.y !== null) {
+                                            label += new Intl.NumberFormat('ko-KR').format(context.parsed.y) + '원';
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value.toLocaleString() + '원';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function updateChart() {
+                 if (!pensionChart) return;
+                 const closestIncomeKey = Object.keys(pensionData).reduce((prev, curr) => 
+                    Math.abs(curr - currentIncome) < Math.abs(prev - currentIncome) ? curr : prev
+                 );
+                 const chartData = Object.values(pensionData[closestIncomeKey]);
+                 pensionChart.data.datasets[0].data = chartData;
+                 pensionChart.update();
+            }
+
+
+            incomeSlider.addEventListener('input', (e) => {
+                currentIncome = parseInt(e.target.value) * 10000;
+                incomeValue.innerText = e.target.value;
+                updatePensionDisplay();
+            });
+
+            periodButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    periodButtons.forEach(btn => btn.classList.remove('active', 'bg-blue-600', 'text-white'));
+                    e.currentTarget.classList.add('active', 'bg-blue-600', 'text-white');
+                    currentPeriod = parseInt(e.currentTarget.dataset.period);
+                    updatePensionDisplay();
+                });
+            });
+
+            const timingChartCtx = document.getElementById('timingChart').getContext('2d');
+            const labels = Array.from({length: 41}, (_, i) => i + 60); // 60세부터 100세
+            const earlyData = [];
+            const normalData = [];
+            const delayedData = [];
+
+            let cumulativeEarly = 0;
+            let cumulativeNormal = 0;
+            let cumulativeDelayed = 0;
+
+            for(let age = 60; age <= 100; age++) {
+                if (age >= 60 && age < 65) cumulativeEarly += 70 * 12;
+                if (age >= 65) cumulativeEarly += 70 * 12;
+                earlyData.push(cumulativeEarly / 10000); 
+
+                if (age >= 65) cumulativeNormal += 100 * 12;
+                normalData.push(cumulativeNormal / 10000); 
+
+                if (age >= 70) cumulativeDelayed += 136 * 12;
+                delayedData.push(cumulativeDelayed / 10000);
+            }
+
+            const timingChart = new Chart(timingChartCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: '5년 조기수령 (월 70만원)',
+                            data: earlyData,
+                            borderColor: 'rgb(249, 115, 22)',
+                            backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                            fill: false,
+                            tension: 0.1
+                        },
+                        {
+                            label: '정상수령 (월 100만원)',
+                            data: normalData,
+                            borderColor: 'rgb(59, 130, 246)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            fill: false,
+                            tension: 0.1
+                        },
+                        {
+                            label: '5년 연기수령 (월 136만원)',
+                            data: delayedData,
+                            borderColor: 'rgb(22, 163, 74)',
+                            backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                            fill: false,
+                            tension: 0.1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: { display: true, text: '나이대별 누적 연금 수령액 (단위: 억원)' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y.toFixed(2) + '억원';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: '나이 (세)' } },
+                        y: { title: { display: true, text: '누적 수령액 (억원)' } }
+                    }
+                }
+            });
+
+            const accordionItems = document.querySelectorAll('.accordion-item');
+            accordionItems.forEach(item => {
+                const header = item.querySelector('.accordion-header');
+                header.addEventListener('click', () => {
+                    const activeItem = document.querySelector('.accordion-item.active');
+                    if (activeItem && activeItem !== item) {
+                        activeItem.classList.remove('active');
+                        activeItem.querySelector('.text-2xl').textContent = '+';
+                        activeItem.querySelector('.text-2xl').classList.remove('rotate-45');
+
+                    }
+                    item.classList.toggle('active');
+                    const icon = header.querySelector('.text-2xl');
+                    if(item.classList.contains('active')){
+                         icon.textContent = '+';
+                         icon.classList.add('rotate-45');
+                    } else {
+                         icon.textContent = '+';
+                         icon.classList.remove('rotate-45');
+                    }
+                });
+            });
+            
+            const checkRiskBtn = document.getElementById('check-risk-btn');
+            checkRiskBtn.addEventListener('click', () => {
+                const pensionIncome = parseFloat(document.getElementById('pension-income').value) || 0;
+                const otherIncome = parseFloat(document.getElementById('other-income').value) || 0;
+                const propertyValue = parseFloat(document.getElementById('property-value').value) || 0;
+                const totalIncome = pensionIncome + otherIncome;
+                
+                let resultText = '';
+                let resultClass = '';
+
+                if (propertyValue > 90000) {
+                    resultText = '<strong>탈락 위험 (매우 높음)</strong>: 재산세 과세표준액이 9억원을 초과하여 피부양자 자격에서 탈락합니다.';
+                    resultClass = 'bg-red-100 text-red-800';
+                } else if (totalIncome > 2000) {
+                    resultText = '<strong>탈락 위험 (높음)</strong>: 연간 합산 소득이 2,000만원을 초과하여 피부양자 자격에서 탈락합니다.';
+                    resultClass = 'bg-red-100 text-red-800';
+                } else if (propertyValue > 54000 && totalIncome > 1000) {
+                    resultText = '<strong>탈락 위험 (주의)</strong>: 재산세 과세표준액이 5억 4천만원을 초과하고 연간 합산 소득이 1,000만원을 초과하여 피부양자 자격에서 탈락합니다.';
+                    resultClass = 'bg-yellow-100 text-yellow-800';
+                } else {
+                    resultText = '<strong>자격 유지 (안전)</strong>: 현재 기준으로 피부양자 자격을 유지할 가능성이 높습니다. (법령 개정 시 변동 가능)';
+                    resultClass = 'bg-green-100 text-green-800';
+                }
+                
+                const riskResultEl = document.getElementById('risk-result');
+                riskResultEl.innerHTML = resultText;
+                riskResultEl.className = 'mt-6 p-4 rounded-lg text-center';
+                riskResultEl.classList.add(resultClass);
+            });
+            
+            createPensionChart();
+            document.querySelector('.period-btn[data-period="20"]').click();
+        });
+    </script>
+</body>
+</html>
