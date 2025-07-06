@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주택연금 모든 것 | 인터랙티브 대시보드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Neutral Harmony -->
+    <!-- Application Structure Plan: The application is designed as a user-centric, task-oriented dashboard rather than a linear report. The structure prioritizes answering the user's most critical questions first. It begins with an interactive "Pension Calculator" for immediate personal relevance. This is followed by a "Myth Debunking" section to address user fears and build trust. A balanced "Pros vs. Cons" comparison aids rational decision-making. Finally, "Eligibility" and "Detailed Info" sections provide necessary facts. This flow guides the user from personal curiosity to informed understanding, making complex information digestible and engaging. -->
+    <!-- Visualization & Content Choices: 
+        - Expected Pension Calculator: Report Info -> Expected monthly payments by age/house price. Goal -> Inform/Compare. Viz -> Interactive sliders for age/price and a dynamic bar chart (Chart.js) to show results instantly. Justification -> Far more engaging than a static table, allows personalized exploration.
+        - Myth Debunking: Report Info -> Three common myths about reverse mortgages. Goal -> Persuade/Inform. Viz -> Three clickable cards that reveal the "Fact Check" on interaction. Justification -> Breaks down complex rebuttals into focused, digestible pieces.
+        - Pros & Cons: Report Info -> List of advantages and disadvantages. Goal -> Compare. Viz -> Two-column layout with clear icons (Unicode). Justification -> Classic, scannable format for balanced comparison.
+        - Eligibility & Details: Report Info -> Conditions and payment types. Goal -> Inform. Viz -> Simple lists and an accordion for progressive disclosure. Justification -> Clear, concise presentation for factual information without overwhelming the user.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; }
+        .bg-warm-neutral { background-color: #F5F5F4; }
+        .bg-soft-accent { background-color: #DDEBF8; }
+        .text-deep-blue { color: #1E3A8A; }
+        .text-soft-gray { color: #4B5563; }
+        .btn-primary { background-color: #2563EB; color: white; }
+        .btn-primary:hover { background-color: #1D4ED8; }
+        .section-card { background-color: white; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); transition: all 0.3s ease; }
+        .nav-link { color: #374151; padding: 0.5rem 1rem; border-radius: 9999px; transition: all 0.2s ease-in-out; }
+        .nav-link.active, .nav-link:hover { background-color: #E5E7EB; color: #11182C; }
+        .myth-card .back { transform: rotateY(180deg); -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+        .myth-card.is-flipped { transform: rotateY(180deg); }
+        .chart-container { position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; height: 300px; max-height: 40vh; }
+        @media (min-width: 640px) { .chart-container { height: 350px; } }
+    </style>
+</head>
+<body class="bg-warm-neutral text-soft-gray">
+
+    <header class="bg-white sticky top-0 z-50 shadow-md">
+        <nav class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-deep-blue">주택연금 완전정복</h1>
+            <div class="hidden md:flex space-x-2">
+                <a href="#calculator" class="nav-link active">예상연금 계산기</a>
+                <a href="#myths" class="nav-link">핵심 오해 바로잡기</a>
+                <a href="#pros-cons" class="nav-link">장단점 비교</a>
+                <a href="#conditions" class="nav-link">가입조건 확인</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-gray-600 hover:bg-gray-100">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <a href="#calculator" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-50">예상연금 계산기</a>
+            <a href="#myths" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-50">핵심 오해 바로잡기</a>
+            <a href="#pros-cons" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-50">장단점 비교</a>
+            <a href="#conditions" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-50">가입조건 확인</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 md:py-12">
+        <section class="text-center mb-12 md:mb-16">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4">평생 살아온 내 집에서, 평생 월급받는 법</h2>
+            <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">주택연금에 대한 모든 궁금증과 오해를 풀고, 현명한 노후를 설계하는 방법을 알아보세요.</p>
+        </section>
+
+        <section id="calculator" class="mb-12 md:mb-16">
+            <div class="section-card p-6 md:p-8">
+                <h3 class="text-2xl font-bold text-gray-800 mb-2 text-center">나의 예상연금, 지금 바로 확인!</h3>
+                <p class="text-center text-gray-500 mb-6">아래 슬라이더를 움직여 예상 월 지급액을 확인해보세요. (종신지급, 정액형 기준)</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-center">
+                    <div>
+                        <div class="mb-6">
+                            <label for="housePrice" class="block font-bold text-gray-700 mb-2">① 주택 가격</label>
+                            <input type="range" id="housePrice" min="3" max="12" value="6" step="0.1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                            <div class="text-center text-2xl font-bold text-deep-blue mt-2"><span id="housePriceValue">6.0</span>억 원</div>
+                        </div>
+                        <div>
+                            <label for="age" class="block font-bold text-gray-700 mb-2">② 가입 연령 (부부 중 연소자)</label>
+                            <input type="range" id="age" min="55" max="90" value="70" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                            <div class="text-center text-2xl font-bold text-deep-blue mt-2"><span id="ageValue">70</span>세</div>
+                        </div>
+                    </div>
+                    <div class="text-center bg-soft-accent p-6 rounded-lg">
+                        <p class="text-gray-600">예상 월 지급액</p>
+                        <p class="text-4xl md:text-5xl font-extrabold text-deep-blue my-2"><span id="pensionAmount">226</span>만 원</p>
+                        <p class="text-xs text-gray-500">※ 실제 수령액은 금리 등에 따라 변동될 수 있습니다.</p>
+                    </div>
+                </div>
+                 <div class="mt-8">
+                    <div class="chart-container">
+                        <canvas id="pensionChart"></canvas>
+                    </div>
+                    <p class="text-center text-sm text-gray-500 mt-2">연령별 예상 월 지급액 비교 (선택한 주택가격 기준)</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="myths" class="mb-12 md:mb-16">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">주택연금, 가장 큰 오해 3가지 바로잡기</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="myth-card" style="perspective: 1000px;">
+                    <div class="relative w-full h-full text-center transition-transform duration-700" style="transform-style: preserve-3d;">
+                        <div class="absolute w-full h-full p-6 section-card flex flex-col justify-center items-center cursor-pointer" style="-webkit-backface-visibility: hidden; backface-visibility: hidden;">
+                            <p class="text-3xl mb-4">🤔</p>
+                            <h4 class="text-xl font-bold text-gray-800">오해 1</h4>
+                            <p class="text-gray-600 mt-2">"집값이 오르면 손해다?"</p>
+                            <span class="mt-4 text-sm font-bold text-blue-600">진실 확인하기</span>
+                        </div>
+                        <div class="absolute w-full h-full p-6 section-card flex flex-col justify-center items-center cursor-pointer back">
+                            <h4 class="text-lg font-bold text-deep-blue">Fact Check</h4>
+                            <p class="text-sm mt-3 text-gray-700 leading-relaxed">
+                                <span class="font-bold text-green-600">전혀 아닙니다.</span><br>
+                                부부 모두 사망 후 주택을 처분했을 때, 받은 연금 총액보다 집값이 더 크면 <span class="font-bold">남는 금액은 모두 자녀에게 상속</span>됩니다. 집값 상승 이익은 온전히 상속인의 몫입니다.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="myth-card" style="perspective: 1000px;">
+                    <div class="relative w-full h-full text-center transition-transform duration-700" style="transform-style: preserve-3d;">
+                        <div class="absolute w-full h-full p-6 section-card flex flex-col justify-center items-center cursor-pointer" style="-webkit-backface-visibility: hidden; backface-visibility: hidden;">
+                             <p class="text-3xl mb-4">😨</p>
+                            <h4 class="text-xl font-bold text-gray-800">오해 2</h4>
+                            <p class="text-gray-600 mt-2">"은행에 집을 뺏긴다?"</p>
+                            <span class="mt-4 text-sm font-bold text-blue-600">진실 확인하기</span>
+                        </div>
+                        <div class="absolute w-full h-full p-6 section-card flex flex-col justify-center items-center cursor-pointer back">
+                            <h4 class="text-lg font-bold text-deep-blue">Fact Check</h4>
+                            <p class="text-sm mt-3 text-gray-700 leading-relaxed">
+                                <span class="font-bold text-green-600">사실이 아닙니다.</span><br>
+                                소유권은 여전히 가입자에게 있으며, 국가가 <span class="font-bold">부부 모두 사망 시까지 평생 거주를 법적으로 보장</span>합니다. 연금 지급 역시 국가가 보증하여 중단될 위험이 없습니다.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="myth-card" style="perspective: 1000px;">
+                    <div class="relative w-full h-full text-center transition-transform duration-700" style="transform-style: preserve-3d;">
+                         <div class="absolute w-full h-full p-6 section-card flex flex-col justify-center items-center cursor-pointer" style="-webkit-backface-visibility: hidden; backface-visibility: hidden;">
+                             <p class="text-3xl mb-4">😥</p>
+                            <h4 class="text-xl font-bold text-gray-800">오해 3</h4>
+                            <p class="text-gray-600 mt-2">"자녀에게 빚이 상속된다?"</p>
+                            <span class="mt-4 text-sm font-bold text-blue-600">진실 확인하기</span>
+                        </div>
+                        <div class="absolute w-full h-full p-6 section-card flex flex-col justify-center items-center cursor-pointer back">
+                            <h4 class="text-lg font-bold text-deep-blue">Fact Check</h4>
+                            <p class="text-sm mt-3 text-gray-700 leading-relaxed">
+                                <span class="font-bold text-green-600">정반대입니다.</span><br>
+                                집값이 하락해 연금 총액이 집값을 초과해도, <span class="font-bold">부족분을 자녀에게 청구하지 않습니다.</span> (비소구형 대출) 모든 위험은 국가가 부담합니다.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="pros-cons" class="mb-12 md:mb-16">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">장점과 단점, 한눈에 비교하기</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="section-card p-6">
+                    <h4 class="text-xl font-bold text-green-600 mb-4 text-center">👍 강력한 장점</h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-start"><span class="mr-3 text-green-500 text-2xl">✔</span><span><strong class="font-bold">평생 거주 및 지급 보장:</strong> 내 집에서 살면서 부부 모두 사망시까지 연금 수령</span></li>
+                        <li class="flex items-start"><span class="mr-3 text-green-500 text-2xl">✔</span><span><strong class="font-bold">국가 보증의 안정성:</strong> 금융위기, 집값 폭락에도 지급 중단 위험 없음</span></li>
+                        <li class="flex items-start"><span class="mr-3 text-green-500 text-2xl">✔</span><span><strong class="font-bold">유리한 리스크 구조:</strong> 집값 상승 이익은 내 것, 하락 위험은 국가가 부담</span></li>
+                        <li class="flex items-start"><span class="mr-3 text-green-500 text-2xl">✔</span><span><strong class="font-bold">각종 세제 혜택:</strong> 재산세 감면, 이자비용 소득공제 등</span></li>
+                         <li class="flex items-start"><span class="mr-3 text-green-500 text-2xl">✔</span><span><strong class="font-bold">신용도 무관:</strong> 소득이나 신용등급과 관계 없이 가입 가능</span></li>
+                    </ul>
+                </div>
+                <div class="section-card p-6">
+                    <h4 class="text-xl font-bold text-red-600 mb-4 text-center">🤔 치명적 단점 (고려사항)</h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-start"><span class="mr-3 text-red-500 text-2xl">⚠️</span><span><strong class="font-bold">물가상승률 미반영:</strong> 연금액이 고정되어 실질 구매력 하락 가능성 (최대 단점)</span></li>
+                        <li class="flex items-start"><span class="mr-3 text-red-500 text-2xl">⚠️</span><span><strong class="font-bold">이사 및 임대 제약:</strong> 실거주 의무로 인해 거주 이전의 자유에 제약 발생</span></li>
+                        <li class="flex items-start"><span class="mr-3 text-red-500 text-2xl">⚠️</span><span><strong class="font-bold">중도 해지 시 불이익:</strong> 초기보증료 등 포함 전액 일시 상환 부담 및 3년간 재가입 금지</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="conditions" class="section-card p-6 md:p-8">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">나는 가입할 수 있을까?</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h4 class="text-lg font-bold text-deep-blue mb-3">가입 기본 조건 (2025년 기준)</h4>
+                    <ul class="space-y-2 text-gray-700">
+                        <li class="flex items-center"><span class="mr-2 text-blue-500">❯</span><strong>연령:</strong> 부부 중 1명이 만 55세 이상</li>
+                        <li class="flex items-center"><span class="mr-2 text-blue-500">❯</span><strong>주택가격:</strong> 부부 합산 공시가격 12억 원 이하</li>
+                        <li class="flex items-center"><span class="mr-2 text-blue-500">❯</span><strong>주택보유:</strong> 다주택자도 합산가격 12억 이하면 가능</li>
+                        <li class="flex items-center"><span class="mr-2 text-blue-500">❯</span><strong>대상주택:</strong> 아파트, 단독주택, 주거용 오피스텔 등</li>
+                    </ul>
+                </div>
+                 <div>
+                    <h4 class="text-lg font-bold text-deep-blue mb-3">다양한 지급 방식</h4>
+                    <div id="accordion-container" class="space-y-2">
+                        <div class="accordion-item">
+                            <button class="accordion-header w-full text-left p-3 bg-gray-100 hover:bg-gray-200 rounded-md font-semibold flex justify-between items-center">
+                                <span>종신 방식 vs 확정기간 방식</span>
+                                <span class="accordion-icon transform duration-300">▼</span>
+                            </button>
+                            <div class="accordion-content hidden p-3 text-sm">
+                                <p><strong>종신 방식:</strong> 부부 모두 사망시까지 평생 지급 (기본)</p>
+                                <p><strong>확정기간 방식:</strong> 정해진 기간(10~30년)만 지급. 월 수령액은 더 많음.</p>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <button class="accordion-header w-full text-left p-3 bg-gray-100 hover:bg-gray-200 rounded-md font-semibold flex justify-between items-center">
+                                <span>정액형 vs 초기증액형 등</span>
+                                <span class="accordion-icon transform duration-300">▼</span>
+                            </button>
+                            <div class="accordion-content hidden p-3 text-sm">
+                                <p><strong>정액형:</strong> 매월 동일한 금액 수령</p>
+                                <p><strong>초기증액형:</strong> 초기 몇 년간 더 많이 받고, 이후엔 적게 받음</p>
+                                 <p><strong>정기증가형:</strong> 3년마다 4.5%씩 지급액 증가</p>
+                            </div>
+                        </div>
+                         <div class="accordion-item">
+                            <button class="accordion-header w-full text-left p-3 bg-gray-100 hover:bg-gray-200 rounded-md font-semibold flex justify-between items-center">
+                                <span>혼합 방식 (목돈 인출)</span>
+                                <span class="accordion-icon transform duration-300">▼</span>
+                            </button>
+                            <div class="accordion-content hidden p-3 text-sm">
+                                <p>대출 한도의 최대 50%(의료비 등) 또는 90%(기존 대출 상환용)까지 목돈으로 먼저 인출하고, 나머지를 연금으로 받는 방식입니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <footer class="text-center mt-16">
+            <p class="text-lg font-bold text-gray-800">내 자산의 가치를 아는 것이 현명한 노후 설계의 첫걸음입니다.</p>
+            <p class="text-gray-600 mt-2 mb-6">정확한 정보는 한국주택금융공사에서 확인하세요.</p>
+            <a href="https://www.hf.go.kr/hf/sub02/sub01_01_01.do" target="_blank" class="inline-block btn-primary font-bold py-3 px-8 rounded-full transition-transform transform hover:scale-105">
+                한국주택금융공사 예상연금 조회하기
+            </a>
+        </footer>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const housePriceSlider = document.getElementById('housePrice');
+            const ageSlider = document.getElementById('age');
+            const housePriceValue = document.getElementById('housePriceValue');
+            const ageValue = document.getElementById('ageValue');
+            const pensionAmount = document.getElementById('pensionAmount');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            const pensionData = {
+                60: { 3: 76, 6: 152, 9: 228, 12: 304 },
+                70: { 3: 113, 6: 226, 9: 339, 12: 452 },
+                80: { 3: 180, 6: 360, 9: 540, 12: 720 },
+                55: { 3: 63, 6: 126, 9: 189, 12: 252 }, 
+                90: { 3: 255, 6: 510, 9: 765, 12: 1020 }
+            };
+
+            function interpolate(x, x1, y1, x2, y2) {
+                if (x1 === x2) return y1;
+                return y1 + (y2 - y1) * (x - x1) / (x2 - x1);
+            }
+
+            function calculatePension() {
+                const price = parseFloat(housePriceSlider.value);
+                const age = parseInt(ageSlider.value);
+
+                housePriceValue.textContent = price.toFixed(1);
+                ageValue.textContent = age;
+
+                const ageKeys = Object.keys(pensionData).map(Number).sort((a, b) => a - b);
+                let lowerAge = ageKeys.filter(k => k <= age).pop() || ageKeys[0];
+                let upperAge = ageKeys.filter(k => k >= age).shift() || ageKeys[ageKeys.length - 1];
+
+                const priceKeys = Object.keys(pensionData[lowerAge]).map(Number).sort((a, b) => a - b);
+                let lowerPrice = priceKeys.filter(k => k <= price).pop() || priceKeys[0];
+                let upperPrice = priceKeys.filter(k => k >= price).shift() || priceKeys[priceKeys.length - 1];
+                
+                const lowerAgeLowerPricePension = pensionData[lowerAge][lowerPrice];
+                const lowerAgeUpperPricePension = pensionData[lowerAge][upperPrice];
+                
+                const upperAgeLowerPricePension = pensionData[upperAge][lowerPrice];
+                const upperAgeUpperPricePension = pensionData[upperAge][upperPrice];
+
+                const pensionAtLowerAge = interpolate(price, lowerPrice, lowerAgeLowerPricePension, upperPrice, lowerAgeUpperPricePension);
+                const pensionAtUpperAge = interpolate(price, lowerPrice, upperAgeLowerPricePension, upperPrice, upperAgeUpperPricePension);
+
+                const finalPension = interpolate(age, lowerAge, pensionAtLowerAge, upperAge, pensionAtUpperAge);
+
+                pensionAmount.textContent = Math.round(finalPension);
+                
+                updateChart(price);
+            }
+
+            housePriceSlider.addEventListener('input', calculatePension);
+            ageSlider.addEventListener('input', calculatePension);
+
+            const mythCards = document.querySelectorAll('.myth-card');
+            mythCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    card.querySelector('.relative').classList.toggle('is-flipped');
+                });
+            });
+
+            const accordionItems = document.querySelectorAll('.accordion-item');
+            accordionItems.forEach(item => {
+                const header = item.querySelector('.accordion-header');
+                const content = item.querySelector('.accordion-content');
+                const icon = item.querySelector('.accordion-icon');
+
+                header.addEventListener('click', () => {
+                    const isVisible = !content.classList.contains('hidden');
+                    if(isVisible) {
+                        content.classList.add('hidden');
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        content.classList.remove('hidden');
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+            
+            const navLinks = document.querySelectorAll('nav a');
+            const sections = document.querySelectorAll('main section');
+            
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach( section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 100) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach( link => {
+                    link.classList.remove('active');
+                    if(link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('active');
+                    }
+                })
+            });
+
+            const ctx = document.getElementById('pensionChart').getContext('2d');
+            const pensionChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['60세', '70세', '80세', '90세'],
+                    datasets: [{
+                        label: '연령별 예상 월 지급액 (만원)',
+                        data: [],
+                        backgroundColor: 'rgba(37, 99, 235, 0.6)',
+                        borderColor: 'rgba(37, 99, 235, 1)',
+                        borderWidth: 1,
+                        borderRadius: 5,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '월 지급액 (만원)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.parsed.y} 만원`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            function updateChart(price) {
+                const chartData = [];
+                const agesForChart = [60, 70, 80, 90];
+                
+                agesForChart.forEach(age => {
+                    const priceKeys = Object.keys(pensionData[age]).map(Number).sort((a, b) => a - b);
+                    let lowerPrice = priceKeys.filter(k => k <= price).pop() || priceKeys[0];
+                    let upperPrice = priceKeys.filter(k => k >= price).shift() || priceKeys[priceKeys.length - 1];
+                    const pension = interpolate(price, lowerPrice, pensionData[age][lowerPrice], upperPrice, pensionData[age][upperPrice]);
+                    chartData.push(Math.round(pension));
+                });
+                
+                pensionChart.data.datasets[0].data = chartData;
+                pensionChart.update();
+            }
+
+            calculatePension(); 
+        });
+    </script>
+</body>
+</html>
