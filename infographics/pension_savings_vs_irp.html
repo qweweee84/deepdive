@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>연금저축 vs IRP 인터랙티브 분석기</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals & Sage -->
+    <!-- Application Structure Plan: The application is designed as a task-oriented dashboard. It starts with a high-level comparison (Comparison Section) to give users a quick overview. The core of the app is the Interactive Tax Credit Calculator, which provides personalized, tangible value by answering the user's primary question: "How much will I save?". Following this, the "Who Are You?" Profile Guide directs users to tailored advice, simplifying decision-making. Finally, a Deep-Dive Accordion section offers detailed information on demand, preventing initial information overload. This structure guides the user from general understanding to personalized calculation, then to actionable advice, making complex information digestible and user-centric. -->
+    <!-- Visualization & Content Choices: 1. Comparison: An interactive side-by-side card layout (HTML/Tailwind/JS) was chosen over a static table to allow for a more dynamic and less cluttered presentation. 2. Tax Savings Calculation: An interactive calculator with sliders and number inputs paired with a Chart.js Bar Chart was implemented. This transforms the static Table 2 from the report into a personalized, engaging tool (Goal: Inform/Compare, Library: Chart.js). 3. Profile-based Recommendations: A button-based selector (HTML/JS) reveals specific content sections. This directly implements the guidance from Chapter 3, helping users quickly find relevant information (Goal: Organize/Guide, Method: JS content switching). 4. Detailed Info: An accordion (HTML/JS) is used for nuanced topics like withdrawal rules, hiding complexity by default to improve initial usability (Goal: Inform, Method: JS toggle). -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F8F7F4;
+            color: #3D3D3D;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .tab-button.active {
+            border-color: #A3B18A;
+            background-color: #A3B18A;
+            color: white;
+            font-weight: 700;
+        }
+        .accordion-button.open .accordion-icon {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+
+        <header class="text-center mb-12">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">연금저축 vs IRP, 완벽 비교 분석기</h1>
+            <p class="text-md md:text-lg text-gray-600">당신의 노후를 위한 최적의 포트폴리오를 직접 설계해보세요.</p>
+        </header>
+
+        <main>
+            <section id="comparison" class="mb-16">
+                <h2 class="text-2xl font-bold text-center mb-8">한눈에 보는 핵심 차이점</h2>
+                <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
+                    쌍둥이처럼 보이는 두 상품은 태생부터 목적까지 다릅니다. 아래 비교표를 통해 두 상품의 핵심적인 차이를 빠르게 파악하고, 어떤 상품이 나에게 더 적합할지 감을 잡아보세요.
+                </p>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-xl shadow-md p-6 border-t-4 border-emerald-300">
+                        <h3 class="text-xl font-bold mb-4 text-emerald-800">연금저축</h3>
+                        <ul class="space-y-4 text-gray-700">
+                            <li><strong class="font-semibold text-gray-900">✅ 가입 자격:</strong> 전국민 누구나</li>
+                            <li><strong class="font-semibold text-gray-900">🎯 핵심 목적:</strong> 자발적 노후 준비 장려 (세제 혜택)</li>
+                            <li><strong class="font-semibold text-gray-900">💰 세액공제 한도:</strong> 연 <span class="text-emerald-600 font-bold">600만원</span></li>
+                            <li><strong class="font-semibold text-gray-900">📈 위험자산 투자:</strong> <span class="text-red-500 font-bold">100% 가능</span> (제한 없음)</li>
+                            <li><strong class="font-semibold text-gray-900">💸 중도 인출:</strong> 비교적 자유로움 (16.5% 기타소득세 부과)</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-md p-6 border-t-4 border-sky-300">
+                        <h3 class="text-xl font-bold mb-4 text-sky-800">IRP (개인형퇴직연금)</h3>
+                        <ul class="space-y-4 text-gray-700">
+                             <li><strong class="font-semibold text-gray-900">✅ 가입 자격:</strong> 소득이 있는 자</li>
+                             <li><strong class="font-semibold text-gray-900">🎯 핵심 목적:</strong> 퇴직금의 안정적 보존 및 운용</li>
+                             <li><strong class="font-semibold text-gray-900">💰 세액공제 한도:</strong> 연금저축 포함 연 <span class="text-sky-600 font-bold">900만원</span></li>
+                             <li><strong class="font-semibold text-gray-900">📉 위험자산 투자:</strong> <span class="text-green-600 font-bold">70%로 제한</span> (안전자산 30% 의무)</li>
+                             <li><strong class="font-semibold text-gray-900">🔒 중도 인출:</strong> 법정 사유 외 <span class="font-bold">원칙적 불가</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="calculator" class="mb-16 bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <h2 class="text-2xl font-bold text-center mb-4">나의 예상 세액 환급액 계산기</h2>
+                <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
+                    연간 총급여와 각 상품에 납입할 금액을 입력하여, '13월의 월급'을 얼마나 받을 수 있는지 직접 확인해보세요. 이 시뮬레이션은 당신의 절세 전략을 세우는 데 가장 중요한 첫걸음입니다.
+                </p>
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="space-y-6">
+                        <div>
+                            <label for="income" class="block text-md font-medium text-gray-700">연간 총급여: <span id="incomeValue" class="font-bold text-lg text-indigo-600">5,500</span> 만원</label>
+                            <input type="range" id="income" min="2000" max="15000" value="5500" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                            <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                <span>2,000만원</span>
+                                <span>1억 5,000만원</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="pensionSaving" class="block text-md font-medium text-gray-700">연금저축 납입액 (연)</label>
+                            <input type="number" id="pensionSaving" min="0" max="1800" step="10" value="600" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2">
+                        </div>
+                        <div>
+                            <label for="irp" class="block text-md font-medium text-gray-700">IRP 납입액 (연)</label>
+                            <input type="number" id="irp" min="0" max="1800" step="10" value="300" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="chart-container">
+                            <canvas id="taxRefundChart"></canvas>
+                        </div>
+                         <div id="totalRefund" class="text-center mt-4 text-xl font-bold"></div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="profiles" class="mb-16">
+                <h2 class="text-2xl font-bold text-center mb-4">내게 맞는 최적의 포트폴리오 찾기</h2>
+                <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
+                    자신의 현재 상황과 가장 유사한 프로필을 선택하세요. 각 생애주기와 소득 수준에 맞는 최적의 연금 조합 전략과 핵심 포인트를 추천해 드립니다. 정답은 없습니다, 오직 최적의 선택만 있을 뿐입니다.
+                </p>
+                <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8">
+                    <button data-profile="young" class="tab-button profile-button active py-2 px-4 border-2 border-transparent rounded-full text-sm md:text-base font-semibold transition-all duration-300">#사회초년생 #저소득</button>
+                    <button data-profile="high-income" class="tab-button profile-button py-2 px-4 border-2 border-transparent rounded-full text-sm md:text-base font-semibold transition-all duration-300">#고소득직장인 #공무원</button>
+                    <button data-profile="freelancer" class="tab-button profile-button py-2 px-4 border-2 border-transparent rounded-full text-sm md:text-base font-semibold transition-all duration-300">#자영업자 #프리랜서</button>
+                    <button data-profile="pre-retiree" class="tab-button profile-button py-2 px-4 border-2 border-transparent rounded-full text-sm md:text-base font-semibold transition-all duration-300">#50대 #은퇴준비</button>
+                </div>
+
+                <div id="profile-content" class="bg-white rounded-xl shadow-lg p-6 md:p-8 min-h-[300px]">
+                    <div id="young-content" class="profile-info space-y-4">
+                        <h3 class="text-xl font-bold text-green-700">추천 전략: 연금저축 100% (연 600만원 한도 내)</h3>
+                        <p class="text-gray-600">이 시기에는 유동성 확보가 최우선 과제입니다. 결혼, 주택 마련 등 예기치 못한 목돈이 필요할 때 자금이 묶이는 IRP보다 일부 인출이 가능한 연금저축이 유리합니다. 또한, 수수료가 없고 위험자산 100% 투자가 가능해 긴 투자 기간 동안 복리 효과를 극대화할 수 있습니다.</p>
+                        <ul class="list-disc list-inside text-gray-700 space-y-2">
+                            <li><strong>핵심 키워드:</strong> <span class="font-semibold">#유동성 #수수료절감 #공격적투자</span></li>
+                            <li><strong>전략 포인트:</strong> IRP의 추가 세액공제 혜택보다 필요할 때 돈을 뺄 수 있는 유연함이 더 중요합니다. 저축 여력이 되는 만큼 연금저축부터 채워나가세요.</li>
+                        </ul>
+                    </div>
+                    <div id="high-income-content" class="profile-info space-y-4 hidden">
+                        <h3 class="text-xl font-bold text-blue-700">추천 전략: 연금저축 600만원 + IRP 300만원 ('국룰' 조합)</h3>
+                        <p class="text-gray-600">안정적인 소득 기반을 갖추었다면, 절세 효과를 극대화하는 것이 중요합니다. 이 조합은 연 900만원의 세액공제 한도를 빈틈없이 채우면서 투자 효율성까지 잡는 가장 합리적인 방법입니다.</p>
+                         <ul class="list-disc list-inside text-gray-700 space-y-2">
+                            <li><strong>핵심 키워드:</strong> <span class="font-semibold">#세금혜택극대화 #효율성 #국룰조합</span></li>
+                            <li><strong>전략 포인트:</strong> 먼저 투자 자유도가 높은 연금저축의 한도(600만원)를 채우고, 추가 세액공제를 위해 IRP에 300만원을 납입하세요. 최대 118.8만원(13.2% 세율 기준)의 세금을 돌려받을 수 있습니다.</li>
+                        </ul>
+                    </div>
+                    <div id="freelancer-content" class="profile-info space-y-4 hidden">
+                         <h3 class="text-xl font-bold text-orange-700">추천 전략: IRP 우선 활용 (연 900만원 한도 내)</h3>
+                        <p class="text-gray-600">회사 퇴직금이 없는 자영업자와 프리랜서에게 IRP는 선택이 아닌 '필수'입니다. 스스로를 위한 '셀프 퇴직금' 계좌이자, 노후 자금을 외부 위험으로부터 지켜주는 강력한 강제 저축 수단입니다.</p>
+                         <ul class="list-disc list-inside text-gray-700 space-y-2">
+                            <li><strong>핵심 키워드:</strong> <span class="font-semibold">#셀프퇴직금 #강제저축 #유일한퇴직연금</span></li>
+                            <li><strong>전략 포인트:</strong> 중도 인출이 어렵다는 단점이 오히려 소득이 불규칙한 상황에서 노후 자금을 지켜주는 안전장치가 될 수 있습니다. 연금저축보다 IRP를 우선적으로 고려해 꾸준히 납입하는 것이 중요합니다.</li>
+                        </ul>
+                    </div>
+                    <div id="pre-retiree-content" class="profile-info space-y-4 hidden">
+                        <h3 class="text-xl font-bold text-purple-700">추천 전략: 자산 배분(리밸런싱) 및 인출 계획 수립</h3>
+                        <p class="text-gray-600">50대부터는 돈을 불리는 것보다 '지키고 잘 쓰는 것'이 중요해집니다. 위험자산 비중을 줄이고 안전자산으로 옮기는 리밸런싱이 필수적이며, 세금 부담을 최소화하는 인출 전략을 미리 세워야 합니다.</p>
+                         <ul class="list-disc list-inside text-gray-700 space-y-2">
+                            <li><strong>핵심 키워드:</strong> <span class="font-semibold">#자산보존 #TDF활용 #세금최소화</span></li>
+                            <li><strong>전략 포인트:</strong> 목표 은퇴 시점에 맞춰 자동으로 자산을 배분해주는 TDF(Target Date Fund)를 활용하세요. 연금 수령 시 사적연금 소득이 연 1,500만원을 넘지 않도록 수령 기간을 조절하여 '세금 폭탄'을 피하는 것이 핵심입니다.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="deep-dive" class="mb-12">
+                <h2 class="text-2xl font-bold text-center mb-8">더 깊이 알아보기: 핵심 규정 상세 분석</h2>
+                 <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
+                    연금 투자의 성공은 디테일에 있습니다. 투자 한도, 중도 인출 조건 등 두 상품의 운명을 가르는 핵심적인 규정들을 아래에서 자세히 확인해보세요.
+                </p>
+                <div class="space-y-4">
+                    <div class="bg-white rounded-lg shadow">
+                        <button class="accordion-button w-full flex justify-between items-center p-5 font-semibold text-left">
+                            <span>📜 법적 근거: 모든 차이의 시작</span>
+                            <span class="accordion-icon transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content overflow-hidden max-h-0 transition-all duration-500 ease-in-out">
+                            <div class="p-5 border-t text-gray-600">
+                                <p><strong>연금저축</strong>은 '소득세법'에 근거하여 국민의 자발적 노후 준비를 '장려'하기 위한 세제혜택 상품입니다. 반면, <strong>IRP</strong>는 '근로자퇴직급여 보장법'에 따라 근로자의 퇴직금을 은퇴 시점까지 '보호'하기 위한 제도적 장치입니다. 이 태생적 차이가 가입 자격, 투자 한도, 중도 인출 등 모든 조건의 차이를 만듭니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="bg-white rounded-lg shadow">
+                        <button class="accordion-button w-full flex justify-between items-center p-5 font-semibold text-left">
+                            <span>Investasi 투자 가능 상품: '개별 주식' 투자는 불가능!</span>
+                            <span class="accordion-icon transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content overflow-hidden max-h-0 transition-all duration-500 ease-in-out">
+                            <div class="p-5 border-t text-gray-600">
+                                <p>가장 많이 오해하는 부분입니다. <strong>연금저축과 IRP 모두 개별 주식(삼성전자, 애플 등)에 직접 투자하는 것은 불가능합니다.</strong> 펀드, ETF 등 간접투자 상품만 가능합니다. <br><br> <strong>연금저축</strong>은 펀드, ETF, 리츠 등 실적배당형 상품 위주로 구성됩니다. 반면 <strong>IRP</strong>는 여기에 더해 예·적금, ELB 등 원리금보장상품까지 담을 수 있는 '금융상품 슈퍼마켓'과 같습니다. 이는 퇴직금 보호라는 IRP의 법적 의무 때문입니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="bg-white rounded-lg shadow">
+                        <button class="accordion-button w-full flex justify-between items-center p-5 font-semibold text-left">
+                            <span>⚠️ 위험자산 투자 한도: IRP의 '70% 룰'</span>
+                            <span class="accordion-icon transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content overflow-hidden max-h-0 transition-all duration-500 ease-in-out">
+                            <div class="p-5 border-t text-gray-600">
+                                <p><strong>연금저축</strong>은 적립금의 100%를 주식형 펀드 등 위험자산에 투자할 수 있어 공격적인 운용이 가능합니다. 하지만 <strong>IRP</strong>는 과도한 위험으로부터 퇴직금을 보호하기 위해, 전체 적립금의 최대 70%까지만 위험자산에 투자할 수 있습니다. 나머지 30%는 반드시 예금, 채권 등 안전자산으로 채워야 합니다. 이 '70% 룰'은 투자자를 위한 강제적인 '안전장치' 역할을 합니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow">
+                        <button class="accordion-button w-full flex justify-between items-center p-5 font-semibold text-left">
+                            <span>🔑 중도 인출: 가장 현실적인 차이점</span>
+                            <span class="accordion-icon transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content overflow-hidden max-h-0 transition-all duration-500 ease-in-out">
+                            <div class="p-5 border-t text-gray-600">
+                                <p><strong>연금저축</strong>은 16.5%의 높은 기타소득세 패널티를 감수하면 언제든 일부 또는 전액 인출이 가능해 비상금으로 활용할 수 있습니다. 그러나 <strong>IRP</strong>는 '자물쇠로 잠긴 금고'와 같습니다. 무주택자의 주택 구매, 6개월 이상 요양 등 법에서 정한 엄격한 사유가 아니면 중도 인출이 불가능하며, 계좌를 '해지'하는 방법밖에 없습니다. 이 차이는 단기 유동성이 중요한 젊은 층에게 매우 중요한 고려사항입니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-16 pt-8 border-t border-gray-200">
+            <p class="text-sm text-gray-500">본 애플리케이션은 제공된 보고서의 정보를 바탕으로 제작되었으며, 투자 결정에 대한 법적 책임은 지지 않습니다.</p>
+            <p class="text-sm text-gray-500">투자에 대한 최종 판단과 책임은 투자자 본인에게 있습니다.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const incomeInput = document.getElementById('income');
+            const incomeValue = document.getElementById('incomeValue');
+            const pensionSavingInput = document.getElementById('pensionSaving');
+            const irpInput = document.getElementById('irp');
+            const totalRefundEl = document.getElementById('totalRefund');
+
+            const profileButtons = document.querySelectorAll('.profile-button');
+            const profileInfos = document.querySelectorAll('.profile-info');
+
+            const accordionButtons = document.querySelectorAll('.accordion-button');
+            
+            let taxRefundChart;
+
+            function formatCurrency(value) {
+                if (value >= 10000) {
+                    return `${Math.floor(value / 10000)}억 ${value % 10000}만원`;
+                }
+                return `${value.toLocaleString()}만원`;
+            }
+
+            function calculateTaxRefund() {
+                const income = parseInt(incomeInput.value) * 10000;
+                const pensionSaving = parseInt(pensionSavingInput.value) * 10000 || 0;
+                const irp = parseInt(irpInput.value) * 10000 || 0;
+
+                const taxRate = income <= 55000000 ? 0.165 : 0.132;
+
+                const pensionSavingCreditLimit = 6000000;
+                const totalCreditLimit = 9000000;
+
+                let creditPensionSaving = Math.min(pensionSaving, pensionSavingCreditLimit);
+                let creditTotal = Math.min(pensionSaving + irp, totalCreditLimit);
+                
+                let creditIrp = creditTotal - creditPensionSaving;
+                if (creditIrp < 0) creditIrp = 0;
+
+
+                const refundPensionSaving = creditPensionSaving * taxRate;
+                const refundIrp = creditIrp * taxRate;
+
+                const totalRefund = refundPensionSaving + refundIrp;
+
+                updateChart(refundPensionSaving, refundIrp);
+                
+                totalRefundEl.innerHTML = `총 예상 환급액: <span class="text-indigo-600">${Math.round(totalRefund).toLocaleString()}</span>원`;
+            }
+
+            function updateChart(refundPensionSaving, refundIrp) {
+                const ctx = document.getElementById('taxRefundChart').getContext('2d');
+                if (taxRefundChart) {
+                    taxRefundChart.data.datasets[0].data = [Math.round(refundPensionSaving)];
+                    taxRefundChart.data.datasets[1].data = [Math.round(refundIrp)];
+                    taxRefundChart.update();
+                } else {
+                    taxRefundChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['예상 환급액'],
+                            datasets: [
+                                {
+                                    label: '연금저축',
+                                    data: [Math.round(refundPensionSaving)],
+                                    backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                                    borderColor: 'rgba(16, 185, 129, 1)',
+                                    borderWidth: 1
+                                },
+                                {
+                                    label: 'IRP',
+                                    data: [Math.round(refundIrp)],
+                                    backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                                    borderColor: 'rgba(59, 130, 246, 1)',
+                                    borderWidth: 1
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            indexAxis: 'y',
+                            scales: {
+                                x: {
+                                    stacked: true,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return value.toLocaleString() + '원';
+                                        }
+                                    }
+                                },
+                                y: {
+                                    stacked: true,
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            let label = context.dataset.label || '';
+                                            if (label) {
+                                                label += ': ';
+                                            }
+                                            if (context.parsed.x !== null) {
+                                                label += context.parsed.x.toLocaleString() + '원';
+                                            }
+                                            return label;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            incomeInput.addEventListener('input', () => {
+                incomeValue.textContent = formatCurrency(parseInt(incomeInput.value));
+                calculateTaxRefund();
+            });
+            pensionSavingInput.addEventListener('input', calculateTaxRefund);
+            irpInput.addEventListener('input', calculateTaxRefund);
+
+            profileButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const selectedProfile = this.dataset.profile;
+
+                    profileButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+
+                    profileInfos.forEach(info => {
+                        if (info.id === `${selectedProfile}-content`) {
+                            info.classList.remove('hidden');
+                        } else {
+                            info.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            accordionButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const content = button.nextElementSibling;
+                    button.classList.toggle('open');
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                    }
+                });
+            });
+
+
+            calculateTaxRefund();
+        });
+    </script>
+
+</body>
+</html>
