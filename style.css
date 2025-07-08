@@ -1,1 +1,1225 @@
- 
+/* --- Google Font Import --- */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap');
+
+/* --- Global Reset & Base Styles --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #333;
+    line-height: 1.6;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+body.loaded {
+    opacity: 1;
+}
+
+body.touch-device {
+    -webkit-overflow-scrolling: touch;
+}
+
+/* --- 스크롤 진행 바 --- */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    z-index: 1000;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+/* --- 맨 위로 가기 버튼 --- */
+.scroll-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+}
+
+.scroll-to-top.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.scroll-to-top:hover {
+    transform: translateY(-5px) scale(1.1);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    padding-top: 3rem; /* 스크롤 바 공간 */
+}
+
+/* --- Header & Footer --- */
+.site-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 3rem 2rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.site-header h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: fadeInUp 0.8s ease 0.2s both;
+}
+
+.site-header p {
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    animation: fadeInUp 0.8s ease 0.4s both;
+}
+
+/* --- 카테고리 필터 --- */
+.category-filter {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+    animation: fadeInUp 0.8s ease 0.6s both;
+}
+
+.filter-btn {
+    padding: 0.8rem 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: #666;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border-color: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.site-footer {
+    text-align: center;
+    margin-top: 4rem;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    color: #666;
+    font-weight: 500;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* --- Category Sections --- */
+.category-section {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 2.5rem;
+    margin-bottom: 3rem;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border-left: 6px solid;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.category-section.animate-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.category-section.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.category-section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+.category-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid;
+}
+
+.category-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-size: 1.8rem;
+    color: white;
+    animation: bounce 2s infinite;
+    animation-delay: calc(var(--delay, 0) * 0.1s);
+}
+
+.category-title {
+    font-size: clamp(1.3rem, 3vw, 1.6rem);
+    font-weight: 700;
+}
+
+/* --- Category-specific colors --- */
+.health {
+    border-left-color: #2ECC71;
+}
+.health .category-header {
+    border-color: #2ECC71;
+}
+.health .category-icon {
+    background: linear-gradient(135deg, #2ECC71, #27AE60);
+    box-shadow: 0 8px 20px rgba(46, 204, 113, 0.3);
+}
+.health .category-title {
+    color: #2ECC71;
+}
+
+.finance {
+    border-left-color: #F1C40F;
+}
+.finance .category-header {
+    border-color: #F1C40F;
+}
+.finance .category-icon {
+    background: linear-gradient(135deg, #F1C40F, #E67E22);
+    box-shadow: 0 8px 20px rgba(241, 196, 15, 0.3);
+}
+.finance .category-title {
+    color: #F1C40F;
+}
+
+.beauty {
+    border-left-color: #E91E63;
+}
+.beauty .category-header {
+    border-color: #E91E63;
+}
+.beauty .category-icon {
+    background: linear-gradient(135deg, #E91E63, #C2185B);
+    box-shadow: 0 8px 20px rgba(233, 30, 99, 0.3);
+}
+.beauty .category-title {
+    color: #E91E63;
+}
+
+/* --- 향후 카테고리들 --- */
+.lifestyle {
+    border-left-color: #3498DB;
+}
+.lifestyle .category-header {
+    border-color: #3498DB;
+}
+.lifestyle .category-icon {
+    background: linear-gradient(135deg, #3498DB, #2980B9);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+}
+.lifestyle .category-title {
+    color: #3498DB;
+}
+
+.education {
+    border-left-color: #9B59B6;
+}
+.education .category-header {
+    border-color: #9B59B6;
+}
+.education .category-icon {
+    background: linear-gradient(135deg, #9B59B6, #8E44AD);
+    box-shadow: 0 8px 20px rgba(155, 89, 182, 0.3);
+}
+.education .category-title {
+    color: #9B59B6;
+}
+
+.realestate {
+    border-left-color: #A0522D;
+}
+.realestate .category-header {
+    border-color: #A0522D;
+}
+.realestate .category-icon {
+    background: linear-gradient(135deg, #A0522D, #8B4513);
+    box-shadow: 0 8px 20px rgba(160, 82, 45, 0.3);
+}
+.realestate .category-title {
+    color: #A0522D;
+}
+
+.business {
+    border-left-color: #566573;
+}
+.business .category-header {
+    border-color: #566573;
+}
+.business .category-icon {
+    background: linear-gradient(135deg, #566573, #34495E);
+    box-shadow: 0 8px 20px rgba(86, 101, 115, 0.3);
+}
+.business .category-title {
+    color: #566573;
+}
+
+.travel {
+    border-left-color: #5DADE2;
+}
+.travel .category-header {
+    border-color: #5DADE2;
+}
+.travel .category-icon {
+    background: linear-gradient(135deg, #5DADE2, #3498DB);
+    box-shadow: 0 8px 20px rgba(93, 173, 226, 0.3);
+}
+.travel .category-title {
+    color: #5DADE2;
+}
+
+.food {
+    border-left-color: #1ABC9C;
+}
+.food .category-header {
+    border-color: #1ABC9C;
+}
+.food .category-icon {
+    background: linear-gradient(135deg, #1ABC9C, #16A085);
+    box-shadow: 0 8px 20px rgba(26, 188, 156, 0.3);
+}
+.food .category-title {
+    color: #1ABC9C;
+}
+
+.art {
+    border-left-color: #2C3E50;
+}
+.art .category-header {
+    border-color: #2C3E50;
+}
+.art .category-icon {
+    background: linear-gradient(135deg, #2C3E50, #34495E);
+    box-shadow: 0 8px 20px rgba(44, 62, 80, 0.3);
+}
+.art .category-title {
+    color: #2C3E50;
+}
+
+.automotive {
+    border-left-color: #BDC3C7;
+}
+.automotive .category-header {
+    border-color: #BDC3C7;
+}
+.automotive .category-icon {
+    background: linear-gradient(135deg, #BDC3C7, #95A5A6);
+    box-shadow: 0 8px 20px rgba(189, 195, 199, 0.3);
+}
+.automotive .category-title {
+    color: #7F8C8D;
+}
+
+.parenting {
+    border-left-color: #F9E79F;
+}
+.parenting .category-header {
+    border-color: #F9E79F;
+}
+.parenting .category-icon {
+    background: linear-gradient(135deg, #F9E79F, #F4D03F);
+    box-shadow: 0 8px 20px rgba(249, 231, 159, 0.3);
+}
+.parenting .category-title {
+    color: #F1C40F;
+}
+
+.books {
+    border-left-color: #800000;
+}
+.books .category-header {
+    border-color: #800000;
+}
+.books .category-icon {
+    background: linear-gradient(135deg, #800000, #600000);
+    box-shadow: 0 8px 20px rgba(128, 0, 0, 0.3);
+}
+.books .category-title {
+    color: #800000;
+}
+
+/* --- Infographic Card List --- */
+.infographic-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(350px, 100%), 1fr));
+    gap: 1.5rem;
+}
+
+.infographic-list li {
+    position: relative;
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    border-left: 4px solid;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.health .infographic-list li {
+    border-left-color: #2ECC71;
+}
+
+.finance .infographic-list li {
+    border-left-color: #F1C40F;
+}
+
+.beauty .infographic-list li {
+    border-left-color: #E91E63;
+}
+
+.lifestyle .infographic-list li {
+    border-left-color: #3498DB;
+}
+
+.education .infographic-list li {
+    border-left-color: #9B59B6;
+}
+
+.realestate .infographic-list li {
+    border-left-color: #A0522D;
+}
+
+.business .infographic-list li {
+    border-left-color: #566573;
+}
+
+.travel .infographic-list li {
+    border-left-color: #5DADE2;
+}
+
+.food .infographic-list li {
+    border-left-color: #1ABC9C;
+}
+
+.art .infographic-list li {
+    border-left-color: #2C3E50;
+}
+
+.automotive .infographic-list li {
+    border-left-color: #BDC3C7;
+}
+
+.parenting .infographic-list li {
+    border-left-color: #F9E79F;
+}
+
+.books .infographic-list li {
+    border-left-color: #800000;
+}
+
+.infographic-list li:hover {
+    transform: translateY(-8px) translateX(5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.touch-device .infographic-list li:hover {
+    transform: none;
+}
+
+.card-link {
+    display: block;
+    text-decoration: none;
+    padding: 2.5rem 2rem 1.5rem 2rem;
+    height: auto;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.card-link:focus-visible {
+    outline: 3px solid #3498db;
+    outline-offset: 3px;
+    border-radius: 16px;
+}
+
+.card-link .title {
+    font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+    color: #2c3e50;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 0;
+    line-height: 1.4;
+    transition: color 0.3s ease;
+}
+
+.card-link:hover .title {
+    color: #1a252f;
+}
+
+/* --- YouTube Link Styling --- */
+.youtube-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1.5rem 1rem 1.5rem 1rem;
+    padding: 0.85rem 1.5rem;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(238, 90, 82, 0.3);
+    border: none;
+}
+
+.youtube-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.youtube-link:hover::before {
+    left: 100%;
+}
+
+.youtube-link:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(238, 90, 82, 0.4);
+    background: linear-gradient(135deg, #ff5252 0%, #d32f2f 100%);
+}
+
+.youtube-link:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 4px 15px rgba(238, 90, 82, 0.3);
+}
+
+.youtube-link:focus-visible {
+    outline: 3px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 2px;
+}
+
+.play-icon {
+    width: 0;
+    height: 0;
+    border-left: 8px solid white;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    margin-left: 2px;
+}
+
+/* --- Card Hover Effects --- */
+.infographic-list li::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #3498db, #2ecc71, #f39c12, #e74c3c);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.infographic-list li:hover::before {
+    opacity: 1;
+}
+
+/* --- 애니메이션 --- */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+/* --- 다크 모드 지원 --- */
+/* @media (prefers-color-scheme: dark) {
+    body {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    }
+    
+    .site-header,
+    .category-section,
+    .site-footer {
+        background: rgba(44, 62, 80, 0.9);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .site-header p {
+        color: #bdc3c7;
+    }
+    
+    .card-link .title {
+        color: #ecf0f1;
+    }
+    
+    .infographic-list li {
+        background-color: rgba(52, 73, 94, 0.8);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+} */
+
+/* --- 접근성 개선 --- */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    html {
+        scroll-behavior: auto;
+    }
+}
+
+/* --- 고해상도 디스플레이 최적화 --- */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .category-icon {
+        text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+    }
+}
+
+/* --- 반응형 디자인 --- */
+@media (min-width: 768px) {
+    .container {
+        padding: 2.5rem;
+        padding-top: 3rem;
+    }
+    
+    .infographic-list {
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .infographic-list {
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    }
+    
+    .category-section {
+        padding: 3rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    .infographic-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .category-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .category-icon {
+        margin-right: 0;
+        margin-bottom: 0.5rem;
+    }
+    
+    .infographic-list {
+        grid-template-columns: 1fr;
+    }
+    
+    .category-filter {
+        gap: 0.5rem;
+    }
+    
+    .filter-btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.8rem;
+    }
+
+    .breadcrumb {
+        font-size: 0.8rem;
+        margin: 0.5rem 0;
+    }
+    
+    .breadcrumb li:not(:last-child)::after {
+        margin: 0 0.3rem;
+    }
+    
+    .breadcrumb a {
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 1rem;
+        padding-top: 2rem;
+    }
+    
+    .site-header {
+        padding: 2rem 1.5rem;
+    }
+    
+    .category-section {
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .card-link {
+        padding: 2rem 1.5rem 1rem 1.5rem;
+    }
+    
+    .youtube-link {
+        margin: 1rem 0.5rem 1rem 0.5rem;
+        padding: 0.75rem 1.25rem;
+        font-size: 0.9rem;
+    }
+    
+    .category-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+    }
+    
+    .scroll-to-top {
+        bottom: 20px;
+        right: 20px;
+        width: 45px;
+        height: 45px;
+    }
+    
+    .category-filter {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .filter-btn {
+        min-width: 120px;
+    }
+
+    .breadcrumb {
+        font-size: 0.75rem;
+        margin: 0.3rem 0;
+    }
+    
+    .breadcrumb li:not(:last-child)::after {
+        margin: 0 0.2rem;
+    }
+    
+    .breadcrumb a {
+        max-width: 80px;
+    }
+}
+
+/* --- 매우 작은 화면 --- */
+@media (max-width: 320px) {
+    .container {
+        padding: 0.75rem;
+        padding-top: 1.5rem;
+    }
+    
+    .site-header {
+        padding: 1.5rem 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .site-header h1 {
+        font-size: 1.5rem;
+        line-height: 1.3;
+    }
+    
+    .site-header p {
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .category-section {
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        border-radius: 15px;
+    }
+    
+    .category-header {
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+    }
+    
+    .category-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+        border-radius: 10px;
+    }
+    
+    .category-title {
+        font-size: 1.1rem;
+    }
+    
+    .card-link {
+        padding: 1.5rem 1rem 0.75rem 1rem;
+    }
+    
+    .card-link .title {
+        font-size: 1rem;
+        line-height: 1.3;
+    }
+    
+    .youtube-link {
+        margin: 0.75rem 0.25rem 1rem 0.25rem;
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+        border-radius: 20px;
+    }
+    
+    .play-icon {
+        border-left-width: 6px;
+        border-top-width: 4px;
+        border-bottom-width: 4px;
+    }
+    
+    .scroll-to-top {
+        bottom: 15px;
+        right: 15px;
+        width: 40px;
+        height: 40px;
+    }
+    
+    .filter-btn {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.75rem;
+        min-width: 100px;
+    }
+    
+    .category-filter {
+        gap: 0.4rem;
+    }
+    
+    .site-footer {
+        padding: 1.5rem 1rem;
+        margin-top: 2rem;
+    }
+}
+
+/* --- 프린트 스타일 --- */
+@media print {
+    body {
+        background: white !important;
+        color: black !important;
+    }
+    
+    .scroll-progress,
+    .scroll-to-top,
+    .youtube-link {
+        display: none !important;
+    }
+    
+    .site-header,
+    .category-section,
+    .site-footer {
+        background: white !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+    }
+    
+    .category-section {
+        page-break-inside: avoid;
+        margin-bottom: 1rem;
+    }
+    
+    .infographic-list li {
+        page-break-inside: avoid;
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+}
+
+/* --- 고대비 모드 지원 --- */
+@media (prefers-contrast: high) {
+    body {
+        background: #000;
+        color: #fff;
+    }
+    
+    .site-header,
+    .category-section,
+    .site-footer {
+        background: #111;
+        border: 2px solid #fff;
+    }
+    
+    .filter-btn {
+        border: 2px solid #fff;
+        background: #000;
+        color: #fff;
+    }
+    
+    .filter-btn:hover,
+    .filter-btn.active {
+        background: #fff;
+        color: #000;
+    }
+    
+    .infographic-list li {
+        background: #111;
+        border: 2px solid #fff;
+    }
+    
+    .card-link .title {
+        color: #fff;
+    }
+    
+    .youtube-link {
+        background: #fff;
+        color: #000;
+        border: 2px solid #000;
+    }
+}
+
+/* --- 포커스 인디케이터 개선 --- */
+@media (prefers-reduced-motion: no-preference) {
+    :focus-visible {
+        outline: 3px solid #3498db;
+        outline-offset: 2px;
+        border-radius: 3px;
+        transition: outline-color 0.2s ease;
+    }
+    
+    .filter-btn:focus-visible {
+        outline-color: #667eea;
+    }
+    
+    .youtube-link:focus-visible {
+        outline-color: #ff6b6b;
+    }
+}
+
+/* --- 터치 디바이스 최적화 --- */
+@media (pointer: coarse) {
+    .filter-btn,
+    .youtube-link,
+    .card-link {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    .youtube-link {
+        padding: 1rem 1.5rem;
+    }
+    
+    .filter-btn {
+        padding: 1rem 1.5rem;
+    }
+    
+    .scroll-to-top {
+        width: 56px;
+        height: 56px;
+    }
+}
+
+/* --- 로딩 상태 스타일 --- */
+body:not(.loaded) {
+    overflow: hidden;
+}
+
+body:not(.loaded)::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+body:not(.loaded)::after {
+    content: '로딩 중...';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 600;
+    z-index: 10000;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* --- 스크롤바 커스터마이징 --- */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #5a6fd8, #6a4190);
+}
+
+/* --- 선택 텍스트 스타일 --- */
+::selection {
+    background: rgba(102, 126, 234, 0.3);
+    color: #2c3e50;
+}
+
+::-moz-selection {
+    background: rgba(102, 126, 234, 0.3);
+    color: #2c3e50;
+}
+
+/* --- 추가 접근성 개선 --- */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* --- 키보드 네비게이션 개선 --- */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: #000;
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    transition: top 0.3s;
+    z-index: 1001;
+}
+
+.skip-link:focus {
+    top: 6px;
+}
+
+/* --- 성능 최적화 --- */
+.category-section {
+    contain: layout style paint;
+}
+
+.infographic-list li {
+    contain: layout style;
+}
+
+/* --- 브라우저별 호환성 --- */
+@supports not (backdrop-filter: blur(10px)) {
+    .site-header,
+    .category-section,
+    .site-footer {
+        background: rgba(255, 255, 255, 0.95);
+    }
+    
+    @media (prefers-color-scheme: dark) {
+        .site-header,
+        .category-section,
+        .site-footer {
+            background: rgba(44, 62, 80, 0.95);
+        }
+    }
+}
+
+/* --- 랜드스케이프 모드 (모바일) --- */
+@media (max-height: 500px) and (orientation: landscape) {
+    .site-header {
+        padding: 1.5rem 2rem;
+    }
+    
+    .category-section {
+        padding: 2rem;
+    }
+    
+    .scroll-to-top {
+        bottom: 20px;
+        right: 20px;
+    }
+}
+
+/* --- 큰 화면 최적화 --- */
+@media (min-width: 1600px) {
+    .container {
+        max-width: 1600px;
+        padding: 3rem;
+    }
+    
+    .infographic-list {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2rem;
+    }
+    
+    .category-section {
+        padding: 3.5rem;
+    }
+    
+    .site-header {
+        padding: 4rem 3rem;
+    }
+}
+
+/* --- 초고해상도 화면 --- */
+@media (min-width: 2000px) {
+    .container {
+        max-width: 1800px;
+    }
+    
+    .site-header h1 {
+        font-size: 3.5rem;
+    }
+    
+    .site-header p {
+        font-size: 1.4rem;
+    }
+    
+    .category-title {
+        font-size: 2rem;
+    }
+    
+    .card-link .title {
+        font-size: 1.5rem;
+    }
+}
+
+/* 브레드크럼 네비게이션 스타일 */
+.breadcrumb {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+    color: #666;
+    flex-wrap: wrap;
+}
+
+.breadcrumb li {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.breadcrumb li:not(:last-child)::after {
+    content: ">";
+    margin: 0 0.5rem;
+    color: #999;
+    flex-shrink: 0;
+}
+
+.breadcrumb a {
+    color: #6366f1;
+    text-decoration: none;
+    transition: color 0.2s;
+    display: inline-block;
+}
+
+.breadcrumb a:hover {
+    color: #4f46e5;
+    text-decoration: underline;
+}
+
+.breadcrumb li[aria-current="page"] {
+    color: #333;
+    font-weight: 500;
+}
