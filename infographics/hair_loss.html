@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인터랙티브 탈모 과학 리포트</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: 사용자의 정보 습득 경로를 고려한 주제별 섹션 구조를 채택했습니다. 1) Hero: 흥미 유발 및 시작 유도 -> 2) 원인: '왜?'라는 근본적 질문에 대한 시각적 해답 제시 -> 3) 오해와 진실: 오개념을 바로잡는 인터랙티브 카드 -> 4) 과학적 해결책: 치료법을 동적 비교/분석하여 정보 탐색의 효율성 극대화 -> 5) 나에게 맞는 방법: 간단한 퀴즈를 통한 개인화된 가이드라인 제시. 이 구조는 사용자가 수동적으로 읽는 것을 넘어 능동적으로 정보를 탐색하고, 자신의 상황에 맞는 지식을 얻어갈 수 있도록 설계되었습니다. -->
+    <!-- Visualization & Content Choices: 1) DHT 생성 과정: Goal-정보 전달, Viz-HTML/CSS/JS 인터랙티브 다이어그램, Interaction-클릭 시 설명 표시, Justification-복잡한 메커니즘을 단계별로 쉽게 이해. 2) 모발 주기 비교: Goal-변화 비교, Viz-Chart.js 바 차트, Justification-생장기 단축을 시각적으로 명확히 비교. 3) 약물 효과 비교: Goal-효과 비교, Viz-Chart.js 도넛 차트, Justification-DHT 억제율 차이를 직관적으로 전달. 4) 속설 검증: Goal-정보 정리, Viz-HTML/CSS/JS 카드 뒤집기, Justification-흥미를 유발하며 진실과 거짓을 명확히 구분. 5) 치료법 비교: Goal-정보 비교, Viz-HTML 테이블, Justification-여러 옵션의 장단점을 한눈에 비교 분석. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F8F7F4;
+            color: #333;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #4A6C8C;
+            border-bottom-color: #4A6C8C;
+        }
+        .section-card {
+            background-color: #ffffff;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease-in-out;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 40vh;
+        }
+        .interactive-diagram-item {
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .interactive-diagram-item.active {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(74, 108, 140, 0.5);
+        }
+        .myth-card-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .myth-card.flipped .myth-card-inner {
+            transform: rotateY(180deg);
+        }
+        .myth-card-front, .myth-card-back {
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+        .myth-card-back {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+    <header id="header" class="bg-white/80 backdrop-blur-sm fixed top-0 left-0 right-0 z-50 shadow-md">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="#" class="text-xl font-bold text-[#4A6C8C]">탈모 과학 리포트</a>
+            <div class="hidden md:flex space-x-8">
+                <a href="#cause" class="nav-link">원인</a>
+                <a href="#myths" class="nav-link">오해와 진실</a>
+                <a href="#solutions" class="nav-link">과학적 해결책</a>
+                <a href="#quiz" class="nav-link">나에게 맞는 방법은?</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-2xl">☰</button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden bg-white py-4">
+             <a href="#cause" class="block text-center py-2 nav-link">원인</a>
+             <a href="#myths" class="block text-center py-2 nav-link">오해와 진실</a>
+             <a href="#solutions" class="block text-center py-2 nav-link">과학적 해결책</a>
+             <a href="#quiz" class="block text-center py-2 nav-link">나에게 맞는 방법은?</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="min-h-screen flex items-center justify-center bg-cover bg-center" style="background-image: linear-gradient(rgba(248, 247, 244, 0.8), rgba(248, 247, 244, 1)), url('https://placehold.co/1920x1080/e2e8f0/a0aec0?text=Hair+Follicles');">
+            <div class="text-center p-8">
+                <h1 class="text-4xl md:text-6xl font-bold text-[#4A6C8C] mb-4">탈모, 운명이 아닌 과학입니다</h1>
+                <p class="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+                    샤워 후 빠진 머리카락에 한숨 쉬고 있나요? '어차피 유전'이라며 포기하셨나요?<br>이곳에서 탈모에 대한 모든 오해를 깨부수고, 당신의 머리카락을 지킬 과학적이고 검증된 방법의 모든 것을 알아보세요.
+                </p>
+                <a href="#cause" class="bg-[#4A6C8C] text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-[#5F9EA0] transition duration-300">
+                    탈모 정복 시작하기
+                </a>
+            </div>
+        </section>
+
+        <section id="cause" class="py-20 bg-[#F8F7F4]">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-4 text-[#4A6C8C]">내 머리카락, 왜 빠지는 걸까?</h2>
+                <p class="text-center text-gray-600 max-w-3xl mx-auto mb-12">
+                    탈모는 복잡해 보이지만, 핵심 원인은 'DHT'라는 호르몬의 공격입니다. 이 과정은 마치 잘 짜인 각본처럼 진행됩니다. 아래 다이어그램의 각 단계를 클릭하여 탈모의 진짜 주범이 어떻게 우리 모낭을 공격하는지 그 메커니즘을 확인해보세요.
+                </p>
+
+                <div class="section-card">
+                    <div id="dht-diagram" class="grid grid-cols-1 md:grid-cols-5 items-center gap-4 text-center mb-8">
+                        <div class="interactive-diagram-item p-4 rounded-lg bg-blue-100" data-target="info-testosterone">
+                            <h4 class="font-bold">테스토스테론</h4><p class="text-sm">남성 호르몬</p>
+                        </div>
+                        <div class="text-2xl font-bold text-gray-400">+</div>
+                        <div class="interactive-diagram-item p-4 rounded-lg bg-green-100" data-target="info-5ar">
+                            <h4 class="font-bold">5알파-환원효소</h4><p class="text-sm">변환 효소</p>
+                        </div>
+                        <div class="text-2xl font-bold text-gray-400">=</div>
+                        <div class="interactive-diagram-item p-4 rounded-lg bg-red-100" data-target="info-dht">
+                             <h4 class="font-bold">DHT</h4><p class="text-sm text-red-700">탈모 유발 호르몬</p>
+                        </div>
+                    </div>
+                    <div id="diagram-info" class="p-6 bg-gray-50 rounded-lg min-h-[150px] flex items-center justify-center">
+                        <p class="text-gray-700 text-center">각 항목을 클릭하여 자세한 설명을 확인하세요.</p>
+                    </div>
+                    <div id="info-testosterone" class="hidden">
+                        <h4 class="font-bold text-lg mb-2 text-blue-800">테스토스테론</h4>
+                        <p>남성성의 상징인 이 호르몬은 그 자체로는 탈모의 직접적인 원인이 아닙니다. 하지만 탈모를 일으키는 물질의 '원재료'가 됩니다.</p>
+                    </div>
+                    <div id="info-5ar" class="hidden">
+                        <h4 class="font-bold text-lg mb-2 text-green-800">5알파-환원효소</h4>
+                        <p>두피의 모낭과 피지선에 존재하는 효소입니다. 이 효소가 테스토스테론과 만나면 비극이 시작됩니다. 탈모 유전 소인은 이 효소의 활성도와 관련이 깊습니다.</p>
+                    </div>
+                    <div id="info-dht" class="hidden">
+                        <h4 class="font-bold text-lg mb-2 text-red-800">DHT (디하이드로테스토스테론)</h4>
+                        <p>탈모의 '진짜 주범'입니다. 테스토스테론보다 모낭의 안드로겐 수용체에 훨씬 강력하게 결합하여, 모낭을 공격하고 위축시키는 신호를 보냅니다. 이로 인해 모발의 생장기가 짧아지고 모낭이 소형화되어 결국 탈모로 이어집니다.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-16">
+                    <div class="section-card">
+                        <h3 class="text-2xl font-bold text-center mb-4">모발 성장 주기의 붕괴</h3>
+                        <p class="text-center text-gray-600 mb-6">탈모는 모발의 생애 주기 중 '생장기'가 급격히 짧아지는 현상입니다. 정상 모발이 수년간 자라나는 반면, 탈모의 영향을 받는 모발은 몇 달 만에 성장을 멈춥니다.</p>
+                        <div class="chart-container h-64 sm:h-80">
+                            <canvas id="hairCycleChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="section-card">
+                         <h3 class="text-2xl font-bold text-center mb-4">남녀 탈모, 패턴이 다른 이유</h3>
+                         <p class="text-center text-gray-600 mb-6">남성과 여성의 탈모 패턴이 다른 이유는 두피의 특정 부위에 분포하는 '효소'의 차이 때문입니다. 아래 버튼을 눌러 차이를 확인해보세요.</p>
+                         <div class="flex justify-center space-x-4 mb-4">
+                             <button class="gender-toggle-btn active bg-[#4A6C8C] text-white py-2 px-4 rounded-full" data-target="male-pattern">남성형 탈모</button>
+                             <button class="gender-toggle-btn bg-gray-200 text-gray-700 py-2 px-4 rounded-full" data-target="female-pattern">여성형 탈모</button>
+                         </div>
+                         <div id="male-pattern" class="gender-pattern-content">
+                             <h4 class="font-bold text-lg mb-2">M자 & 정수리 탈모</h4>
+                             <p>남성의 앞머리와 정수리에는 DHT를 만드는 '5알파-환원효소'가 많아 이 부위가 집중적으로 공격받습니다. 이로 인해 헤어라인이 후퇴하고 정수리가 휑해지는 패턴이 나타납니다.</p>
+                         </div>
+                         <div id="female-pattern" class="gender-pattern-content hidden">
+                             <h4 class="font-bold text-lg mb-2">가르마 중심의 확산형 탈모</h4>
+                             <p>여성의 앞머리 헤어라인에는 DHT 생성을 억제하는 '아로마타제' 효소가 풍부하여 헤어라인은 유지됩니다. 대신 가르마를 중심으로 정수리 부위 모발이 전반적으로 가늘어지고 숱이 줄어드는 '크리스마스트리 패턴'을 보입니다.</p>
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="myths" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-4 text-[#4A6C8C]">속설의 함정: "이거 하면 머리 난다"의 진실과 거짓</h2>
+                 <p class="text-center text-gray-600 max-w-3xl mx-auto mb-12">
+                    탈모에 대한 간절함은 검증되지 않은 속설에 기대게 만듭니다. 하지만 잘못된 정보는 시간과 돈을 낭비하게 할 뿐입니다. 카드를 클릭해서 속설의 진실을 확인하고, 현명한 대처법을 찾아보세요.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="myth-card perspective-[1000px]">
+                        <div class="myth-card-inner relative w-full h-64">
+                            <div class="myth-card-front absolute w-full h-full p-6 rounded-2xl shadow-lg bg-gray-100 flex flex-col justify-center items-center text-center">
+                                <div class="text-5xl mb-4">🤔</div>
+                                <h3 class="text-xl font-bold">"검은콩, 맥주효모, 비오틴을 먹으면 머리가 난다?"</h3>
+                            </div>
+                            <div class="myth-card-back absolute w-full h-full p-6 rounded-2xl shadow-lg bg-[#5F9EA0] text-white flex flex-col justify-center items-center text-center">
+                                <h3 class="text-xl font-bold mb-2">부분적 사실, 그러나 한계 명확</h3>
+                                <p>이들은 모발 '건강'에 좋은 영양소지만, 탈모의 근본 원인인 DHT를 막지 못합니다. 비유하자면 '양질의 건축 자재 공급'일 뿐, 건물을 파괴하는 '철거팀(DHT)'을 막을 순 없습니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="myth-card perspective-[1000px]">
+                        <div class="myth-card-inner relative w-full h-64">
+                            <div class="myth-card-front absolute w-full h-full p-6 rounded-2xl shadow-lg bg-gray-100 flex flex-col justify-center items-center text-center">
+                                <div class="text-5xl mb-4">🧴</div>
+                                <h3 class="text-xl font-bold">"탈모 샴푸, 두피 스케일링으로 탈모를 치료할 수 있다?"</h3>
+                            </div>
+                            <div class="myth-card-back absolute w-full h-full p-6 rounded-2xl shadow-lg bg-[#5F9EA0] text-white flex flex-col justify-center items-center text-center">
+                                <h3 class="text-xl font-bold mb-2">치료가 아닌 '환경 개선'</h3>
+                                <p>두피를 깨끗하게 하는 것은 '증상 완화'에 도움을 줄 뿐, 의학적 치료법이 아닙니다. 식물의 뿌리(모낭)가 병들었는데, 땅(두피)에만 비료를 주는 격입니다. 보조 요법일 뿐, 주요 치료법이 될 수 없습니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="myth-card perspective-[1000px]">
+                        <div class="myth-card-inner relative w-full h-64">
+                            <div class="myth-card-front absolute w-full h-full p-6 rounded-2xl shadow-lg bg-gray-100 flex flex-col justify-center items-center text-center">
+                                <div class="text-5xl mb-4">🧬</div>
+                                <h3 class="text-xl font-bold">"탈모는 100% 유전이라 어쩔 수 없다?"</h3>
+                            </div>
+                            <div class="myth-card-back absolute w-full h-full p-6 rounded-2xl shadow-lg bg-[#5F9EA0] text-white flex flex-col justify-center items-center text-center">
+                                <h3 class="text-xl font-bold mb-2">반은 맞고 반은 틀리다</h3>
+                                <p>유전은 '장전된 총'과 같습니다. 스트레스, 수면 부족 등 후천적 요인은 '방아쇠를 당기는' 역할을 합니다. 유전적 소인이 있더라도 생활 습관 관리를 통해 발현 시기와 속도를 늦출 수 있습니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="solutions" class="py-20 bg-[#F8F7F4]">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-4 text-[#4A6C8C]">과학적 해결책: 의학적으로 검증된 치료법</h2>
+                 <p class="text-center text-gray-600 max-w-3xl mx-auto mb-12">
+                    더 이상 속설에 흔들리지 마세요. 현대 의학은 탈모의 원인인 DHT를 직접 공략하거나 모낭을 활성화하는 효과적인 무기들을 가지고 있습니다. 각 치료법의 원리와 효과, 장단점을 비교하여 자신에게 맞는 최적의 전략을 찾아보세요.
+                </p>
+                <div class="section-card">
+                    <div class="mb-8 border-b border-gray-200">
+                        <nav class="flex space-x-8" aria-label="Tabs">
+                            <button id="tab-drugs" class="solution-tab active font-semibold text-[#4A6C8C] pb-4 border-b-2 border-[#4A6C8C]" data-target="content-drugs">약물 치료</button>
+                            <button id="tab-procedures" class="solution-tab text-gray-500 hover:text-gray-700 pb-4 border-b-2 border-transparent" data-target="content-procedures">수술 및 기타 치료</button>
+                        </nav>
+                    </div>
+
+                    <div id="content-drugs" class="solution-content">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-2xl font-bold mb-4">먹는 약: DHT 생성 차단</h3>
+                                <p class="mb-6">탈모 치료의 핵심. 5알파-환원효소를 억제하여 DHT 생성을 원천 차단합니다. 피나스테리드와 두타스테리드가 대표적이며, 각각의 효과와 특징을 비교해보세요.</p>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="text-center">
+                                        <h4 class="font-bold">피나스테리드</h4>
+                                        <div class="chart-container h-40">
+                                            <canvas id="finaChart"></canvas>
+                                        </div>
+                                        <p class="text-sm">2형 효소 선택적 억제</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <h4 class="font-bold">두타스테리드</h4>
+                                        <div class="chart-container h-40">
+                                            <canvas id="dutaChart"></canvas>
+                                        </div>
+                                        <p class="text-sm">1형 & 2형 동시 억제</p>
+                                    </div>
+                                </div>
+                                <div class="mt-6 bg-gray-50 p-4 rounded-lg">
+                                    <p><strong class="text-red-600">주의:</strong> 이 약물들은 남성에게만 처방되며, 1-4% 내외에서 성기능 관련 부작용이 보고됩니다. 반드시 전문의와 상담 후 처방받아야 합니다.</p>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold mb-4">바르는 약: 모낭 자극 및 활성화</h3>
+                                <p class="mb-6">대표적인 성분은 '미녹시딜'입니다. 두피의 혈관을 확장하고 모낭에 영양 공급을 원활하게 하여 휴지기 모낭을 생장기로 전환시키는 '비료' 같은 역할을 합니다. DHT를 직접 억제하지는 않습니다.</p>
+                                <ul class="space-y-4">
+                                    <li class="flex items-start">
+                                        <span class="text-green-500 mr-3">✔</span>
+                                        <div><strong>올바른 사용법:</strong> 하루 2번, 마른 두피에 직접 도포. 최소 4~6개월 꾸준한 사용이 중요합니다.</div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="text-yellow-500 mr-3">⚠</span>
+                                        <div><strong>쉐딩 현상:</strong> 사용 초기 일시적으로 머리가 더 빠질 수 있습니다. 이는 새롭고 건강한 모발이 자라기 위한 긍정적 신호입니다.</div>
+                                    </li>
+                                     <li class="flex items-start">
+                                        <span class="text-blue-500 mr-3">男女</span>
+                                        <div><strong>농도 차이:</strong> 보통 남성은 5%, 여성은 다모증 위험으로 인해 2-3% 제품을 사용합니다.</div>
+                                    </li>
+                                </ul>
+                                <div class="mt-6 bg-blue-50 p-4 rounded-lg">
+                                    <h4 class="font-bold text-blue-800">최상의 시너지: 병용 요법</h4>
+                                    <p>먹는 약(살충제)으로 DHT를 막고, 바르는 약(비료)으로 성장을 촉진하는 병용 요법이 가장 효과적인 표준 치료법으로 권장됩니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="content-procedures" class="solution-content hidden">
+                        <h3 class="text-2xl font-bold mb-6">모발이식: 내 자산의 재배치</h3>
+                        <p class="mb-8">DHT의 공격에 강한 후두부 모낭을 탈모 부위로 옮겨 심는 수술입니다. 새로운 모발을 만드는 것이 아닌, 기존 모발을 '재배치'하는 개념임을 이해하는 것이 중요합니다. 수술 후에도 기존 모발을 지키기 위한 약물 치료는 필수입니다.</p>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr>
+                                        <th class="py-3 px-4 bg-gray-100 font-bold uppercase text-sm text-gray-600 border-b">구분</th>
+                                        <th class="py-3 px-4 bg-gray-100 font-bold uppercase text-sm text-gray-600 border-b">절개법 (FUT)</th>
+                                        <th class="py-3 px-4 bg-gray-100 font-bold uppercase text-sm text-gray-600 border-b">비절개법 (FUE)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="py-3 px-4 border-b">채취 방식</td>
+                                        <td class="py-3 px-4 border-b">두피를 띠 모양으로 절제</td>
+                                        <td class="py-3 px-4 border-b">모낭 단위로 하나씩 추출</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="py-3 px-4 border-b">흉터</td>
+                                        <td class="py-3 px-4 border-b">선(Line) 형태</td>
+                                        <td class="py-3 px-4 border-b">작은 점(Dot) 형태</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="py-3 px-4 border-b">장점</td>
+                                        <td class="py-3 px-4 border-b">대량 이식 용이, 비용 효율성</td>
+                                        <td class="py-3 px-4 border-b">흉터 적음, 통증 적음, 짧은 머리 가능</td>
+                                    </tr>
+                                     <tr class="hover:bg-gray-50">
+                                        <td class="py-3 px-4 border-b">단점</td>
+                                        <td class="py-3 px-4 border-b">선상 흉터, 회복 기간 상대적으로 김</td>
+                                        <td class="py-3 px-4 border-b">수술 시간 김, 비용 높음</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                         <h3 class="text-2xl font-bold mt-12 mb-6">기타 치료: 성장 가속기</h3>
+                         <p class="mb-8">약물 치료와 병행하여 효과를 높이는 보조 치료법들입니다. 주력 부대(약물)가 적(DHT)을 막는 동안, 손상된 병사(모낭)를 치료하고 전력을 강화하는 '지원군' 역할을 합니다.</p>
+                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                             <div class="bg-gray-50 p-6 rounded-lg">
+                                 <h4 class="font-bold text-lg mb-2">저준위 레이저 치료 (LLLT)</h4>
+                                 <p>FDA 승인을 받은 치료법으로, 특정 파장의 빛을 쬐어 모낭 세포의 에너지 생성을 촉진하고 활동을 활성화시킵니다.</p>
+                             </div>
+                             <div class="bg-gray-50 p-6 rounded-lg">
+                                 <h4 class="font-bold text-lg mb-2">두피 주사 (PRP, 메조테라피)</h4>
+                                 <p>자신의 혈액에서 추출한 성장인자(PRP)나 모발 성장에 필요한 영양 칵테일을 두피에 직접 주사하여 모낭을 활성화합니다.</p>
+                             </div>
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="quiz" class="py-20 bg-white">
+             <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-4 text-[#4A6C8C]">나에게 맞는 방법은? (간단 가이드)</h2>
+                <p class="text-center text-gray-600 max-w-3xl mx-auto mb-12">
+                    자신의 상태에 대해 간단히 답해보세요. 어떤 치료법을 우선적으로 고려해야 할지 대략적인 방향을 알 수 있습니다. 단, 이것은 참고용이며 가장 정확한 진단과 처방은 전문의를 통해 받아야 합니다.
+                </p>
+                <div class="section-card max-w-2xl mx-auto">
+                    <div id="quiz-form">
+                        <div class="mb-6">
+                            <p class="font-semibold mb-2">1. 현재 당신의 탈모 진행 상태는 어떤가요?</p>
+                            <label class="block mb-2"><input type="radio" name="progress" value="early" class="mr-2"> 이제 막 신경 쓰이기 시작한 초기 단계</label>
+                            <label class="block mb-2"><input type="radio" name="progress" value="mid" class="mr-2"> 눈에 띄게 숱이 줄어든 중기 단계</label>
+                            <label class="block mb-2"><input type="radio" name="progress" value="advanced" class="mr-2"> 누가 봐도 알 수 있을 정도로 많이 진행된 상태</label>
+                        </div>
+                         <div class="mb-8">
+                            <p class="font-semibold mb-2">2. 당신이 가장 중요하게 생각하는 것은 무엇인가요?</p>
+                            <label class="block mb-2"><input type="radio" name="priority" value="prevention" class="mr-2"> 더 이상의 탈모 진행을 막는 것 (현상 유지)</label>
+                            <label class="block mb-2"><input type="radio" name="priority" value="recovery" class="mr-2"> 이미 비어 보이는 부분을 채우는 것 (복구)</label>
+                        </div>
+                        <button id="quiz-submit-btn" class="w-full bg-[#4A6C8C] text-white font-bold py-3 px-8 rounded-full hover:bg-[#5F9EA0] transition duration-300">결과 보기</button>
+                    </div>
+                    <div id="quiz-result" class="hidden text-center">
+                        <h3 class="text-2xl font-bold mb-4 text-[#4A6C8C]">추천 전략</h3>
+                        <p id="result-text" class="text-lg p-6 bg-blue-50 rounded-lg"></p>
+                        <p class="mt-4 text-sm text-red-600"><strong>※ 중요:</strong> 이 결과는 일반적인 가이드일 뿐, 의학적 진단을 대체할 수 없습니다. 최적의 치료 계획을 위해 반드시 피부과 전문의와 상담하세요.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-2xl font-bold mb-4">이제 당신의 차례입니다</h2>
+            <p class="max-w-2xl mx-auto mb-8">
+                탈모는 더 이상 감춰야 할 고민이 아닌, 관리하고 치료할 수 있는 질환입니다. <br>오늘 얻은 과학적 지식을 바탕으로, 헛된 희망을 주는 광고 대신 전문가를 찾으세요.
+            </p>
+            <a href="https://map.naver.com/p/search/%ED%94%BC%EB%B6%80%EA%B3%BC" target="_blank" rel="noopener noreferrer" class="bg-white text-[#4A6C8C] font-bold py-3 px-8 rounded-full text-lg hover:bg-gray-200 transition duration-300">
+                가까운 피부과 전문의 찾기
+            </a>
+        </div>
+    </footer>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('shadow-lg');
+            } else {
+                header.classList.remove('shadow-lg');
+            }
+        });
+
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if(!mobileMenu.classList.contains('hidden')){
+                    mobileMenu.classList.add('hidden');
+                }
+            })
+        });
+
+        const diagramItems = document.querySelectorAll('.interactive-diagram-item');
+        const infoDisplay = document.getElementById('diagram-info');
+        const initialInfo = infoDisplay.innerHTML;
+
+        diagramItems.forEach(item => {
+            item.addEventListener('click', () => {
+                diagramItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+
+                const targetId = item.getAttribute('data-target');
+                const targetInfo = document.getElementById(targetId);
+                if (targetInfo) {
+                    infoDisplay.innerHTML = targetInfo.innerHTML;
+                }
+            });
+        });
+
+        const hairCycleCtx = document.getElementById('hairCycleChart').getContext('2d');
+        new Chart(hairCycleCtx, {
+            type: 'bar',
+            data: {
+                labels: ['생장기 기간 (년)'],
+                datasets: [
+                    {
+                        label: '정상 모발',
+                        data: [5],
+                        backgroundColor: 'rgba(74, 108, 140, 0.6)',
+                        borderColor: 'rgba(74, 108, 140, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '탈모 영향 모발',
+                        data: [1],
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: { display: true, text: '생장기 단축이 탈모의 핵심' },
+                    tooltip: {
+                        callbacks: {
+                             label: function(context) {
+                                 let label = context.dataset.label || '';
+                                 if (label) {
+                                     label += ': ';
+                                 }
+                                 if (context.parsed.y !== null) {
+                                     label += context.parsed.y + '년';
+                                 }
+                                 return label;
+                             }
+                        }
+                    }
+                },
+                scales: { y: { beginAtZero: true, max: 7, title: { display: true, text: '기간(년)' } } }
+            }
+        });
+        
+        const genderToggleBtns = document.querySelectorAll('.gender-toggle-btn');
+        const genderPatternContents = document.querySelectorAll('.gender-pattern-content');
+        genderToggleBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                genderToggleBtns.forEach(b => {
+                    b.classList.remove('active', 'bg-[#4A6C8C]', 'text-white');
+                    b.classList.add('bg-gray-200', 'text-gray-700');
+                });
+                btn.classList.add('active', 'bg-[#4A6C8C]', 'text-white');
+                btn.classList.remove('bg-gray-200', 'text-gray-700');
+                
+                genderPatternContents.forEach(content => content.classList.add('hidden'));
+                document.getElementById(btn.dataset.target).classList.remove('hidden');
+            });
+        });
+
+        const mythCards = document.querySelectorAll('.myth-card');
+        mythCards.forEach(card => {
+            card.addEventListener('click', () => {
+                card.classList.toggle('flipped');
+            });
+        });
+
+        const solutionTabs = document.querySelectorAll('.solution-tab');
+        const solutionContents = document.querySelectorAll('.solution-content');
+        solutionTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                solutionTabs.forEach(t => {
+                    t.classList.remove('active', 'text-[#4A6C8C]', 'border-[#4A6C8C]');
+                    t.classList.add('text-gray-500', 'border-transparent');
+                });
+                tab.classList.add('active', 'text-[#4A6C8C]', 'border-[#4A6C8C]');
+                tab.classList.remove('text-gray-500', 'border-transparent');
+
+                solutionContents.forEach(content => content.classList.add('hidden'));
+                document.getElementById(tab.dataset.target).classList.remove('hidden');
+            });
+        });
+
+        const createDrugChart = (canvasId, label, percentage, color) => {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: [label, '남은 DHT'],
+                    datasets: [{
+                        data: [percentage, 100 - percentage],
+                        backgroundColor: [color, '#e5e7eb'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false },
+                        title: { display: true, text: `DHT 약 ${percentage}% 억제`, font: { size: 14 } }
+                    },
+                    cutout: '70%'
+                }
+            });
+        };
+
+        createDrugChart('finaChart', '피나스테리드', 70, 'rgba(74, 108, 140, 0.8)');
+        createDrugChart('dutaChart', '두타스테리드', 90, 'rgba(95, 158, 160, 0.8)');
+        
+        const quizSubmitBtn = document.getElementById('quiz-submit-btn');
+        const quizForm = document.getElementById('quiz-form');
+        const quizResult = document.getElementById('quiz-result');
+        const resultText = document.getElementById('result-text');
+
+        quizSubmitBtn.addEventListener('click', () => {
+            const progress = document.querySelector('input[name="progress"]:checked');
+            const priority = document.querySelector('input[name="priority"]:checked');
+
+            if (!progress || !priority) {
+                alert('모든 질문에 답해주세요.');
+                return;
+            }
+
+            let recommendation = '';
+            
+            if (progress.value === 'early') {
+                recommendation = "<strong>초기 단계 전략:</strong> 더 이상의 진행을 막는 것이 급선무입니다. 5알파-환원효소 억제제(피나스테리드/두타스테리드) 복용과 미녹시딜 도포와 같은 약물 치료를 최우선으로 고려하여 전문의와 상담하세요. 지금이 골든타임입니다."
+            } else if (progress.value === 'mid') {
+                if (priority.value === 'prevention') {
+                    recommendation = "<strong>중기 단계 (유지 초점):</strong> 약물 치료(먹는 약+바르는 약)를 꾸준히 하는 것이 핵심입니다. LLLT나 두피 주사와 같은 보조 치료를 병행하여 모낭 건강을 증진시키는 것도 좋은 전략이 될 수 있습니다.";
+                } else {
+                    recommendation = "<strong>중기 단계 (복구 초점):</strong> 강력한 약물 치료(먹는 약+바르는 약)를 기반으로, 비어 보이는 부분에 대한 모발이식을 고려해볼 수 있습니다. 이식으로 밀도를 높이고, 약물로 기존 모발을 지키는 투 트랙 전략이 효과적입니다.";
+                }
+            } else { // advanced
+                recommendation = "<strong>진행된 단계 전략:</strong> 모발이식은 비어 보이는 부분을 복구하는 가장 확실한 방법입니다. 하지만 가장 중요한 것은, 수술 후에도 남아있는 모발을 지키고 이식 모발의 생착률을 높이기 위해 약물 치료를 반드시 평생 병행해야 한다는 점입니다.";
+            }
+
+            resultText.innerHTML = recommendation;
+            quizForm.classList.add('hidden');
+            quizResult.classList.remove('hidden');
+        });
+
+    });
+    </script>
+</body>
+</html>
