@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>가스라이팅: 인터랙티브 자가 진단 및 탈출 가이드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: The SPA is structured as a user journey, not a direct mirror of the report. It starts with an immediate, actionable self-diagnosis (the core user need), then provides foundational knowledge (What is it?, The Playbook), explains the consequences (The Damage), and finally offers a clear, step-by-step solution (Escape Plan). This flow prioritizes user self-discovery and empowerment over passive reading, making the complex information more accessible and actionable. Key interactions include the interactive checklist, tabbed content for language patterns, and accordion-style reveals for the escape plan. -->
+    <!-- Visualization & Content Choices: Checklist -> Goal: Self-Assessment -> Viz: Interactive Checklist -> Interaction: Clickable checkboxes with a dynamic result summary. Justification: More engaging and provides instant, personalized feedback. | Language Patterns -> Goal: Pattern Recognition -> Viz: Interactive Cards/Tabs -> Interaction: Click to reveal details. Justification: Breaks down complex info into digestible pieces. | Mental Health Impacts -> Goal: Show Severity -> Viz: Icon-based grid and a Donut Chart. Interaction: The chart visualizes the thematic breakdown of checklist items. Justification: Provides a quick, data-driven visual summary of the core issues. | Escape Plan -> Goal: Actionable Guidance -> Viz: Numbered accordion sections. Interaction: Click to expand each step. Justification: Makes the plan feel structured and less overwhelming. All charts use Chart.js (Canvas). -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; }
+        .chart-container { position: relative; width: 100%; max-width: 500px; margin-left: auto; margin-right: auto; height: 300px; max-height: 350px; }
+        @media (min-width: 768px) { .chart-container { height: 350px; max-height: 400px; } }
+        .nav-link { transition: color 0.3s, border-color 0.3s; }
+        .nav-link.active { color: #3b82f6; border-bottom-color: #3b82f6; }
+        .nav-link:hover { color: #3b82f6; }
+        .checklist-item.checked { background-color: #e0f2fe; border-left-color: #3b82f6; }
+        .tab-button.active { background-color: #3b82f6; color: white; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-3">
+            <ul class="flex justify-center space-x-4 sm:space-x-8 text-sm sm:text-base">
+                <li><a href="#diagnosis" class="nav-link font-semibold border-b-2 border-transparent pb-1">자가 진단</a></li>
+                <li><a href="#definition" class="nav-link font-semibold border-b-2 border-transparent pb-1">정의</a></li>
+                <li><a href="#patterns" class="nav-link font-semibold border-b-2 border-transparent pb-1">언어 패턴</a></li>
+                <li><a href="#escape" class="nav-link font-semibold border-b-2 border-transparent pb-1">탈출 계획</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        
+        <section id="intro" class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">보이지 않는 감옥, 가스라이팅</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">내 기억이, 내 감정이, 내 판단이 정말 내 것이 맞을까요? 끊임없는 자기 의심 속에서 길을 잃었다면, 지금 바로 확인하고 벗어날 기회입니다.</p>
+            <a href="#diagnosis" class="mt-8 inline-block bg-blue-500 text-white font-bold py-3 px-8 rounded-full hover:bg-blue-600 transition duration-300 text-lg">내 상황 진단하기 →</a>
+        </section>
+        
+        <section id="diagnosis" class="py-16 bg-white rounded-2xl shadow-lg">
+            <div class="max-w-4xl mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-4">혹시 나도? 가스라이팅 자가 진단</h2>
+                <p class="text-center text-gray-600 mb-10">특정 인물과의 관계에서 아래 문장들이 얼마나 자주 사실처럼 느껴지는지 확인해보세요. 이것은 당신의 문제가 아닌, 관계의 위험 신호일 수 있습니다.</p>
+                
+                <div id="checklist" class="space-y-4">
+                </div>
+                
+                <div id="diagnosis-result" class="mt-12 text-center p-6 bg-blue-50 rounded-lg hidden">
+                    <h3 class="text-2xl font-bold text-blue-800 mb-2">진단 결과</h3>
+                    <p id="result-text" class="text-lg text-blue-700"></p>
+                    <p class="mt-4 text-sm text-gray-600">이 결과는 의학적 진단이 아닙니다. 하지만 여러 항목에 해당된다면, 전문가의 도움이 필요하다는 중요한 신호일 수 있습니다.</p>
+                </div>
+
+                <div class="mt-12">
+                     <h3 class="text-2xl font-bold text-center mb-6">자가 진단을 통해 본 핵심 문제 영역</h3>
+                     <p class="text-center text-gray-600 mb-8">가스라이팅 피해자들이 공통적으로 겪는 어려움은 크게 4가지 영역으로 나타납니다. 아래 차트는 자가 진단 항목들이 어떤 심리적 영역에 분포되어 있는지 보여줍니다.</p>
+                     <div class="chart-container">
+                        <canvas id="impacts-chart"></canvas>
+                     </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="definition" class="py-16">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-center mb-4">가스라이팅이란 무엇인가?</h2>
+                <p class="text-center text-gray-600 mb-12">가스라이팅은 단순한 거짓말이나 다툼을 넘어, 한 사람의 현실 인식 능력을 체계적으로 파괴하는 정서적 학대입니다. 이 섹션에서는 용어의 충격적인 유래와 심리학적 정의를 알아봅니다.</p>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-white p-8 rounded-xl shadow-md">
+                        <h3 class="font-bold text-xl mb-3">임상적 정의: 현실 조작</h3>
+                        <p class="text-gray-700">심리학에서 가스라이팅은 "타인의 심리나 상황을 교묘하게 조작해 그 사람 스스로 자신의 현실감, 판단력, 기억력을 의심하게 만듦으로써, 지배력을 강화하는 지속적인 심리적 학대 행위"로 정의됩니다. 목표는 논쟁에서 이기는 것이 아니라, 상대방의 자아를 무너뜨리고 통제하는 것입니다.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-md">
+                        <h3 class="font-bold text-xl mb-3">유래: 영화 '가스등' (1944)</h3>
+                        <p class="text-gray-700">이 용어는 영화 '가스등(Gaslight)'에서 유래했습니다. 남편이 집에 숨겨진 보석을 찾기 위해 밤마다 가스등을 어둡게 하고 다락방을 뒤집니다. 아내가 "등이 어두워져요"라고 말할 때마다 남편은 "당신이 헛것을 본다"며 그녀를 정신이상으로 몰아갑니다. 결국 아내는 자신의 현실 감각을 모두 잃게 됩니다.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="patterns" class="py-16 bg-gray-100 rounded-2xl">
+            <div class="max-w-5xl mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-4">가스라이터의 5가지 언어 패턴</h2>
+                <p class="text-center text-gray-600 mb-12">가스라이터는 체계적이고 반복적인 언어 전략을 사용합니다. 이 5가지 패턴을 아는 것은 보이지 않는 공격을 감지하는 첫걸음입니다.</p>
+                
+                <div class="flex flex-wrap justify-center gap-2 sm:gap-4 mb-8">
+                </div>
+
+                <div id="patterns-content" class="bg-white p-8 rounded-lg shadow-inner min-h-[200px]">
+                </div>
+            </div>
+        </section>
+        
+        <section id="escape" class="py-16">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-center mb-4">보이지 않는 감옥에서 탈출하기</h2>
+                <p class="text-center text-gray-600 mb-12">가스라이팅에서 벗어나는 것은 자신에 대한 믿음을 되찾는 여정입니다. 다음 3단계 생존 전략은 당신이 온전한 자신으로 돌아갈 수 있도록 도울 것입니다.</p>
+                
+                <div id="escape-plan-container" class="space-y-4">
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-6 text-center">
+            <h3 class="text-2xl font-bold mb-4">당신의 빛을 되찾을 시간입니다</h3>
+            <p class="max-w-2xl mx-auto mb-6">당신이 예민하거나 이상한 것이 아닙니다. 상대방이 당신의 현실을 조작하고 있었을 뿐입니다. 더 이상 스스로를 의심하지 않고, 자신의 감정과 판단을 온전히 신뢰하는 당신의 모습을 되찾으세요.</p>
+            <p class="font-bold">오늘, 당신을 혼란스럽게 했던 말을 노트에 적어보는 것으로 첫걸음을 시작해보세요.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const data = {
+                checklist: [
+                    { text: "나는 항상 그 사람 앞에서 내가 무슨 말을 잘못했는지, 무슨 행동을 잘못했는지 되짚어 보게 된다.", category: "자기 의심" },
+                    { text: "나는 끊임없이 '내가 너무 예민한가?', '내가 너무 과민반응하는 건가?'라고 자문한다.", category: "자기 의심" },
+                    { text: "나는 그 사람과 대화하고 나면 늘 혼란스럽고, 내가 '좀 이상한 사람'처럼 느껴진다.", category: "정서적 혼란" },
+                    { text: "나는 사소한 결정을 내리는 것조차 어렵고, 항상 내 판단보다 그 사람의 판단을 더 신뢰하게 된다.", category: "의존성 증가" },
+                    { text: "나는 다툼이 생기면 항상 내 잘못이라고 느끼고, 먼저 사과하는 쪽은 언제나 나다.", category: "자기 의심" },
+                    { text: "나는 그 사람의 행동에 대해 친구나 가족에게 자주 변명하거나 사실을 축소해서 말한다.", category: "고립" },
+                    { text: "나는 그 사람의 기분을 상하게 할까 봐, 또는 그가 윽박지를까 봐 두려워서 거짓말을 한 적이 있다.", category: "의존성 증가" },
+                    { text: "나는 그 사람을 만나기 전보다 훨씬 자신감이 없고, 우울하며, 삶을 즐기지 못하게 되었다는 생각이 든다.", category: "정서적 혼란" },
+                    { text: "나는 무언가 굉장히 잘못되었다는 것을 막연하게 느끼지만, 그것이 무엇인지 명확하게 설명할 수 없다.", category: "정서적 혼란" },
+                    { text: "나는 그 사람과의 관계 때문에 가장 친한 친구나 가족과 멀어지고 고립되었다고 느낀다.", category: "고립" },
+                    { text: "나는 그 사람이 나를 비난하거나 무시할 것을 알기 때문에, 내 생각이나 감정을 표현하는 것을 포기했다.", category: "의존성 증가" },
+                    { text: "나는 왠지 모르게, 결국 모든 일이 항상 그 사람의 방식대로 진행된다고 느낀다.", category: "자기 의심" }
+                ],
+                patterns: [
+                    { name: "거부하기", goal: "당신의 기억을 의심하게 만든다.", example: "피해자: '지난주에 약속했잖아요.' / 가해자: '그런 약속 한 적 없어. 네가 상상한 거겠지.'" },
+                    { name: "반박하기", goal: "당신의 현실을 자신의 현실로 대체한다.", example: "피해자: '분명히 A로 하라고 하셨어요.' / 가해자: '아니, 네가 잘못 기억하네. 난 B라고 했어.'" },
+                    { name: "전환하기", goal: "자신의 책임을 회피하고 당신 탓으로 돌린다.", example: "피해자: '약속 어긴 것에 대해 얘기하고 싶어.' / 가해자: '또 그 얘기야? 넌 항상 과거에만 집착하더라.'" },
+                    { name: "경시하기", goal: "당신의 감정을 비이성적이고 하찮게 만든다.", example: "피해자: '그 말에 상처받았어.' / 가해자: '네가 너무 예민한 거 아니야? 별것도 아닌 걸로 뭘 그래.'" },
+                    { name: "폄하하기", goal: "당신의 자존감과 신뢰도를 파괴한다.", example: "가해자: '나니까 너 같은 사람 만나주는 거야. 다른 사람이 널 감당할 수 있을 것 같아?'" }
+                ],
+                escapePlan: [
+                    { title: "1단계: 인식하기 - '이건 내 잘못이 아니다'", content: "가장 어렵지만 가장 중요한 첫걸음입니다. 당신이 느끼는 불안, 자기 의심, 혼란은 당신이 약해서가 아니라, 비정상적인 환경에 대한 정상적인 경고 신호임을 깨달아야 합니다. '이것은 학대다'라고 인정하는 순간, 당신은 가해자가 설계한 현실에서 벗어나기 시작합니다." },
+                    { title: "2단계: 기록하고 거리두기 - 현실에 닻을 내려라", content: "객관적인 기록은 당신의 기억이 맞다는 가장 강력한 증거입니다. 대화 내용, 날짜, 당신의 감정을 비밀 일기에 적으세요. 문자나 이메일도 저장하세요. 또한, 가해자와의 감정적 논쟁을 피하고, '회색 돌 기법(Grey Rock Method)'처럼 감정적 반응을 최소화하여 심리적 거리를 확보하는 것이 중요합니다." },
+                    { title: "3단계: 지지체계 구축 및 관계 재정립 - 빛을 향하여", content: "고립은 가스라이팅의 가장 큰 무기입니다. 신뢰할 수 있는 친구, 가족, 그리고 가장 중요한 심리 상담 전문가에게 상황을 털어놓으세요. 외부의 지지는 당신의 현실 인식을 바로잡아 줍니다. 이를 바탕으로 '네가 다시 내 감정을 무시하면, 나는 대화를 중단할 것이다'와 같이 명확한 경계를 설정하고 실행하거나, 관계를 완전히 단절하는 결정을 내려야 합니다." }
+                ]
+            };
+
+            const checklistContainer = document.getElementById('checklist');
+            data.checklist.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'checklist-item p-4 border border-gray-200 rounded-lg cursor-pointer transition duration-300 border-l-4 border-gray-200';
+                div.innerHTML = `<label class="flex items-center">
+                    <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-4" data-index="${index}">
+                    <span class="text-gray-700">${item.text}</span>
+                </label>`;
+                checklistContainer.appendChild(div);
+            });
+
+            const patternsButtonContainer = document.querySelector('#patterns .flex');
+            const patternsContentContainer = document.getElementById('patterns-content');
+            data.patterns.forEach((pattern, index) => {
+                const button = document.createElement('button');
+                button.className = 'tab-button px-4 py-2 sm:px-6 sm:py-2 text-sm sm:text-base font-semibold rounded-full transition duration-300 bg-white shadow-sm hover:bg-gray-200';
+                button.textContent = pattern.name;
+                button.dataset.index = index;
+                if (index === 0) {
+                    button.classList.add('active');
+                }
+                patternsButtonContainer.appendChild(button);
+            });
+
+            function updatePatternContent(index) {
+                const pattern = data.patterns[index];
+                patternsContentContainer.innerHTML = `
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">${pattern.name}</h3>
+                    <p class="text-sm text-blue-600 font-semibold mb-4">심리적 목표: ${pattern.goal}</p>
+                    <div class="bg-gray-50 p-4 rounded-md">
+                        <p class="text-gray-700 italic">"${pattern.example}"</p>
+                    </div>
+                `;
+            }
+
+            patternsButtonContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('tab-button')) {
+                    const allButtons = patternsButtonContainer.querySelectorAll('.tab-button');
+                    allButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    updatePatternContent(e.target.dataset.index);
+                }
+            });
+            updatePatternContent(0);
+
+            const escapePlanContainer = document.getElementById('escape-plan-container');
+            data.escapePlan.forEach((plan, index) => {
+                const div = document.createElement('div');
+                div.className = 'accordion-item bg-white rounded-lg shadow';
+                div.innerHTML = `
+                    <button class="accordion-header w-full text-left p-5 font-bold text-lg flex justify-between items-center hover:bg-gray-50">
+                        <span>${plan.title}</span>
+                        <span class="transform transition-transform duration-300">▼</span>
+                    </button>
+                    <div class="accordion-content px-5 pb-5 text-gray-700">
+                        <p>${plan.content}</p>
+                    </div>
+                `;
+                escapePlanContainer.appendChild(div);
+            });
+            
+            escapePlanContainer.addEventListener('click', (e) => {
+                const header = e.target.closest('.accordion-header');
+                if (header) {
+                    const content = header.nextElementSibling;
+                    const icon = header.querySelector('span:last-child');
+                    
+                    if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+                        content.style.maxHeight = '0px';
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        document.querySelectorAll('.accordion-content').forEach(c => c.style.maxHeight = '0px');
+                        document.querySelectorAll('.accordion-header span:last-child').forEach(i => i.style.transform = 'rotate(0deg)');
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                }
+            });
+
+            const checkboxes = document.querySelectorAll('#checklist input[type="checkbox"]');
+            const resultDiv = document.getElementById('diagnosis-result');
+            const resultText = document.getElementById('result-text');
+
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    const parentDiv = checkbox.closest('.checklist-item');
+                    parentDiv.classList.toggle('checked', checkbox.checked);
+
+                    const checkedCount = Array.from(checkboxes).filter(c => c.checked).length;
+                    
+                    if (checkedCount > 0) {
+                        resultDiv.classList.remove('hidden');
+                        if (checkedCount <= 3) {
+                            resultText.textContent = `${checkedCount}개 항목에 해당됩니다. 관계에서 약간의 어려움을 겪고 있을 수 있습니다. 주의 깊게 살펴보세요.`;
+                            resultDiv.className = 'mt-12 text-center p-6 bg-yellow-50 rounded-lg';
+                        } else if (checkedCount <= 7) {
+                            resultText.textContent = `${checkedCount}개 항목에 해당됩니다. 가스라이팅의 위험 신호가 보입니다. 관계를 심각하게 점검해볼 필요가 있습니다.`;
+                            resultDiv.className = 'mt-12 text-center p-6 bg-orange-50 rounded-lg';
+                        } else {
+                            resultText.textContent = `${checkedCount}개 항목에 해당됩니다. 정서적 학대인 가스라이팅을 겪고 있을 가능성이 매우 높습니다. 전문가의 도움이 시급합니다.`;
+                            resultDiv.className = 'mt-12 text-center p-6 bg-red-50 rounded-lg';
+                        }
+                    } else {
+                        resultDiv.classList.add('hidden');
+                    }
+                });
+            });
+
+            const navLinks = document.querySelectorAll('nav a');
+            const sections = document.querySelectorAll('main section');
+            
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 100) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').substring(1) === current) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+            
+            const categoryCounts = data.checklist.reduce((acc, item) => {
+                acc[item.category] = (acc[item.category] || 0) + 1;
+                return acc;
+            }, {});
+
+            const ctx = document.getElementById('impacts-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(categoryCounts),
+                    datasets: [{
+                        label: '문제 영역 분포',
+                        data: Object.values(categoryCounts),
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.7)',
+                            'rgba(249, 115, 22, 0.7)',
+                            'rgba(16, 185, 129, 0.7)',
+                            'rgba(239, 68, 68, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(59, 130, 246, 1)',
+                            'rgba(249, 115, 22, 1)',
+                            'rgba(16, 185, 129, 1)',
+                            'rgba(239, 68, 68, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed + '개 항목';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

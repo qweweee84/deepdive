@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>빅터 프랭클: 의미를 향한 여정</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals & Deep Teal -->
+    <!-- Application Structure Plan: The application is designed as an exploratory journey, moving from Frankl's core philosophy to practical application. It starts with a Hero section posing the central question of life's meaning. The main body uses a tab-based navigation to switch between key themes: 1) A visual comparison of psychological schools (Logotherapy vs. Freud/Adler) using a Chart.js bar chart for clarity. 2) An interactive card section for 'The Three Paths to Meaning,' allowing users to explore each path without being overwhelmed. 3) A practical 'Application Lab' where users can select modern-day problems and receive Frankl's 'Meaning Prescription.' This structure was chosen to transform a dense report into an accessible, engaging, and personally relevant experience, prioritizing user exploration over a linear reading. -->
+    <!-- Visualization & Content Choices: 
+        1. Report Info: Comparing Frankl, Freud, Adler. Goal: Compare. Viz/Method: Horizontal Bar Chart (Chart.js). Interaction: Hover tooltips for details. Justification: Visually superior to a text table for comparing the core tenets.
+        2. Report Info: The three ways to find meaning. Goal: Organize/Explore. Viz/Method: Interactive Cards (HTML/CSS/JS). Interaction: Click to reveal detailed text. Justification: Breaks down a core concept into digestible, user-controlled chunks.
+        3. Report Info: 'The Last Freedom' concept. Goal: Inform/Organize. Viz/Method: HTML/CSS diagram (Stimulus -> Space -> Response). Interaction: Hover effect on the 'Space' element. Justification: A simple visual metaphor is more powerful than text alone.
+        4. Report Info: Applying logotherapy to modern issues. Goal: Apply. Viz/Method: Interactive buttons for each issue. Interaction: Click to show relevant 'prescription' text. Justification: Directly connects theory to the user's potential life challenges, making it highly practical.
+        This design uses interactive elements to deepen understanding and engagement with the source material's philosophical concepts. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; }
+        .tab-active { border-color: #0f766e; color: #0f766e; font-weight: 500; }
+        .tab-inactive { border-color: transparent; color: #6b7280; }
+        .content-section { display: none; }
+        .content-active { display: block; }
+        .card { transition: all 0.3s ease-in-out; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .chart-container { position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; height: 350px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 400px; } }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+        
+        <header class="text-center py-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-teal-900 mb-4">빅터 프랭클: 의미를 향한 여정</h1>
+            <p class="text-lg text-stone-600 max-w-3xl mx-auto">최악의 절망 속에서 피어난 위대한 통찰, 로고테라피(의미치료)를 통해 당신의 삶을 지탱할 단단한 답을 발견해보세요.</p>
+        </header>
+
+        <main>
+            <section id="intro" class="bg-white p-8 rounded-xl shadow-sm mb-12 text-center">
+                <h2 class="text-2xl font-bold text-teal-800 mb-4">자극과 반응 사이의 공간</h2>
+                <p class="text-stone-700 mb-6 max-w-2xl mx-auto">"우리를 파괴할 수 있는 것은 아무것도 없다. 우리를 파괴할 수 있는 것은 우리 자신뿐이다. 우리에게서 모든 것을 앗아갈 수는 있어도, 단 한 가지, 마지막 남은 인간의 자유, 즉 어떤 상황에 놓이더라도 자신의 태도를 선택하고 자기 길을 갈 수 있는 자유만은 빼앗아 갈 수 없다."</p>
+                <div class="flex items-center justify-center space-x-2 md:space-x-4 text-sm md:text-base font-medium text-stone-700">
+                    <div class="bg-amber-100 text-amber-800 p-3 rounded-lg shadow-sm">자극 (Stimulus)</div>
+                    <div class="text-2xl font-sans text-teal-600">→</div>
+                    <div id="space-element" class="relative bg-teal-100 text-teal-800 p-3 rounded-lg shadow-sm border-2 border-dashed border-teal-300 cursor-pointer">
+                        선택의 공간
+                        <div id="space-tooltip" class="hidden absolute bottom-full mb-2 w-48 bg-teal-800 text-white text-xs rounded-lg py-2 px-3 text-center z-10">
+                            이곳에 당신의 성장과 행복을 좌우하는 '마지막 자유'가 있습니다.
+                        </div>
+                    </div>
+                    <div class="text-2xl font-sans text-teal-600">→</div>
+                    <div class="bg-sky-100 text-sky-800 p-3 rounded-lg shadow-sm">반응 (Response)</div>
+                </div>
+            </section>
+
+            <div class="bg-white rounded-xl shadow-sm p-4 md:p-8">
+                <div class="border-b border-stone-200 mb-6">
+                    <nav class="flex flex-wrap -mb-px" aria-label="Tabs">
+                        <button class="tab-btn tab-active" data-tab="tab1">🧠 정신치료 학파 비교</button>
+                        <button class="tab-btn tab-inactive" data-tab="tab2">🧭 의미를 찾는 3가지 길</button>
+                        <button class="tab-btn tab-inactive" data-tab="tab3">💊 현대인을 위한 의미 처방</button>
+                    </nav>
+                </div>
+
+                <div id="tab1" class="content-section content-active fade-in">
+                    <h3 class="text-xl font-bold text-teal-800 mb-2 text-center">인간을 움직이는 근본 동기는 무엇인가?</h3>
+                    <p class="text-center text-stone-600 mb-6">빈 정신치료 3대 학파의 핵심 동기를 비교해 보세요. 프랭클은 인간의 가장 근본적인 동기를 '의미를 향한 의지'라고 보았습니다.</p>
+                    <div class="chart-container">
+                        <canvas id="psychologyChart"></canvas>
+                    </div>
+                </div>
+
+                <div id="tab2" class="content-section fade-in">
+                     <h3 class="text-xl font-bold text-teal-800 mb-2 text-center">어디에서 삶의 의미를 발견할 것인가?</h3>
+                    <p class="text-center text-stone-600 mb-8">프랭클은 삶의 의미를 발견할 수 있는 3가지 길을 제시합니다. 각 카드를 클릭하여 자세한 내용을 확인해보세요.</p>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="card bg-stone-100 p-6 rounded-lg cursor-pointer" onclick="showMeaningDetail('creation')">
+                            <h4 class="text-lg font-bold text-teal-900 mb-2">1. 창조의 길 🎨</h4>
+                            <p class="text-stone-700">무엇인가를 창조하거나 어떤 일을 함으로써 의미를 찾습니다. 세상에 무언가를 '주는' 행위입니다.</p>
+                        </div>
+                        <div class="card bg-stone-100 p-6 rounded-lg cursor-pointer" onclick="showMeaningDetail('experience')">
+                            <h4 class="text-lg font-bold text-teal-900 mb-2">2. 경험의 길 ❤️</h4>
+                            <p class="text-stone-700">세상과 만나고 경험하며 의미를 찾습니다. 사랑, 자연, 예술을 '받아들이는' 것입니다.</p>
+                        </div>
+                        <div class="card bg-stone-100 p-6 rounded-lg cursor-pointer" onclick="showMeaningDetail('attitude')">
+                            <h4 class="text-lg font-bold text-teal-900 mb-2">3. 태도의 길 💪</h4>
+                            <p class="text-stone-700">피할 수 없는 시련에 맞서는 태도를 통해 의미를 찾습니다. 가장 숭고한 의미의 원천입니다.</p>
+                        </div>
+                    </div>
+                    <div id="meaning-detail-area" class="mt-8 p-6 bg-teal-50 rounded-lg hidden fade-in"></div>
+                </div>
+
+                <div id="tab3" class="content-section fade-in">
+                    <h3 class="text-xl font-bold text-teal-800 mb-2 text-center">현대인의 '실존적 공허'를 치유하는 법</h3>
+                    <p class="text-center text-stone-600 mb-8">현대 사회가 겪는 무의미함, 권태감, 공허함에 대한 프랭클의 처방을 확인해보세요. 당신의 고민을 클릭하세요.</p>
+                    <div class="flex flex-wrap justify-center gap-4 mb-8">
+                        <button class="prescription-btn" data-problem="burnout">직장에서의 번아웃</button>
+                        <button class="prescription-btn" data-problem="apathy">은퇴 후의 무력감</button>
+                        <button class="prescription-btn" data-problem="illness">질병과의 싸움</button>
+                    </div>
+                    <div id="prescription-display" class="p-6 bg-amber-50 rounded-lg min-h-[150px] flex items-center justify-center">
+                        <p class="text-stone-600">위의 문제 상황을 선택하면 해결을 위한 통찰을 얻을 수 있습니다.</p>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <footer class="text-center py-12 mt-8">
+             <h3 class="text-xl font-bold text-teal-800 mb-4">당신의 삶에 던지는 위대한 질문</h3>
+            <p class="text-stone-600 max-w-3xl mx-auto">"오늘 영상이 끝나면, 당신의 삶에서 '피할 수 없지만, 태도를 선택할 수는 있는' 어려움이 무엇인지 단 하나만 떠올려 보십시오. 그리고 그 어려움 앞에서 어떤 태도를 취할 것인지 스스로에게 질문을 던져보는 것. 그것이 '의미 치료'의 위대한 시작입니다."</p>
+        </footer>
+
+    </div>
+
+    <script>
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const contentSections = document.querySelectorAll('.content-section');
+        const spaceElement = document.getElementById('space-element');
+        const spaceTooltip = document.getElementById('space-tooltip');
+
+        const meaningData = {
+            creation: {
+                title: '🎨 창조의 길: 세상에 무엇을 남길 것인가',
+                content: "이것은 세상에 무언가를 '주는' 행위를 통해 의미를 발견하는 방식입니다. 위대한 예술 작품뿐만 아니라, 자녀를 훌륭하게 키우는 것, 자신의 직업에서 탁월함을 발휘하는 것, 공동체를 위해 봉사하는 모든 창조적, 생산적 활동이 포함됩니다. 수용소에서 프랭클이 만난 한 과학자는, 자신이 완성해야 할 책이 있다는 사명감 때문에 삶의 끈을 놓지 않았습니다.",
+            },
+            experience: {
+                title: '❤️ 경험의 길: 무엇을 사랑하고 받아들일 것인가',
+                content: "세상으로부터 무언가를 '받아들이는' 행위를 통해 의미를 발견하는 방식입니다. 장엄한 자연 풍경에 감동하고, 위대한 예술 작품에 몰입하는 순간들이 바로 그것입니다. 프랭클은 경험 가치의 정점에 '사랑'이 있다고 보았습니다. 다른 사람을 그의 존재 자체로 깊이 이해하고 사랑하는 경험은 그 자체로 충만한 삶의 의미를 제공합니다.",
+            },
+            attitude: {
+                title: '💪 태도의 길: 시련 앞에서 어떻게 설 것인가',
+                content: "피할 수 없는 운명에 대해 어떤 태도를 취할 것인지 선택함으로써 의미를 찾는 것입니다. 창조나 경험의 기회가 모두 박탈된 상황에서도, 이 길은 누구에게나 열려 있습니다. 고통 그 자체는 무의미할 수 있지만, 그 고통을 짊어지는 '방식'에서 의미를 찾을 수 있습니다. 용기, 존엄, 인내와 같은 태도는 개인의 비극을 인간 정신의 위대한 승리로 바꿉니다."
+            }
+        };
+
+        const prescriptionData = {
+            burnout: {
+                title: '직장에서의 번아웃',
+                prescription: '질문을 바꾸세요. "회사가 내게 뭘 줄까?"에서 "나는 이 역할에서 어떤 고유한 기여를 할 수 있을까?"로요. 동료에게 건네는 따뜻한 말, 책임감 있는 태도 등 작은 행동으로도 일의 의미를 되찾을 수 있습니다. 직업을 창조와 태도 가치를 실현하는 무대로 재정의하는 것입니다.'
+            },
+            apathy: {
+                title: '은퇴 후의 무력감',
+                prescription: '은퇴는 의미의 끝이 아니라 전환점입니다. 직업이라는 창조의 길이 좁아졌다면, 새로운 취미, 여행, 예술 감상, 가족과 이웃에 대한 사랑 등 경험과 태도의 길을 넓힐 때입니다. 지나온 삶을 돌아보며 성공과 행복의 기억에서 의미를 재발견하는 것도 큰 힘이 됩니다.'
+            },
+            illness: {
+                title: '질병과의 싸움',
+                prescription: '의미는 병 자체가 아니라, 그 병에 "어떻게 반응하는가"에 있습니다. "이 병을 통해 삶이 나에게 무엇을 기대하는가?"라고 질문하세요. 고통 속에서도 용기와 존엄을 잃지 않는 태도를 선택함으로써, 수동적 희생자가 아닌 인간 정신의 위대함을 증명하는 능동적 주체로 거듭날 수 있습니다.'
+            }
+        };
+        
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => {
+                    b.classList.remove('tab-active');
+                    b.classList.add('tab-inactive');
+                });
+                btn.classList.add('tab-active');
+                btn.classList.remove('tab-inactive');
+
+                contentSections.forEach(section => {
+                    section.classList.remove('content-active');
+                });
+                document.getElementById(btn.dataset.tab).classList.add('content-active');
+            });
+        });
+
+        spaceElement.addEventListener('mouseenter', () => {
+            spaceTooltip.classList.remove('hidden');
+        });
+        spaceElement.addEventListener('mouseleave', () => {
+            spaceTooltip.classList.add('hidden');
+        });
+
+        function showMeaningDetail(type) {
+            const detailArea = document.getElementById('meaning-detail-area');
+            const data = meaningData[type];
+            detailArea.innerHTML = `
+                <h5 class="text-lg font-bold text-teal-900 mb-3">${data.title}</h5>
+                <p class="text-stone-700 leading-relaxed">${data.content}</p>
+            `;
+            detailArea.classList.remove('hidden');
+        }
+        
+        const prescriptionBtns = document.querySelectorAll('.prescription-btn');
+        const prescriptionDisplay = document.getElementById('prescription-display');
+
+        prescriptionBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const problem = btn.dataset.problem;
+                const data = prescriptionData[problem];
+                
+                prescriptionBtns.forEach(b => b.classList.remove('bg-teal-600', 'text-white'));
+                btn.classList.add('bg-teal-600', 'text-white');
+
+                prescriptionDisplay.innerHTML = `
+                    <div class="fade-in">
+                        <h4 class="font-bold text-teal-800 text-lg mb-2">${data.title}</h4>
+                        <p class="text-stone-700 leading-relaxed">${data.prescription}</p>
+                    </div>
+                `;
+            });
+
+            btn.classList.add('bg-white', 'text-teal-700', 'font-medium', 'py-2', 'px-4', 'rounded-full', 'shadow-sm', 'hover:bg-teal-50', 'transition');
+        });
+
+
+        const ctx = document.getElementById('psychologyChart').getContext('2d');
+        const psychologyChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['지그문트 프로이트', '알프레트 아들러', '빅터 프랭클'],
+                datasets: [{
+                    label: '핵심 동기',
+                    data: [1, 1, 1],
+                    backgroundColor: [
+                        'rgba(251, 146, 60, 0.6)',
+                        'rgba(59, 130, 246, 0.6)',
+                        'rgba(13, 148, 136, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(251, 146, 60, 1)',
+                        'rgba(59, 130, 246, 1)',
+                        'rgba(13, 148, 136, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { display: false },
+                    y: {
+                        ticks: {
+                            font: {
+                                size: 14,
+                                weight: '500'
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        enabled: false,
+                        external: function(context) {
+                            let tooltipEl = document.getElementById('chartjs-tooltip');
+
+                            if (!tooltipEl) {
+                                tooltipEl = document.createElement('div');
+                                tooltipEl.id = 'chartjs-tooltip';
+                                tooltipEl.innerHTML = '<table></table>';
+                                document.body.appendChild(tooltipEl);
+                            }
+
+                            const tooltipModel = context.tooltip;
+                            if (tooltipModel.opacity === 0) {
+                                tooltipEl.style.opacity = 0;
+                                return;
+                            }
+
+                            function getBody(bodyItem) {
+                                return bodyItem.lines;
+                            }
+                            
+                            if (tooltipModel.body) {
+                                const titleLines = tooltipModel.title || [];
+                                const bodyLines = tooltipModel.body.map(getBody);
+
+                                const coreMotivations = {
+                                    '지그문트 프로이트': '쾌락을 향한 의지 (Will to Pleasure)',
+                                    '알프레트 아들러': '권력을 향한 의지 (Will to Power)',
+                                    '빅터 프랭클': '의미를 향한 의지 (Will to Meaning)'
+                                };
+                                const humanViews = {
+                                    '지그문트 프로이트': '과거의 성적 욕구(리비도)에 의해 결정되는 존재',
+                                    '알프레트 아들러': '열등감을 극복하고 우월성을 추구하는 사회적 존재',
+                                    '빅터 프랭클': '미래의 의미를 추구하며 스스로를 초월하는 영적 존재'
+                                };
+
+                                let innerHtml = '<thead>';
+                                titleLines.forEach(function(title) {
+                                    innerHtml += '<tr><th style="font-weight: bold; text-align: left; padding-bottom: 5px;">' + title + '</th></tr>';
+                                });
+                                innerHtml += '</thead><tbody>';
+
+                                const motivation = coreMotivations[titleLines[0]];
+                                const view = humanViews[titleLines[0]];
+
+                                innerHtml += `<tr><td style="padding-bottom: 3px;"><strong>동기:</strong> ${motivation}</td></tr>`;
+                                innerHtml += `<tr><td><strong>관점:</strong> ${view}</td></tr>`;
+
+                                innerHtml += '</tbody>';
+
+                                let table = tooltipEl.querySelector('table');
+                                table.innerHTML = innerHtml;
+                            }
+
+                            const position = context.chart.canvas.getBoundingClientRect();
+                            
+                            tooltipEl.style.opacity = 1;
+                            tooltipEl.style.position = 'absolute';
+                            tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px';
+                            tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px';
+                            tooltipEl.style.fontFamily = 'Noto Sans KR, sans-serif';
+                            tooltipEl.style.fontSize = '12px';
+                            tooltipEl.style.padding = '10px';
+                            tooltipEl.style.backgroundColor = 'rgba(0,0,0,0.7)';
+                            tooltipEl.style.color = 'white';
+                            tooltipEl.style.borderRadius = '5px';
+                            tooltipEl.style.pointerEvents = 'none';
+                            tooltipEl.style.transition = 'opacity 0.2s';
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
