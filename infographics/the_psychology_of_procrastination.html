@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>미루는 습관의 심리학: 인터랙티브 가이드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: A thematic dashboard structure with four main sections (Brain War, Hidden Fears, Vicious Cycle, Escape Strategies). This non-linear approach is chosen over the report's chapter format to empower users to explore topics based on personal relevance, enhancing engagement and usability. The flow guides users from understanding the 'why' to diagnosing their 'what' and finally to actionable 'how-to' solutions. -->
+    <!-- Visualization & Content Choices: 1. Brain War: Goal=Inform -> HTML/CSS diagram -> Hover interaction -> Simple visual metaphor for a core concept. 2. Hidden Fears: Goal=Compare -> Accordion component -> Click to expand -> Organizes dense text, prevents overwhelm. 3. Vicious Cycle: Goal=Organize -> Animated Radar Chart (Chart.js) -> Button click animation -> Dynamically shows the reinforcing loop, more impactful than static text. 4. Escape Strategies: Goal=Change -> Interactive Cards & Pomodoro Timer -> Click/Flip & functional timer -> Provides actionable tools, not just information. Library: Chart.js for canvas-based charting. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 350px; } }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .nav-button.active { background-color: #818cf8; color: white; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .strategy-card .card-back { transform: rotateY(180deg); -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+        .strategy-card .card-front { -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+        .strategy-card.is-flipped { transform: rotateY(180deg); }
+        .pomodoro-button { transition: background-color 0.2s; }
+    </style>
+</head>
+<body class="bg-[#FDF6E3] text-[#657b83]">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#268bd2] mb-4">미루는 습관의 심리학</h1>
+            <p class="text-lg text-[#586e75]">당신은 게으른 게 아닙니다. 뇌의 '감정 조절 실패' 때문입니다.</p>
+        </header>
+
+        <main>
+            <section id="intro" class="text-center bg-[#EEE8D5] p-6 rounded-xl shadow-md mb-12">
+                 <h2 class="text-2xl font-bold text-[#cb4b16] mb-3">왜 우리는 미루는 걸까?</h2>
+                 <p class="text-base md:text-lg">미루는 습관은 '시간 관리'의 문제가 아닌, 불편한 감정을 피하려는 뇌의 본능적인 반응입니다. 이 앱은 미루는 습관의 근본 원인을 이해하고, 뇌과학에 기반한 실용적인 해결책을 통해 당신이 삶의 주도권을 되찾도록 돕습니다. 아래 네 가지 핵심 주제를 탐색하며 미루기와의 전쟁을 끝내보세요.</p>
+            </section>
+            
+            <nav id="main-nav" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+                <button data-target="war" class="nav-button p-4 bg-[#EEE8D5] rounded-lg shadow-md hover:bg-[#d1cbbc] transition-colors duration-200 text-lg font-semibold text-[#2aa198] active">① 뇌 속 전쟁</button>
+                <button data-target="fears" class="nav-button p-4 bg-[#EEE8D5] rounded-lg shadow-md hover:bg-[#d1cbbc] transition-colors duration-200 text-lg font-semibold text-[#d33682]">② 숨겨진 공포</button>
+                <button data-target="cycle" class="nav-button p-4 bg-[#EEE8D5] rounded-lg shadow-md hover:bg-[#d1cbbc] transition-colors duration-200 text-lg font-semibold text-[#dc322f]">③ 악순환의 늪</button>
+                <button data-target="strategies" class="nav-button p-4 bg-[#EEE8D5] rounded-lg shadow-md hover:bg-[#d1cbbc] transition-colors duration-200 text-lg font-semibold text-[#859900]">④ 탈출 전략</button>
+            </nav>
+
+            <div id="content-container">
+                <section id="war" class="content-section active">
+                    <h2 class="text-3xl font-bold text-center mb-8 text-[#2aa198]">뇌 속 전쟁: 감정 vs 이성</h2>
+                    <p class="text-center mb-8 max-w-3xl mx-auto">우리가 일을 미룰 때, 뇌 속에서는 즉각적인 편안함을 추구하는 '변연계'와 장기적인 계획을 세우는 '전전두엽' 사이에 격렬한 전쟁이 벌어집니다. 이 전쟁에서 감정적인 변연계가 이길 때, 우리는 미루기를 선택하게 됩니다.</p>
+                    <div class="flex flex-col md:flex-row items-center justify-center gap-8 p-6 bg-[#EEE8D5] rounded-xl shadow-md">
+                        <div class="text-center p-6 bg-[#FDF6E3] rounded-lg w-full md:w-2/5">
+                            <h3 class="text-xl font-bold text-[#d33682] mb-2">변연계 (현재의 나)</h3>
+                            <p class="text-sm">"이 일은 지루하고 불안해! 당장 피하고 재밌는 걸 하자!"</p>
+                        </div>
+                        <div class="text-4xl font-bold text-[#cb4b16] animate-pulse">VS</div>
+                        <div class="text-center p-6 bg-[#FDF6E3] rounded-lg w-full md:w-2/5">
+                             <h3 class="text-xl font-bold text-[#268bd2] mb-2">전전두엽 (미래의 나)</h3>
+                             <p class="text-sm">"지금 해두는 게 미래에 더 이득이야. 참고 견디자."</p>
+                        </div>
+                    </div>
+                    <div class="mt-12">
+                        <h3 class="text-2xl font-bold text-center mb-4 text-[#b58900]">어떤 일을 주로 미루시나요?</h3>
+                        <p class="text-center mb-6">우리는 특정 성격을 가진 '혐오적 과제'를 더 피하는 경향이 있습니다. 아래에서 당신이 미루는 일의 특징을 선택해보세요.</p>
+                        <div id="task-characteristics" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 text-center"></div>
+                        <p id="task-feedback" class="mt-6 text-center text-lg font-semibold text-[#268bd2] h-6"></p>
+                    </div>
+                </section>
+
+                <section id="fears" class="content-section">
+                    <h2 class="text-3xl font-bold text-center mb-8 text-[#d33682]">숨겨진 공포: 당신의 뇌가 두려워하는 것</h2>
+                    <p class="text-center mb-8 max-w-3xl mx-auto">미루는 행동의 이면에는 종종 깊은 심리적 두려움이 숨어 있습니다. 이는 단순한 게으름이 아니라, 자존감을 보호하려는 뇌의 방어기제일 수 있습니다. 아래 탭을 눌러 각 두려움의 정체를 확인해보세요.</p>
+                    <div id="accordion-container" class="space-y-4"></div>
+                </section>
+
+                <section id="cycle" class="content-section">
+                    <h2 class="text-3xl font-bold text-center mb-8 text-[#dc322f]">악순환의 늪: '잠깐의 안도감'이 부르는 재앙</h2>
+                    <p class="text-center mb-8 max-w-3xl mx-auto">미루기는 '부정적 감정 회피'라는 즉각적인 보상을 주지만, 결국 더 큰 스트레스와 죄책감을 낳아 다음 미루기를 부추기는 악순환을 만듭니다. '시작' 버튼을 눌러 이 파괴적인 순환 과정을 시각적으로 확인해보세요.</p>
+                    <div class="chart-container mx-auto">
+                        <canvas id="cycleChart"></canvas>
+                    </div>
+                    <div class="text-center mt-4">
+                        <button id="start-cycle-animation" class="bg-[#dc322f] text-white font-bold py-2 px-6 rounded-lg hover:bg-red-700 transition">악순환 시작</button>
+                    </div>
+                </section>
+
+                <section id="strategies" class="content-section">
+                    <h2 class="text-3xl font-bold text-center mb-8 text-[#859900]">뇌과학 기반 탈출 전략</h2>
+                     <p class="text-center mb-8 max-w-3xl mx-auto">미루기에서 벗어나려면 의지로 뇌를 억누르는 대신, 뇌의 작동 방식을 역이용해야 합니다. 효과가 입증된 4가지 기술을 통해 감정을 다스리고 행동을 시작하는 법을 배워보세요. 카드를 클릭하면 자세한 내용이 나타납니다.</p>
+                    <div id="strategy-cards" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
+                    <div id="pomodoro-container" class="mt-12 bg-[#EEE8D5] p-6 rounded-xl shadow-md text-center" style="display: none;">
+                        <h3 class="text-2xl font-bold text-[#859900] mb-4">뽀모도로 타이머</h3>
+                        <div id="pomodoro-timer" class="text-6xl font-bold text-[#268bd2] mb-4">25:00</div>
+                        <div class="space-x-4">
+                            <button id="pomodoro-start" class="pomodoro-button bg-[#859900] text-white py-2 px-6 rounded-lg font-semibold hover:bg-green-700">시작</button>
+                            <button id="pomodoro-pause" class="pomodoro-button bg-[#cb4b16] text-white py-2 px-6 rounded-lg font-semibold hover:bg-orange-700">일시정지</button>
+                            <button id="pomodoro-reset" class="pomodoro-button bg-[#6c71c4] text-white py-2 px-6 rounded-lg font-semibold hover:bg-purple-700">초기화</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <footer class="text-center mt-16 pt-8 border-t border-[#93a1a1]">
+            <p class="text-[#586e75]">이 애플리케이션은 정보 제공을 목적으로 하며, 전문적인 심리 상담을 대체할 수 없습니다.</p>
+            <p class="text-xs text-[#93a1a1] mt-2">© 2025 Interactive Psychology Guide. All Rights Reserved.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        const appData = {
+            taskCharacteristics: [
+                { id: 'boring', name: '지루함', feedback: '단조로운 일은 뇌의 보상 회로를 자극하지 못해 회피 대상이 됩니다.' },
+                { id: 'frustrating', name: '좌절스러움', feedback: '뜻대로 되지 않는 일은 무력감을 유발하여 미루게 만듭니다.' },
+                { id: 'difficult', name: '어려움', feedback: '능력 밖의 일이라는 부담감은 시작할 엄두를 내지 못하게 합니다.' },
+                { id: 'ambiguous', name: '모호함', feedback: '무엇부터 할지 막막할 때, 뇌는 행동을 멈춥니다.' },
+                { id: 'unstructured', name: '비구조적임', feedback: '체계가 없는 일은 어디로 가야 할지 모르는 길과 같습니다.' },
+                { id: 'unrewarding', name: '내재적 보상 없음', feedback: '과정 자체가 즐겁지 않으면 동기를 유지하기 어렵습니다.' },
+                { id: 'meaningless', name: '개인적 의미 부족', feedback: '\'이걸 왜 해야 하지?\'라는 의문은 모든 에너지를 앗아갑니다.' },
+            ],
+            fears: [
+                {
+                    title: "두려움 ①: 실패에 대한 공포",
+                    content: `<strong>"최선을 다했는데 결과가 나쁘면, 내 무능이 증명되는 거 아닐까?"</strong><br><br> 이 두려움은 '자기-불구화(Self-Handicapping)'라는 방어기제를 작동시킵니다. 일부러 공부 안 하기, 밤새 게임하기 등 실패의 원인을 능력 부족이 아닌 외부 탓으로 돌릴 핑계를 만드는 것이죠. 미루기는 '시간 부족'이라는 가장 완벽한 핑계를 제공하여, 실패하더라도 자존감을 지키려는 자기 파괴적인 보험입니다.`
+                },
+                {
+                    title: "두려움 ②: 완벽주의의 함정",
+                    content: `<strong>"완벽하게 못할 거면, 시작도 안 하는 게 나아."</strong><br><br> 병적인 완벽주의는 '전부 아니면 전무'라는 흑백논리에 빠져 시작에 대한 엄청난 장벽을 만듭니다. 작은 실수도 용납 못 하는 압박감에 과제는 거대한 산처럼 느껴지고, 결국 '실패하느니 안 하고 말지'라는 회피로 이어집니다. 이는 성취욕이 아닌, 비난과 수치심을 피하려는 방어기제입니다.`
+                },
+                {
+                    title: "두려움 ③: 성공에 대한 불안감",
+                    content: `<strong>"이번에 성공하면, 다음엔 더 잘해야 한다는 기대가 부담스러워."</strong><br><br> '가면 증후군(Imposter Syndrome)'과 깊이 연관된 이 두려움은, 자신의 성공이 실력이 아닌 운이나 속임수 덕분이라 믿게 만듭니다. 그래서 성공할 때마다 '사기꾼'으로 발각될까 봐 불안해하며, 더 큰 성공으로 이어질 과제를 무의식적으로 미루거나 망쳐 이 불안감에서 벗어나려 합니다.`
+                }
+            ],
+            strategies: [
+                {
+                    id: 'strategy1',
+                    title: '2분 규칙',
+                    icon: '⏱️',
+                    frontText: '시작의 장벽을 허무는 가장 단순하고 강력한 전략입니다.',
+                    backText: '어떤 일이든 "2분 안에 할 수 있는 일"로 쪼개어 시작하세요. "운동하기"가 아닌 "운동복 입기", "보고서 쓰기"가 아닌 "워드 파일 열기"처럼요. 행동이 동기를 만듭니다. 동기가 생길 때까지 기다리지 말고, 딱 2분의 행동으로 동기를 직접 만들어내세요.'
+                },
+                {
+                    id: 'strategy2',
+                    title: '뽀모도로 테크닉',
+                    icon: '🍅',
+                    frontText: '집중과 휴식의 리듬을 만들어 지치지 않고 완주하게 돕습니다.',
+                    backText: '타이머를 25분에 맞추고 집중한 뒤, 5분간 휴식하세요. 이 짧은 보상 주기는 뇌의 도파민 시스템을 자극해 긍정적 습관을 만듭니다. "보고서 완성"이라는 막막함 대신 "뽀모도로 1번 완수"라는 구체적인 목표가 부담을 줄여줍니다.'
+                },
+                {
+                    id: 'strategy3',
+                    title: '실패 이력서',
+                    icon: '📄',
+                    frontText: '실패를 성장의 데이터로 재정의하는 인지적 훈련입니다.',
+                    backText: '자신의 실패 경험들을 나열하고, 각 실패에서 무엇을 배웠는지 적어보세요. 이 과정은 실패를 "무능의 증거"에서 "학습의 기회"로 재해석하여 실패에 대한 두려움을 줄여줍니다. 실패가 두려워 망설이는 미래의 도전을 가능하게 하는 강력한 백신입니다.'
+                },
+                {
+                    id: 'strategy4',
+                    title: '자기 자비',
+                    icon: '❤️',
+                    frontText: '죄책감을 동기 부여로 전환하는 가장 효과적인 기술입니다.',
+                    backText: '미룬 후에 자신을 비난하는 대신, 친한 친구를 위로하듯 따뜻하게 대하세요. "나만 이런 게 아니야"라고 생각하며 자신을 이해해주세요. 자기 비난은 스트레스를 가중시켜 미루기를 악화시키지만, 자기 자비는 다시 시도할 용기와 회복탄력성을 줍니다.'
+                }
+            ]
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const navButtons = document.querySelectorAll('.nav-button');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.dataset.target;
+
+                    navButtons.forEach(btn => btn.classList.remove('active', 'bg-[#818cf8]', 'text-white'));
+                    button.classList.add('active', 'bg-[#818cf8]', 'text-white');
+                    
+                    contentSections.forEach(section => {
+                        section.classList.remove('active');
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                        }
+                    });
+                });
+            });
+
+            const taskCharacteristicsContainer = document.getElementById('task-characteristics');
+            const taskFeedback = document.getElementById('task-feedback');
+            appData.taskCharacteristics.forEach(task => {
+                const button = document.createElement('button');
+                button.className = 'p-3 bg-[#EEE8D5] rounded-lg hover:bg-[#d1cbbc] transition-colors duration-200';
+                button.textContent = task.name;
+                button.addEventListener('click', () => {
+                    taskFeedback.textContent = task.feedback;
+                });
+                taskCharacteristicsContainer.appendChild(button);
+            });
+            
+            const accordionContainer = document.getElementById('accordion-container');
+            appData.fears.forEach((fear, index) => {
+                const item = document.createElement('div');
+                item.className = 'bg-[#EEE8D5] rounded-xl shadow-md overflow-hidden';
+                item.innerHTML = `
+                    <button class="accordion-button w-full text-left p-4 font-bold text-lg text-[#cb4b16] flex justify-between items-center hover:bg-[#d1cbbc]">
+                        <span>${fear.title}</span>
+                        <span class="transform transition-transform duration-300">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="p-4 pt-0 text-[#586e75]">
+                            <p>${fear.content}</p>
+                        </div>
+                    </div>
+                `;
+                accordionContainer.appendChild(item);
+            });
+
+            document.querySelectorAll('.accordion-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const content = button.nextElementSibling;
+                    const arrow = button.querySelector('span:last-child');
+                    
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        arrow.style.transform = 'rotate(0deg)';
+                    } else {
+                        document.querySelectorAll('.accordion-content').forEach(c => c.style.maxHeight = null);
+                        document.querySelectorAll('.accordion-button span:last-child').forEach(a => a.style.transform = 'rotate(0deg)');
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        arrow.style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+
+            const strategyCardsContainer = document.getElementById('strategy-cards');
+            appData.strategies.forEach(strategy => {
+                const cardContainer = document.createElement('div');
+                cardContainer.className = 'strategy-card-container h-64 [perspective:1000px]';
+                
+                const card = document.createElement('div');
+                card.id = strategy.id;
+                card.className = 'strategy-card relative w-full h-full text-center transition-transform duration-500 [transform-style:preserve-3d]';
+                
+                card.innerHTML = `
+                    <div class="card-front absolute w-full h-full bg-[#EEE8D5] rounded-xl shadow-lg flex flex-col items-center justify-center p-4 cursor-pointer">
+                        <div class="text-6xl mb-4">${strategy.icon}</div>
+                        <h3 class="text-2xl font-bold text-[#859900]">${strategy.title}</h3>
+                        <p class="mt-2">${strategy.frontText}</p>
+                    </div>
+                    <div class="card-back absolute w-full h-full bg-[#e7f1c6] rounded-xl shadow-lg flex flex-col items-center justify-center p-6 cursor-pointer [transform:rotateY(180deg)]">
+                        <p class="text-base text-[#586e75]">${strategy.backText}</p>
+                    </div>
+                `;
+                
+                card.addEventListener('click', () => {
+                    const pomodoroContainer = document.getElementById('pomodoro-container');
+                    card.classList.toggle('is-flipped');
+                    if (strategy.id === 'strategy2' && card.classList.contains('is-flipped')) {
+                        pomodoroContainer.style.display = 'block';
+                    } else if (strategy.id === 'strategy2') {
+                        pomodoroContainer.style.display = 'none';
+                    }
+                });
+
+                cardContainer.appendChild(card);
+                strategyCardsContainer.appendChild(cardContainer);
+            });
+
+            let cycleChart;
+            const cycleCtx = document.getElementById('cycleChart').getContext('2d');
+            const cycleData = {
+                labels: ['미루기', '일시적 안도', '죄책감/스트레스', '과제 혐오감 증폭', '더 강한 미루기'],
+                datasets: [{
+                    label: '악순환 지수',
+                    data: [0, 0, 0, 0, 0],
+                    backgroundColor: 'rgba(220, 50, 47, 0.2)',
+                    borderColor: 'rgba(220, 50, 47, 1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(220, 50, 47, 1)'
+                }]
+            };
+            const cycleConfig = {
+                type: 'radar',
+                data: cycleData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: '#93a1a1' },
+                            grid: { color: '#eee8d5' },
+                            pointLabels: { font: { size: 14 }, color: '#657b83' },
+                            suggestedMin: 0,
+                            suggestedMax: 10
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            };
+            cycleChart = new Chart(cycleCtx, cycleConfig);
+
+            document.getElementById('start-cycle-animation').addEventListener('click', () => {
+                cycleChart.data.datasets[0].data = [0, 0, 0, 0, 0];
+                cycleChart.update();
+                const dataPoints = [8, 6, 9, 10, 8];
+                let i = 0;
+                const interval = setInterval(() => {
+                    if (i < dataPoints.length) {
+                        cycleChart.data.datasets[0].data[i] = dataPoints[i];
+                        if (i === 4) cycleChart.data.datasets[0].data[0] = dataPoints[0]; //
+                        cycleChart.update();
+                        i++;
+                    } else {
+                        clearInterval(interval);
+                    }
+                }, 500);
+            });
+
+            const timerDisplay = document.getElementById('pomodoro-timer');
+            const startBtn = document.getElementById('pomodoro-start');
+            const pauseBtn = document.getElementById('pomodoro-pause');
+            const resetBtn = document.getElementById('pomodoro-reset');
+            
+            let pomodoroInterval;
+            let timeLeft = 25 * 60;
+            let isPaused = false;
+
+            function updateTimer() {
+                const minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+                seconds = seconds < 10 ? '0' + seconds : seconds;
+                timerDisplay.textContent = `${minutes}:${seconds}`;
+            }
+
+            startBtn.addEventListener('click', () => {
+                if (pomodoroInterval) return;
+                isPaused = false;
+                pomodoroInterval = setInterval(() => {
+                    if (!isPaused) {
+                        timeLeft--;
+                        updateTimer();
+                        if (timeLeft <= 0) {
+                            clearInterval(pomodoroInterval);
+                            pomodoroInterval = null;
+                            alert('뽀모도로 세션 종료! 5분간 휴식하세요.');
+                            timeLeft = 25 * 60;
+                            updateTimer();
+                        }
+                    }
+                }, 1000);
+            });
+
+            pauseBtn.addEventListener('click', () => {
+                isPaused = !isPaused;
+                pauseBtn.textContent = isPaused ? '계속' : '일시정지';
+            });
+            
+            resetBtn.addEventListener('click', () => {
+                clearInterval(pomodoroInterval);
+                pomodoroInterval = null;
+                timeLeft = 25 * 60;
+                isPaused = false;
+                pauseBtn.textContent = '일시정지';
+                updateTimer();
+            });
+
+        });
+    </script>
+
+</body>
+</html>
