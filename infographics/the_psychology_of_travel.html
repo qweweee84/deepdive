@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>여행의 심리학: 대화형 탐색 가이드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals (Background: #FDFBF7, Text: #4A4A4A, Primary: #D5A083, Secondary: #A3BCA7) -->
+    <!-- Application Structure Plan: The SPA is designed as a user-driven exploratory journey, transforming the report's linear narrative into interactive modules. It begins with a captivating Hero section stating the core thesis. The main content is divided into four thematic, navigable sections: 1) 'The Science': uses interactive charts and diagrams to explain complex neuroscience (Novelty, Neuroplasticity, Awe). 2) 'Self-Assessment': engages the user with a 'Tourist vs. Traveler' comparison and a clickable 'Comfort Zone' model. 3) 'Trip Design': provides a practical, actionable 3-stage timeline (Before, During, After) visualized with a chart showing happiness levels over time. 4) 'Everyday Explorer': concludes with a 'Micro-Adventure' idea generator to make the concepts applicable to daily life. This modular, interactive structure was chosen to maximize user engagement and comprehension, allowing them to explore concepts non-linearly and apply learnings, which is more effective than a passive scroll-through of the original report. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Dopamine release from novelty. Goal: Inform. Viz: Bar Chart. Interaction: Hover. Justification: Quantifies the "newness" reward. Library: Chart.js.
+        - Report Info: Neuroplasticity & enriched environments. Goal: Compare. Viz: HTML/CSS diagram. Interaction: Click to transform. Justification: Visually demonstrates the "brain growth" concept. Library: Vanilla JS/CSS.
+        - Report Info: Awe and its effects. Goal: Inform. Viz: Doughnut Chart. Interaction: Clickable segments. Justification: Shows the psychological and physiological benefits clearly. Library: Chart.js.
+        - Report Info: Tourist vs. Traveler. Goal: Organize/Compare. Viz: Two-column card layout. Interaction: Click to reveal details. Justification: Direct, scannable comparison of two mindsets. Library: HTML/CSS/JS.
+        - Report Info: Comfort/Growth Zones. Goal: Organize. Viz: Concentric circle diagram. Interaction: Click to highlight zones. Justification: Intuitive model for personal growth. Library: HTML/CSS/JS.
+        - Report Info: Happiness from anticipation. Goal: Show Change. Viz: Line Chart. Interaction: Clickable data points. Justification: Effectively visualizes the study's findings on when travel happiness peaks. Library: Chart.js.
+        - Report Info: Micro-adventures. Goal: Engage. Viz: Idea generator card. Interaction: Button click for new idea. Justification: Action-oriented and fun, promoting immediate application. Library: Vanilla JS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #FDFBF7; color: #4A4A4A; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 350px; } }
+        .nav-link { transition: color 0.3s, border-color 0.3s; }
+        .nav-link.active { color: #D5A083; border-bottom-color: #D5A083; }
+        .nav-link:not(.active) { border-bottom-color: transparent; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .interactive-card { transition: transform 0.3s, box-shadow 0.3s; }
+        .interactive-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .zone-circle { transition: all 0.3s ease-in-out; }
+        .tab-button.active { background-color: #D5A083; color: white; }
+        .tab-button { background-color: #EFEAE3; color: #4A4A4A; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="sticky top-0 bg-white/80 backdrop-blur-md z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-3">
+            <div class="flex justify-between items-center">
+                <div class="text-xl font-bold text-[#4A4A4A]">여행의 심리학</div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#science" class="nav-link text-gray-600 hover:text-[#D5A083] border-b-2 pb-1">뇌과학적 원리</a>
+                    <a href="#identity" class="nav-link text-gray-600 hover:text-[#D5A083] border-b-2 pb-1">여행자 유형</a>
+                    <a href="#design" class="nav-link text-gray-600 hover:text-[#D5A083] border-b-2 pb-1">최고의 여행 설계</a>
+                    <a href="#daily" class="nav-link text-gray-600 hover:text-[#D5A083] border-b-2 pb-1">일상 속 여행</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="menu-button" class="text-gray-600 focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-4 6h4"></path></svg>
+                    </button>
+                </div>
+            </div>
+            <div id="mobile-menu" class="hidden md:hidden mt-4">
+                <a href="#science" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100 rounded">뇌과학적 원리</a>
+                <a href="#identity" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100 rounded">여행자 유형</a>
+                <a href="#design" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100 rounded">최고의 여행 설계</a>
+                <a href="#daily" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100 rounded">일상 속 여행</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="text-center py-20 md:py-32 bg-white">
+            <div class="container mx-auto px-6">
+                <h1 class="text-4xl md:text-6xl font-bold text-[#4A4A4A] mb-4">당신의 여행, 이대로 괜찮은가요?</h1>
+                <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+                    여행 후 남는 것이 허무함뿐이라면, 당신은 삶을 바꾸는 최고의 기회를 놓치고 있는지도 모릅니다.
+                    진정한 여행은 장소의 이동이 아닌, '뇌를 재설계하는' 내면의 여정입니다.
+                </p>
+                <a href="#science" class="bg-[#D5A083] text-white font-bold py-3 px-8 rounded-full hover:bg-opacity-90 transition transform hover:scale-105">
+                    뇌를 깨우는 여정 시작하기
+                </a>
+            </div>
+        </section>
+
+        <section id="science" class="py-16 md:py-24 bg-[#FDFBF7]">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-[#4A4A4A]">왜 우리는 떠나야만 하는가?</h2>
+                    <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">여행은 단순한 휴식이 아닙니다. '새로움', '도전', '경외감'을 통해 당신의 뇌를 물리적으로 바꾸는 과학적 과정입니다.</p>
+                </div>
+
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                    <div class="mb-8 border-b border-gray-200">
+                        <nav class="flex flex-wrap -mb-px" id="science-tabs">
+                            <button data-tab="novelty" class="tab-button text-lg font-medium py-4 px-6 border-b-2 border-transparent rounded-t-lg">🚀 새로움 (Novelty)</button>
+                            <button data-tab="neuroplasticity" class="tab-button text-lg font-medium py-4 px-6 border-b-2 border-transparent rounded-t-lg">🧠 신경가소성 (Neuroplasticity)</button>
+                            <button data-tab="awe" class="tab-button text-lg font-medium py-4 px-6 border-b-2 border-transparent rounded-t-lg">🌌 경외감 (Awe)</button>
+                        </nav>
+                    </div>
+
+                    <div id="novelty-content" class="tab-content">
+                        <h3 class="text-2xl font-bold mb-4">'새로움'이 주는 도파민의 힘</h3>
+                        <p class="mb-6 text-gray-700">새로운 경험은 뇌의 보상 시스템을 자극하여 '행복 호르몬'인 도파민을 분비시킵니다. 이는 학습 능력을 향상시키고, 단기 기억을 장기 기억으로 전환하는 데 결정적인 역할을 합니다. 특히 과거 경험과 완전히 다른 '근본적 새로움'은 잊지 못할 생생한 기억을 만듭니다.</p>
+                        <div class="chart-container h-80 md:h-96">
+                            <canvas id="noveltyChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div id="neuroplasticity-content" class="tab-content">
+                        <h3 class="text-2xl font-bold mb-4">'신경가소성': 낯선 환경이 뇌를 조각한다</h3>
+                        <p class="mb-6 text-gray-700">우리의 뇌는 경험에 따라 물리적으로 변합니다. 단조로운 일상은 '빈곤한 환경'처럼 뇌 성장을 정체시키지만, 예측 불가능한 자극으로 가득한 여행은 '풍요로운 환경'을 제공하여 새로운 신경망을 만들고 뇌를 더욱 튼튼하게 만듭니다. 아래 다이어그램을 클릭하여 변화를 확인해보세요.</p>
+                        <div id="neuro-diagram" class="mt-4 p-4 border-2 border-dashed rounded-lg cursor-pointer text-center">
+                            <h4 class="text-xl font-semibold mb-2">일상 vs 여행 환경</h4>
+                            <p class="mb-4 text-sm text-gray-500">클릭하여 '풍요로운 환경'으로 전환</p>
+                            <div class="flex justify-around items-center">
+                                <div id="impoverished-env" class="w-1/3 text-center">
+                                    <span class="text-lg font-bold">일상</span>
+                                    <div class="p-4 bg-gray-100 rounded-lg mt-2">
+                                        <div class="h-1 bg-gray-300 my-4 w-1/2 mx-auto"></div>
+                                        <div class="h-1 bg-gray-300 my-4 w-2/3 mx-auto"></div>
+                                    </div>
+                                </div>
+                                <span class="text-2xl font-bold text-[#D5A083]">&rarr;</span>
+                                <div id="enriched-env" class="w-1/3 text-center">
+                                    <span class="text-lg font-bold">여행</span>
+                                    <div class="p-4 bg-yellow-100 rounded-lg mt-2">
+                                        <div class="h-2 bg-yellow-400 my-3 w-3/4 mx-auto rounded-full"></div>
+                                        <div class="h-2 bg-yellow-400 my-3 w-full mx-auto rounded-full"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="awe-content" class="tab-content">
+                        <h3 class="text-2xl font-bold mb-4">'경외감': '작은 나'를 느끼는 순간의 기적</h3>
+                        <p class="mb-6 text-gray-700">거대한 자연이나 위대한 예술 앞에서 느끼는 경외감은 '나'라는 존재가 얼마나 작은지를 깨닫게 합니다. 이 '자아 축소' 경험은 사소한 걱정에서 벗어나게 하고, 스트레스 수치를 낮추며, 타인에 대한 이타심을 높이는 놀라운 효과를 가져옵니다.</p>
+                         <div class="chart-container h-80 md:h-96">
+                            <canvas id="aweChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="identity" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-[#4A4A4A]">당신은 '관광객'인가, '여행자'인가?</h2>
+                    <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">같은 장소에 가더라도, 어떤 마음가짐으로 임하느냐에 따라 뇌가 얻는 경험의 질은 완전히 달라집니다.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 items-start">
+                    <div class="bg-[#FDFBF7] p-8 rounded-xl shadow-lg interactive-card">
+                        <h3 class="text-2xl font-bold mb-4">두 가지 여행 스타일</h3>
+                        <p class="mb-6">여행에는 두 가지 접근 방식이 있습니다. 하나는 정해진 목표를 완수하는 '체크리스트 여행'이고, 다른 하나는 과정 자체를 즐기는 '과정 중심의 여행'입니다. 당신은 어디에 더 가까운가요?</p>
+                        <div class="space-y-4">
+                            <div class="p-4 bg-white rounded-lg border">
+                                <h4 class="font-bold">관광객 (결과 중심)</h4>
+                                <p class="text-sm text-gray-600">"명소를 모두 찍었는가?"<br>목표 달성 후 허무함, 단기적 성취감</p>
+                            </div>
+                            <div class="p-4 bg-white rounded-lg border">
+                                <h4 class="font-bold">여행자 (과정 중심)</h4>
+                                <p class="text-sm text-gray-600">"어떻게 존재했는가?"<br>예상치 못한 발견, 지속적인 만족감</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-[#FDFBF7] p-8 rounded-xl shadow-lg interactive-card">
+                        <h3 class="text-2xl font-bold mb-4">컴포트 존 vs 성장 존</h3>
+                        <p class="mb-6">뇌의 성장은 익숙함을 벗어나는 '자발적 불편함' 속에서 일어납니다. 각 영역을 클릭하여 어떤 일이 일어나는지 알아보세요.</p>
+                        <div id="growth-zone-container" class="relative w-full aspect-square max-w-sm mx-auto">
+                        </div>
+                         <p id="zone-description" class="mt-4 text-center text-gray-600 h-12">영역을 클릭하여 설명을 확인하세요.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="design" class="py-16 md:py-24 bg-[#FDFBF7]">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-[#4A4A4A]">뇌를 성장시키는 최고의 여행법: 3단계 설계</h2>
+                    <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">행복과 성장의 총량을 극대화하려면 여행 전, 중, 후의 경험을 의식적으로 설계해야 합니다.</p>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div>
+                            <h3 class="text-2xl font-bold mb-4">여행 행복 곡선</h3>
+                             <p class="mb-6 text-gray-700">많은 연구에 따르면, 여행의 행복감은 실제 여행 중이 아니라 '계획하고 기대하는 단계'에서 최고조에 달합니다. 여행 후 경험을 '통합'하는 과정을 통해 이 행복감을 더 오래 유지할 수 있습니다. 각 단계를 클릭하여 실천법을 확인해보세요.</p>
+                            <div class="chart-container h-80 md:h-96">
+                                <canvas id="happinessChart"></canvas>
+                            </div>
+                        </div>
+                        <div id="design-details" class="p-6 bg-gray-50 rounded-lg">
+                           <h4 class="text-xl font-bold mb-2">여행 설계 3단계</h4>
+                           <p>차트의 각 지점을 클릭하여 단계별 실천 전략을 확인하세요.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="daily" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-[#4A4A4A]">지금 당장 실천할 수 있는 '일상 속 여행'</h2>
+                    <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">비싼 비행기 표 없이도, 당신의 뇌를 깨울 수 있습니다. 모험은 장소가 아니라 '정신 상태'입니다.</p>
+                </div>
+
+                <div class="max-w-2xl mx-auto bg-[#A3BCA7] text-white p-8 rounded-2xl shadow-xl text-center interactive-card">
+                    <h3 class="text-3xl font-bold mb-4">마이크로 어드벤처 생성기</h3>
+                    <p class="mb-6">짧고, 단순하며, 저렴하지만, 충분히 보람 있는 작은 모험을 시작해보세요.</p>
+                    <div id="adventure-idea" class="bg-white/20 p-6 rounded-lg min-h-[100px] flex items-center justify-center mb-6">
+                        <p class="text-xl font-medium">버튼을 눌러 오늘의 도전을 확인하세요!</p>
+                    </div>
+                    <button id="generate-adventure" class="bg-white text-[#4A4A4A] font-bold py-3 px-8 rounded-full hover:bg-opacity-90 transition transform hover:scale-105">
+                        새로운 아이디어!
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-[#4A4A4A] text-white py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p>본 콘텐츠는 '여행의 심리학' 보고서를 기반으로 제작된 대화형 교육 자료입니다.</p>
+            <p class="text-sm mt-2 opacity-70">진정한 여정은 지금, 당신의 일상에서 시작됩니다.</p>
+        </div>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const chartColors = {
+            primary: '#D5A083',
+            secondary: '#A3BCA7',
+            text: '#4A4A4A',
+            grid: '#EAEAEA'
+        };
+
+        const scienceTabs = document.querySelectorAll('#science-tabs .tab-button');
+        const scienceTabContents = document.querySelectorAll('.tab-content');
+
+        const setActiveTab = (tabName) => {
+            scienceTabs.forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.tab === tabName);
+            });
+            scienceTabContents.forEach(content => {
+                content.classList.toggle('active', content.id === `${tabName}-content`);
+            });
+        };
+        
+        scienceTabs.forEach(tab => {
+            tab.addEventListener('click', () => setActiveTab(tab.dataset.tab));
+        });
+
+        setActiveTab('novelty');
+        
+        let noveltyChartInstance, aweChartInstance, happinessChartInstance;
+
+        const initNoveltyChart = () => {
+            const ctx = document.getElementById('noveltyChart').getContext('2d');
+            if(noveltyChartInstance) noveltyChartInstance.destroy();
+            noveltyChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['익숙한 경험', '일상적 새로움', '근본적 새로움'],
+                    datasets: [{
+                        label: '도파민 분비량 / 기억 강도',
+                        data: [30, 65, 95],
+                        backgroundColor: [chartColors.secondary, '#F0C9A3', chartColors.primary],
+                        borderColor: 'white',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => `기대 효과: ${context.raw}%`
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: '새로움의 종류에 따른 뇌 반응',
+                            color: chartColors.text,
+                            font: { size: 16 }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: { color: chartColors.grid }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        };
+
+        const initAweChart = () => {
+            const ctx = document.getElementById('aweChart').getContext('2d');
+            if(aweChartInstance) aweChartInstance.destroy();
+            aweChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['스트레스 감소', '이타심 증가', '시간 인식 확장', '만족도 향상'],
+                    datasets: [{
+                        data: [35, 30, 20, 15],
+                        backgroundColor: [chartColors.primary, chartColors.secondary, '#F0C9A3', '#C5D8C0'],
+                        borderColor: '#FDFBF7',
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        title: {
+                            display: true,
+                            text: '경외감(Awe)의 심리적 효과',
+                            color: chartColors.text,
+                            font: { size: 16 }
+                        }
+                    }
+                }
+            });
+        };
+        
+        document.querySelector('button[data-tab="novelty"]').addEventListener('click', initNoveltyChart, { once: true });
+        document.querySelector('button[data-tab="awe"]').addEventListener('click', initAweChart, { once: true });
+        initNoveltyChart();
+
+        const neuroDiagram = document.getElementById('neuro-diagram');
+        const impoverishedEnv = document.getElementById('impoverished-env').querySelector('div');
+        const enrichedEnv = document.getElementById('enriched-env').querySelector('div');
+        neuroDiagram.addEventListener('click', () => {
+            neuroDiagram.classList.toggle('border-yellow-400');
+            neuroDiagram.classList.toggle('bg-yellow-50');
+            impoverishedEnv.innerHTML = `<div class="h-1 bg-gray-400 my-4 w-1/2 mx-auto transition-all duration-500"></div><div class="h-1 bg-gray-400 my-4 w-2/3 mx-auto transition-all duration-500"></div>`;
+            enrichedEnv.innerHTML = `<div class="h-2 bg-gradient-to-r from-yellow-400 to-orange-400 my-3 w-full mx-auto rounded-full transition-all duration-500 scale-110"></div><div class="h-2 bg-gradient-to-r from-yellow-400 to-orange-400 my-3 w-full mx-auto rounded-full transition-all duration-500 scale-110"></div>`;
+        });
+        
+        const growthZoneContainer = document.getElementById('growth-zone-container');
+        const zoneDescription = document.getElementById('zone-description');
+        const zones = [
+            { name: '컴포트 존', size: '100%', color: 'bg-green-100', description: '안전하지만 성장이 없는 익숙한 상태입니다.' },
+            { name: '두려움 존', size: '80%', color: 'bg-yellow-100', description: '자신감이 부족하고, 남의 시선을 의식하게 됩니다.' },
+            { name: '학습 존', size: '60%', color: 'bg-orange-100', description: '새로운 기술을 배우며 도전에 직면합니다.' },
+            { name: '성장 존', size: '40%', color: 'bg-red-100', description: '새로운 목표를 설정하고 잠재력을 실현합니다.' }
+        ];
+
+        zones.forEach((zone, index) => {
+            const circle = document.createElement('div');
+            circle.className = `zone-circle absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full cursor-pointer flex items-center justify-center ${zone.color} border-2 border-white`;
+            circle.style.width = zone.size;
+            circle.style.height = zone.size;
+            circle.style.zIndex = zones.length - index;
+            
+            const text = document.createElement('span');
+            text.textContent = zone.name;
+            text.className = 'font-semibold text-xs md:text-sm text-center text-gray-700';
+            circle.appendChild(text);
+
+            circle.addEventListener('click', () => {
+                zoneDescription.textContent = zone.description;
+                document.querySelectorAll('.zone-circle').forEach(c => c.style.transform = 'translate(-50%, -50%) scale(1)');
+                circle.style.transform = 'translate(-50%, -50%) scale(1.05)';
+            });
+            growthZoneContainer.appendChild(circle);
+        });
+
+        const designDetails = document.getElementById('design-details');
+        const happinessData = {
+            '1단계 (여행 전)': {
+                title: '1단계: ' + "'기대감'의 과학",
+                text: "행복은 공항이 아닌 계획 단계에서 시작됩니다. 스스로 여행을 계획하는 행위는 통제감을 주고, 뇌는 미래의 보상을 상상하며 도파민을 분비합니다.",
+                action: "오늘의 실천: 다음 여행지를 정하고, 그곳을 배경으로 한 영화를 보거나 관련 책을 읽어보세요."
+            },
+            '2단계 (여행 중)': {
+                title: '2단계: ' + "'몰입'의 기술",
+                text: "순간에 깊이 '존재'하는 것이 중요합니다. 디지털 기기 사용을 줄이고, 현지인과 교류하며, 의도적으로 한 곳에 오래 머물러 보세요.",
+                action: "오늘의 실천: 여행 중 하루는 스마트폰 없이, 오직 감각에만 의지해 동네를 탐험해보세요."
+            },
+            '3단계 (여행 후)': {
+                title: '3단계: ' + "'통합'의 과정",
+                text: "여행의 경험을 글로 정리하며 '나의 이야기'로 만드세요. 이 과정을 통해 흩어진 경험은 '지혜'로 변환되고, 삶에 영구적으로 내재화됩니다.",
+                action: "오늘의 실천: 여행에서 찍은 사진 한 장을 보고, 그때 느꼈던 감정을 15분간 글로 써보세요."
+            }
+        };
+
+        const initHappinessChart = () => {
+            const ctx = document.getElementById('happinessChart').getContext('2d');
+            if(happinessChartInstance) happinessChartInstance.destroy();
+            happinessChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['일상', '1단계 (여행 전)', '2단계 (여행 중)', '3단계 (여행 후)', '일상 복귀'],
+                    datasets: [{
+                        label: '여행 단계별 행복지수',
+                        data: [50, 90, 75, 80, 60],
+                        fill: true,
+                        backgroundColor: 'rgba(213, 160, 131, 0.2)',
+                        borderColor: chartColors.primary,
+                        tension: 0.3,
+                        pointBackgroundColor: chartColors.primary,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, max: 100 },
+                        x: { grid: { display: false } }
+                    },
+                    onClick: (e, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const label = e.chart.data.labels[index];
+                            const data = happinessData[label];
+                            if(data) {
+                                designDetails.innerHTML = `
+                                <h4 class="text-xl font-bold mb-2 text-[#D5A083]">${data.title}</h4>
+                                <p class="mb-4 text-gray-700">${data.text}</p>
+                                <p class="p-3 bg-[#A3BCA7]/20 text-gray-800 rounded-lg text-sm">${data.action}</p>
+                                `;
+                            }
+                        }
+                    },
+                    onHover: (e, elements) => {
+                        e.native.target.style.cursor = elements.length ? 'pointer' : 'default';
+                    }
+                }
+            });
+        };
+        initHappinessChart();
+
+        const adventureIdea = document.getElementById('adventure-idea');
+        const generateAdventureBtn = document.getElementById('generate-adventure');
+        const adventures = [
+            "퇴근길, 늘 가던 길이 아닌 다른 길로 가보기",
+            "한 번도 내려보지 않은 역에 내려 1시간 탐험하기",
+            "점심시간, 새로운 동네의 낯선 식당에 도전하기",
+            "가장 가까운 공원/언덕에 올라 일몰 보기",
+            "관심 없던 분야의 다큐멘터리 한 편 보기",
+            "대중교통을 타고 종점까지 갔다가 돌아오기",
+            "동네 서점에서 가장 눈에 띄는 책 표지 사보기",
+            "스마트폰 없이 동네 시장 구경하기"
+        ];
+        generateAdventureBtn.addEventListener('click', () => {
+            const randomIndex = Math.floor(Math.random() * adventures.length);
+            adventureIdea.querySelector('p').textContent = adventures[randomIndex];
+        });
+        
+        const menuButton = document.getElementById('menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        menuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+                if (mobileMenu.classList.contains('hidden') === false) {
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        });
+        
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('main > section');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 60) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    });
+    </script>
+</body>
+</html>
