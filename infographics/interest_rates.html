@@ -3,567 +3,641 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>불안장애: 내 마음속의 소리, 이해하고 다스리기</title>
+    <title>금리: 인터랙티브 가이드</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Calm Beige & Soft Teal -->
-    <!-- Application Structure Plan: The application is designed as a single-page exploratory journey, moving beyond the report's linear Q&A. A sticky navigation bar allows users to freely jump between six thematic sections: 1. Definition, 2. Causes, 3. Symptoms, 4. Self-Check, 5. Treatment, 6. Daily Care. This structure facilitates non-linear exploration, allowing users to delve into topics of immediate interest. Key interactions include comparative diagrams, an interactive GAD-7 quiz for self-assessment, and modal windows for detailed techniques. This user-centric design aims to transform passive reading into an active learning experience, empowering users to understand and manage their anxiety. -->
+    <!-- Chosen Palette: Calm Neutral Harmony -->
+    <!-- Application Structure Plan: The application is designed as an interactive dashboard, moving away from the linear report structure. The user is first greeted with a central "Economic Gravity" simulation to grasp the core concept intuitively. Navigation is task-oriented ("Core Concepts", "Impact on Assets", "Forecasting", "Strategies") allowing users to jump to their area of interest. Key features include interactive calculators for loans and asset valuation, and dynamic charts for economic indicators like CPI and the Fed's Dot Plot. This structure prioritizes user engagement and practical application over passive reading, enabling users to understand how macroeconomic concepts directly affect their personal finances. -->
     <!-- Visualization & Content Choices: 
-        - Report Info: Normal vs. Disordered Anxiety -> Goal: Compare -> Viz: Interactive Toggle Cards -> Interaction: Click to reveal details -> Justification: Simplifies complex distinctions, enhances engagement. -> Library/Method: HTML/CSS/JS.
-        - Report Info: Panic Disorder vs. GAD -> Goal: Compare patterns -> Viz: Line Chart -> Interaction: Static chart with clear labels -> Justification: Visually illustrates the core difference in anxiety patterns (spike vs. chronic). -> Library/Method: Chart.js.
-        - Report Info: Brain's role (Amygdala/Prefrontal Cortex) -> Goal: Inform & Simplify -> Viz: HTML/CSS diagram with icons -> Interaction: Hover to see descriptions -> Justification: Makes abstract neuroscience concepts tangible. -> Library/Method: HTML/CSS/JS.
-        - Report Info: GAD-7 Scale -> Goal: Self-assessment -> Viz: Interactive quiz with a result bar chart -> Interaction: User selects radio buttons, score is calculated and visualized -> Justification: Provides a direct, personalized, and actionable takeaway. -> Library/Method: JS for logic, Chart.js for result visualization.
-        - Report Info: Daily management techniques (PMR, Breathing) -> Goal: Teach practical skills -> Viz: Cards opening modal windows -> Interaction: Click to open step-by-step guides -> Justification: Keeps the main layout clean while providing in-depth, actionable information on demand. -> Library/Method: HTML/CSS/JS.
-        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+        - Report Info: 'Economic Gravity' analogy -> Goal: Inform/Engage -> Viz: Interactive CSS/JS simulation -> Interaction: Slider to change rate -> Justification: Makes the core abstract concept tangible and memorable. -> Library/Method: Vanilla JS, CSS Transforms.
+        - Report Info: Loan payment increase examples -> Goal: Compare/Inform -> Viz: HTML form + JS calculator -> Interaction: User inputs loan details and adjusts rate slider -> Justification: Personalizes the impact of rate changes, making it highly relevant. -> Library/Method: Vanilla JS.
+        - Report Info: Discount rate effect on stocks -> Goal: Inform -> Viz: Simplified DCF visualizer with JS -> Interaction: Rate slider changes the "present value" of future earnings -> Justification: Visually explains a complex financial valuation principle. -> Library/Method: Vanilla JS.
+        - Report Info: Dot Plot, CPI -> Goal: Inform/Organize -> Viz: Dynamic charts -> Interaction: Hover tooltips, toggles -> Justification: Demystifies complex economic indicators shown in news. -> Library/Method: Chart.js.
+        - Report Info: Rate cycle strategies -> Goal: Compare/Organize -> Viz: Side-by-side HTML table -> Interaction: Static display -> Justification: Provides clear, actionable advice in an easy-to-compare format. -> Library/Method: HTML/Tailwind CSS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
-        body { font-family: 'Noto Sans KR', sans-serif; scroll-behavior: smooth; }
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #F8F7F4; color: #3C3633; }
+        .nav-link { transition: color 0.3s, border-color 0.3s; }
+        .nav-link.active { color: #BF5B3F; border-bottom-color: #BF5B3F; }
+        .nav-link:hover { color: #BF5B3F; }
+        .tab-button { transition: background-color 0.3s, color 0.3s; }
+        .tab-button.active { background-color: #BF5B3F; color: white; }
+        .asset-card { transition: transform 0.3s, box-shadow 0.3s; }
+        .asset-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); }
         .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
         @media (min-width: 768px) { .chart-container { height: 350px; } }
-        .nav-link { transition: color 0.3s, border-color 0.3s; }
-        .nav-link.active, .nav-link:hover { color: #0d9488; border-bottom-color: #0d9488; }
-        .card { transition: transform 0.3s, box-shadow 0.3s; }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
-        .modal { transition: opacity 0.3s ease; }
+        #gravity-system .planet { transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s; }
+        .flow-diagram-box { border: 2px solid #D1D5DB; padding: 1rem; border-radius: 0.5rem; text-align: center; background-color: white; }
+        .flow-arrow { display: flex; align-items: center; justify-content: center; margin: 0.5rem 0; font-size: 2rem; color: #9CA3AF; }
     </style>
 </head>
-<body class="bg-[#fdfbf7] text-gray-800">
+<body class="antialiased">
 
-    <header id="nav-header" class="bg-[#fdfbf7]/80 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
-        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
-            <a href="#" class="text-xl font-bold text-teal-700">마음 돌보기</a>
-            <div class="hidden md:flex space-x-6">
-                <a href="#definition" class="nav-link text-gray-600 pb-1 border-b-2 border-transparent">정의</a>
-                <a href="#causes" class="nav-link text-gray-600 pb-1 border-b-2 border-transparent">원인</a>
-                <a href="#symptoms" class="nav-link text-gray-600 pb-1 border-b-2 border-transparent">증상</a>
-                <a href="#selfcheck" class="nav-link text-gray-600 pb-1 border-b-2 border-transparent">자가진단</a>
-                <a href="#treatment" class="nav-link text-gray-600 pb-1 border-b-2 border-transparent">치료</a>
-                <a href="#dailycare" class="nav-link text-gray-600 pb-1 border-b-2 border-transparent">일상 관리</a>
+    <header id="header" class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-[#BF5B3F]">금리: 인터랙티브 가이드</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#gravity" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 border-b-2 border-transparent">핵심 원리</a>
+                        <a href="#impact" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 border-b-2 border-transparent">내 자산에 미치는 영향</a>
+                        <a href="#forecast" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 border-b-2 border-transparent">금리 예측하기</a>
+                        <a href="#strategy" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 border-b-2 border-transparent">대응 전략</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                        <span class="sr-only">메뉴 열기</span>
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
             </div>
-            <button id="mobile-menu-button" class="md:hidden text-gray-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
-                </svg>
-            </button>
         </nav>
-        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
-            <a href="#definition" class="block py-2 text-gray-600">정의</a>
-            <a href="#causes" class="block py-2 text-gray-600">원인</a>
-            <a href="#symptoms" class="block py-2 text-gray-600">증상</a>
-            <a href="#selfcheck" class="block py-2 text-gray-600">자가진단</a>
-            <a href="#treatment" class="block py-2 text-gray-600">치료</a>
-            <a href="#dailycare" class="block py-2 text-gray-600">일상 관리</a>
+        <div id="mobile-menu" class="md:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#gravity" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700">핵심 원리</a>
+                <a href="#impact" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700">내 자산에 미치는 영향</a>
+                <a href="#forecast" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700">금리 예측하기</a>
+                <a href="#strategy" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700">대응 전략</a>
+            </div>
         </div>
     </header>
 
-    <main class="container mx-auto px-6 py-12">
-        <section class="text-center mb-24">
-            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-teal-800">내 마음속의 소리, 불안</h1>
-            <p class="text-lg text-gray-600 max-w-3xl mx-auto mb-8">혹시 늘 마음 한구석에 무거운 돌을 얹고 사는 것 같으신가요? 아직 일어나지도 않은 일에 대한 걱정이 꼬리에 꼬리를 물고, 이유 없는 불편함이 계속된다면, 그 안개의 정체를 함께 파헤쳐 볼 시간입니다.</p>
-            <a href="#definition" class="bg-teal-600 text-white font-bold py-3 px-8 rounded-full hover:bg-teal-700 transition-colors">내 마음 들여다보기</a>
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <section id="gravity" class="text-center py-12 md:py-20 scroll-mt-20">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">금리는 '경제의 중력'입니다</h2>
+            <p class="max-w-3xl mx-auto text-gray-600 mb-12">
+                워런 버핏은 금리를 자산 가치를 끌어당기는 중력에 비유했습니다. 금리가 오르면 중력이 강해져 모든 자산의 가치가 하락 압력을 받고, 금리가 내리면 중력이 약해져 자산 가격이 떠오릅니다. 아래 시뮬레이터로 이 원리를 직접 체험해보세요.
+            </p>
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 max-w-5xl mx-auto">
+                <div id="gravity-system" class="relative w-full h-[300px] md:h-[400px] mb-8 flex items-center justify-center">
+                    <div id="sun" class="absolute w-20 h-20 md:w-28 md:h-28 bg-yellow-400 rounded-full flex items-center justify-center text-center text-xs md:text-sm font-bold text-yellow-900 shadow-2xl">기준금리<br><span id="rate-display" class="text-lg md:text-2xl">3.5%</span></div>
+                    <div class="planet absolute w-12 h-12 md:w-16 md:h-16 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs md:text-sm font-semibold shadow-md" data-distance="1.0" style="top: 10%; left: 15%;">주식</div>
+                    <div class="planet absolute w-14 h-14 md:w-20 md:h-20 bg-green-500 rounded-full flex items-center justify-center text-white text-xs md:text-sm font-semibold shadow-md" data-distance="1.2" style="top: 70%; left: 10%;">부동산</div>
+                    <div class="planet absolute w-10 h-10 md:w-12 md:h-12 bg-red-500 rounded-full flex items-center justify-center text-white text-xs md:text-sm font-semibold shadow-md" data-distance="0.9" style="top: 15%; left: 75%;">대출</div>
+                    <div class="planet absolute w-10 h-10 md:w-12 md:h-12 bg-indigo-500 rounded-full flex items-center justify-center text-white text-xs md:text-sm font-semibold shadow-md" data-distance="0.8" style="top: 65%; left: 80%;">예금</div>
+                </div>
+                <div class="max-w-md mx-auto">
+                    <label for="rate-slider" class="font-medium text-gray-700">기준금리 조절 슬라이더</label>
+                    <input id="rate-slider" type="range" min="0.5" max="6.5" value="3.5" step="0.25" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer mt-2">
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>0.5% (중력 약함)</span>
+                        <span>6.5% (중력 강함)</span>
+                    </div>
+                </div>
+                 <p id="gravity-explanation" class="mt-4 text-center text-gray-600 min-h-[40px]"></p>
+            </div>
         </section>
 
-        <div id="content" class="space-y-24">
-            
-            <section id="definition">
-                <h2 class="text-3xl font-bold text-center mb-2 text-teal-800">Q1. 불안장애, 정확히 어떤 병인가요?</h2>
-                <p class="text-center text-gray-600 mb-12">누구나 느끼는 '불안'과 치료가 필요한 '불안장애'는 다릅니다. 이 섹션에서는 전문가들의 의견을 바탕으로 그 결정적인 차이를 알아보고, 대표적인 불안장애 유형을 소개합니다.</p>
-                
-                <div class="grid md:grid-cols-2 gap-8 items-start">
-                    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-                        <h3 class="text-xl font-bold mb-4 text-teal-700">정상적 불안 vs 병적 불안</h3>
-                        <p class="mb-4 text-gray-600">전문가들은 '과도성', '지속성', '통제 불가능성' 그리고 '일상생활 지장 여부'를 기준으로 둘을 구분합니다. 아래 카드를 눌러 자세히 알아보세요.</p>
-                        <div id="anxiety-toggle-container" class="space-y-3"></div>
-                    </div>
+        <div class="border-t my-16"></div>
 
-                    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-                        <h3 class="text-xl font-bold mb-4 text-teal-700">공황장애 vs 범불안장애</h3>
-                        <p class="mb-4 text-gray-600">'급작스러운 공포'와 '만성적인 걱정'의 차이를 시각적으로 확인해보세요. 공황장애는 폭풍우처럼, 범불안장애는 짙은 안개처럼 다가옵니다.</p>
-                        <div class="chart-container">
-                            <canvas id="disorder-comparison-chart"></canvas>
+        <section id="concepts" class="py-12 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-10">핵심 개념 A to Z</h2>
+            <p class="max-w-3xl mx-auto text-gray-600 mb-12 text-center">
+                금리 논의의 기초가 되는 핵심 개념들입니다. 각 항목을 클릭하여 금리가 어떻게 탄생하고, 어떤 종류가 있으며, 누가 결정하는지 알아보세요. 이 개념들은 경제 뉴스를 이해하는 열쇠가 됩니다.
+            </p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="font-bold text-xl mb-3 text-[#BF5B3F]">1. 금리는 왜 존재할까요?</h3>
+                    <p class="text-gray-600">금리는 '돈의 가격'이며, '현재의 소비를 포기하는 것'에 대한 보상입니다. 지금 100만 원을 쓰는 즐거움을 포기하고 남에게 빌려준다면, 미래에 그보다 더 큰 보상(이자)을 원하게 됩니다. 이는 두 가지 원리로 설명됩니다.</p>
+                    <ul class="mt-4 space-y-2 list-disc list-inside text-gray-700">
+                        <li><strong>시간 선호:</strong> 사람들은 불확실한 미래보다 확실한 현재를 선호합니다. 현재의 소비를 포기하는 대가가 바로 이자입니다.</li>
+                        <li><strong>기회비용:</strong> 그 돈을 빌려주지 않고 다른 곳(주식, 사업)에 투자했을 때 얻을 수 있는 잠재적 이익을 포기하는 비용입니다.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="font-bold text-xl mb-3 text-[#BF5B3F]">2. 금리의 폭포수 모델</h3>
+                    <p class="text-gray-600 mb-4">금리는 중앙은행에서 시작해 우리에게 닿기까지 여러 단계를 거칩니다. 이는 마치 폭포수와 같습니다.</p>
+                    <div class="space-y-2">
+                        <div class="flow-diagram-box bg-sky-100 border-sky-300">
+                            <h4 class="font-semibold">① 기준금리</h4>
+                            <p class="text-sm text-gray-600">중앙은행(한국은행, Fed)이 결정하는 모든 금리의 기준점</p>
+                        </div>
+                        <div class="flow-arrow">↓</div>
+                        <div class="flow-diagram-box bg-teal-100 border-teal-300">
+                            <h4 class="font-semibold">② 시장금리</h4>
+                            <p class="text-sm text-gray-600">국채, 회사채 등 금융시장에서 결정되는 금리</p>
+                        </div>
+                        <div class="flow-arrow">↓</div>
+                        <div class="flow-diagram-box bg-orange-100 border-orange-300">
+                            <h4 class="font-semibold">③ 예대금리</h4>
+                            <p class="text-sm text-gray-600">우리가 체감하는 은행의 예금/대출 금리</p>
                         </div>
                     </div>
                 </div>
-            </section>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="font-bold text-xl mb-3 text-[#BF5B3F]">3. 누가 금리를 결정하나요?</h3>
+                    <p class="text-gray-600 mb-4">바로 각국의 '중앙은행'입니다. 이들은 이익을 추구하는 기관이 아니라, 경제 안정을 목표로 통화 정책을 운영합니다.</p>
+                     <ul class="mt-4 space-y-2 list-disc list-inside text-gray-700">
+                        <li><strong>미국 연준(Fed):</strong> '물가 안정'과 '최대 고용'이라는 두 가지 목표(이중 책무)를 가집니다.</li>
+                        <li><strong>한국은행(BOK):</strong> 법적으로 '물가 안정'을 최우선 목표로 삼습니다.</li>
+                        <li><strong>핵심 무기:</strong> 공개시장운영(채권 매매)을 통해 시중의 돈의 양을 조절하여 기준금리를 목표 수준으로 유도합니다.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="font-bold text-xl mb-3 text-[#BF5B3F]">4. 왜 미국 금리가 중요한가요?</h3>
+                    <p class="text-gray-600">미국 달러가 세계의 '기축통화'이기 때문입니다. 전 세계 원유 거래, 무역 결제, 외환보유액의 대부분이 달러로 이루어집니다.</p>
+                    <ul class="mt-4 space-y-2 list-disc list-inside text-gray-700">
+                        <li><strong>자본 이동:</strong> 미국 금리가 오르면 더 높은 수익과 안정성을 찾아 전 세계 자금이 미국으로 몰립니다.</li>
+                        <li><strong>환율 변동:</strong> 달러 수요가 늘면 달러 가치가 치솟고(킹달러), 원화 가치는 하락합니다. 이는 수입 물가 상승으로 이어집니다.</li>
+                        <li><strong>정책 동조화:</strong> 자본 유출과 환율 방어를 위해 다른 나라들도 울며 겨자 먹기로 미국을 따라 금리를 올리는 경우가 많습니다.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
 
-            <section id="causes">
-                <h2 class="text-3xl font-bold text-center mb-2 text-teal-800">Q2. 왜 이런 일이 생길까요?</h2>
-                <p class="text-center text-gray-600 mb-12">불안장애는 마음이 약하거나 의지가 부족해서 생기는 것이 아닙니다. 이 섹션에서는 '과열된 뇌의 경보 시스템'이라는 비유를 통해 뇌과학적 원인을 살펴보고, 유전, 경험, 스트레스가 어떻게 상호작용하는지 알아봅니다.</p>
-                <div class="bg-white p-8 rounded-lg shadow-md border border-gray-200">
-                    <h3 class="text-2xl font-bold mb-6 text-center text-teal-700">뇌 속의 과열된 경보 시스템</h3>
+        <div class="border-t my-16"></div>
+
+        <section id="impact" class="py-12 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4">내 자산에 미치는 영향</h2>
+            <p class="max-w-3xl mx-auto text-gray-600 mb-12 text-center">
+                금리 변동은 네 가지 주요 경로를 통해 우리 자산에 직접적인 영향을 줍니다. 금리가 오르고 내릴 때 각 자산이 어떻게 반응하는지, 그리고 내 상황에 어떤 변화가 생길지 인터랙티브 계산기로 직접 확인해보세요.
+            </p>
+
+            <div class="mb-8 flex justify-center border-b border-gray-200">
+                <button data-tab="deposits" class="tab-button active px-4 py-2 font-medium text-gray-500 hover:text-[#BF5B3F]">💰 예/적금</button>
+                <button data-tab="loans" class="tab-button px-4 py-2 font-medium text-gray-500 hover:text-[#BF5B3F]">💸 대출</button>
+                <button data-tab="stocks" class="tab-button px-4 py-2 font-medium text-gray-500 hover:text-[#BF5B3F]">📈 주식</button>
+                <button data-tab="realty" class="tab-button px-4 py-2 font-medium text-gray-500 hover:text-[#BF5B3F]">🏠 부동산</button>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+                <div id="deposits-content" class="tab-content">
+                    <h3 class="text-2xl font-bold mb-4">예/적금: 금리 인상은 예금자에게 '보너스'</h3>
                     <div class="grid md:grid-cols-2 gap-8 items-center">
-                        <div class="text-center">
-                            <div class="relative w-48 h-48 mx-auto flex items-center justify-center bg-red-100 rounded-full border-4 border-red-200">
-                                <span class="text-5xl">🚨</span>
-                                <div class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">과활성</div>
+                        <div>
+                            <p class="text-gray-600 mb-4">금리 인상기에는 은행들이 예금 유치를 위해 경쟁적으로 금리를 올립니다. 현금을 보유한 사람에게는 자산을 안전하게 불릴 좋은 기회가 됩니다.</p>
+                            <div class="flex items-start space-x-4 p-4 bg-green-50 rounded-lg border border-green-200">
+                                <span class="text-3xl">📈</span>
+                                <div>
+                                    <h4 class="font-bold text-green-800">금리 상승 시</h4>
+                                    <p class="text-green-700">예금 이자 수익 증가. 특히 단기 고금리 특판 상품이 유리할 수 있습니다.</p>
+                                </div>
                             </div>
-                            <h4 class="text-lg font-bold mt-4">편도체 (위험 감지 센서)</h4>
-                            <p class="text-gray-600">사소한 자극에도 화재경보를 울리듯 지나치게 예민해진 상태입니다.</p>
-                        </div>
-                         <div class="text-center">
-                            <div class="relative w-48 h-48 mx-auto flex items-center justify-center bg-blue-100 rounded-full border-4 border-blue-200">
-                                <span class="text-5xl">💡</span>
-                                <div class="absolute -top-2 -right-2 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full">기능 저하</div>
+                            <div class="flex items-start space-x-4 p-4 bg-red-50 rounded-lg border border-red-200 mt-4">
+                                <span class="text-3xl">📉</span>
+                                <div>
+                                    <h4 class="font-bold text-red-800">금리 하락 시</h4>
+                                    <p class="text-red-700">예금 이자 수익 감소. 금리가 더 떨어지기 전에 장기 예금으로 높은 이자를 고정하는 전략이 필요합니다.</p>
+                                </div>
                             </div>
-                            <h4 class="text-lg font-bold mt-4">전두엽 (이성적 관제탑)</h4>
-                            <p class="text-gray-600">울리는 경보를 끄고 시스템을 안정시키는 브레이크 기능이 약해진 상태입니다.</p>
+                        </div>
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h4 class="font-semibold text-lg mb-3">내 예금 이자 계산해보기</h4>
+                            <div>
+                                <label for="deposit-principal" class="block text-sm font-medium text-gray-700">예금 원금 (만원)</label>
+                                <input type="number" id="deposit-principal" value="5000" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            </div>
+                            <div class="mt-4">
+                                <label for="deposit-rate" class="block text-sm font-medium text-gray-700">연 이자율 (%)</label>
+                                <input type="number" id="deposit-rate" value="4.0" step="0.1" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            </div>
+                            <button id="calculate-deposit" class="mt-6 w-full bg-[#BF5B3F] text-white py-2 px-4 rounded-md hover:bg-[#a94f36] transition-colors">계산하기</button>
+                            <div id="deposit-result" class="mt-4 text-center font-bold text-xl text-indigo-600"></div>
                         </div>
                     </div>
-                    <p class="mt-8 text-center text-gray-700">결론적으로, 불안장애는 의지의 문제가 아닌, 뇌의 특정 회로가 오작동하는 <span class="font-bold text-teal-600">'뇌 기능의 문제'</span>입니다. "마음이 약해서 그래"라는 말은 가장 위험한 오해입니다.</p>
                 </div>
-            </section>
 
-            <section id="symptoms">
-                <h2 class="text-3xl font-bold text-center mb-2 text-teal-800">Q3. 혹시 나도 불안장애일까요?</h2>
-                <p class="text-center text-gray-600 mb-12">불안의 신호는 마음뿐만 아니라 몸으로도 나타납니다. 많은 분들이 원인 모를 통증으로 고통받기도 합니다. 이 섹션에서는 대표적인 정신적, 신체적 증상을 알아봅니다.</p>
-                <div class="bg-white p-8 rounded-lg shadow-md border border-gray-200">
-                    <div id="symptoms-tabs" class="flex justify-center border-b mb-6">
-                        <button data-tab="mental" class="symptom-tab-button px-6 py-3 font-bold text-lg text-teal-600 border-b-2 border-teal-600">정신적 증상</button>
-                        <button data-tab="physical" class="symptom-tab-button px-6 py-3 font-bold text-lg text-gray-500">신체적 증상</button>
+                <div id="loans-content" class="tab-content hidden">
+                    <h3 class="text-2xl font-bold mb-4">대출: 금리 인상은 대출자에게 '재앙'</h3>
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div>
+                             <p class="text-gray-600 mb-4">특히 변동금리 대출은 금리 상승의 충격을 고스란히 받습니다. 이자 부담이 커지면 가계의 가처분소득이 줄고 소비가 위축될 수 있습니다.</p>
+                             <div class="flex items-start space-x-4 p-4 bg-red-50 rounded-lg border border-red-200">
+                                <span class="text-3xl">📈</span>
+                                <div>
+                                    <h4 class="font-bold text-red-800">금리 상승 시</h4>
+                                    <p class="text-red-700">월 상환 이자 부담 급증. 변동금리 대출자는 고정금리 대환을 고려해볼 필요가 있습니다.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-4 p-4 bg-green-50 rounded-lg border border-green-200 mt-4">
+                                <span class="text-3xl">📉</span>
+                                <div>
+                                    <h4 class="font-bold text-green-800">금리 하락 시</h4>
+                                    <p class="text-green-700">이자 부담 감소. 저렴한 비용으로 자금을 조달하여 투자를 고려해볼 수 있는 시기입니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h4 class="font-semibold text-lg mb-3">내 대출 이자 변동 시뮬레이터</h4>
+                             <div>
+                                <label for="loan-principal" class="block text-sm font-medium text-gray-700">대출 원금 (만원)</label>
+                                <input type="number" id="loan-principal" value="30000" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            </div>
+                            <div class="mt-4">
+                                <label for="loan-rate-slider" class="block text-sm font-medium text-gray-700">대출 금리 변동: <span id="loan-rate-display" class="font-bold">4.0%</span></label>
+                                <input type="range" id="loan-rate-slider" min="2" max="8" value="4" step="0.1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer mt-1">
+                            </div>
+                            <div id="loan-result" class="mt-4 text-center">
+                                <p class="text-gray-600">예상 월 상환 이자</p>
+                                <p class="font-bold text-2xl text-red-600"></p>
+                            </div>
+                        </div>
                     </div>
-                    <div id="symptoms-content"></div>
                 </div>
-            </section>
+                
+                <div id="stocks-content" class="tab-content hidden">
+                    <h3 class="text-2xl font-bold mb-4">주식: 금리 인상은 시장을 얼어붙게 만드는 '할인율'</h3>
+                     <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div>
+                            <p class="text-gray-600 mb-4">금리 인상은 두 가지 경로로 주식 시장에 타격을 줍니다. 첫째, 기업의 이자 부담을 늘려 실적을 악화시킵니다. 둘째, 미래 이익의 가치를 현재로 끌어올 때 적용하는 '할인율'을 높여 주식의 내재 가치를 떨어뜨립니다.</p>
+                             <div class="flex items-start space-x-4 p-4 bg-red-50 rounded-lg border border-red-200">
+                                <span class="text-3xl">📈</span>
+                                <div>
+                                    <h4 class="font-bold text-red-800">금리 상승 시</h4>
+                                    <p class="text-red-700">할인율 상승으로 특히 미래 성장 기대가 큰 기술주/성장주에 불리. 안전자산 선호 심리가 커집니다.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-4 p-4 bg-green-50 rounded-lg border border-green-200 mt-4">
+                                <span class="text-3xl">📉</span>
+                                <div>
+                                    <h4 class="font-bold text-green-800">금리 하락 시</h4>
+                                    <p class="text-green-700">기업의 자금 조달 비용이 줄고 투자가 활성화됩니다. 미래 이익의 현재가치가 높아져 주식시장에 긍정적입니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h4 class="font-semibold text-lg mb-3">할인율(금리)과 자산가치 시뮬레이터</h4>
+                            <p class="text-sm text-gray-600 mb-4">'10년 후 1억 원'의 가치는 금리에 따라 현재 얼마일까요? 슬라이더를 움직여 확인해보세요.</p>
+                            <div>
+                                <label for="discount-rate-slider" class="block text-sm font-medium text-gray-700">할인율(금리): <span id="discount-rate-display" class="font-bold">3.0%</span></label>
+                                <input type="range" id="discount-rate-slider" min="1" max="10" value="3" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer mt-1">
+                            </div>
+                            <div id="stock-value-result" class="mt-4 text-center">
+                                <p class="text-gray-600">'10년 후 1억'의 현재가치</p>
+                                <p class="font-bold text-2xl text-blue-600"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-            <section id="selfcheck">
-                 <h2 class="text-3xl font-bold text-center mb-2 text-teal-800">스스로 점검해보기: GAD-7</h2>
-                <p class="text-center text-gray-600 mb-12">병원 방문 전, 자신의 상태를 객관적으로 점검해볼 수 있는 GAD-7 자가진단 도구입니다. 지난 2주간의 상태를 기준으로 답변해주세요. 이 검사는 선별 도구일 뿐, 최종 진단이 아님을 기억해주세요.</p>
-                <div class="bg-white p-8 rounded-lg shadow-md border border-gray-200 max-w-4xl mx-auto">
-                    <div id="gad7-quiz-container" class="space-y-6"></div>
-                    <button id="gad7-submit" class="mt-8 w-full bg-teal-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-teal-700 transition-colors">결과 보기</button>
-                    <div id="gad7-result-container" class="mt-8 hidden">
-                        <h3 class="text-xl font-bold text-center mb-4 text-teal-700">자가진단 결과</h3>
-                        <div class="chart-container h-24 sm:h-32">
-                            <canvas id="gad7-result-chart"></canvas>
+                <div id="realty-content" class="tab-content hidden">
+                    <h3 class="text-2xl font-bold mb-4">부동산: 금리 인상은 강력한 하방 압력</h3>
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div>
+                             <p class="text-gray-600 mb-4">부동산 시장은 레버리지(대출) 의존도가 높아 금리에 매우 민감합니다. 금리가 오르면 대출 이자 부담이 커져 주택 구매력이 감소하고, 이는 수요 위축과 거래량 감소로 이어져 가격 하락 압력으로 작용합니다.</p>
+                             <div class="flex items-start space-x-4 p-4 bg-red-50 rounded-lg border border-red-200">
+                                <span class="text-3xl">📈</span>
+                                <div>
+                                    <h4 class="font-bold text-red-800">금리 상승 시</h4>
+                                    <p class="text-red-700">주택담보대출 이자 부담 증가 → 주택 구매력 감소 → 수요 위축 및 가격 하방 압력.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-4 p-4 bg-green-50 rounded-lg border border-green-200 mt-4">
+                                <span class="text-3xl">📉</span>
+                                <div>
+                                    <h4 class="font-bold text-green-800">금리 하락 시</h4>
+                                    <p class="text-green-700">대출 부담 감소로 주택 구매 수요 증가. 유동성이 부동산 시장으로 유입되며 가격 상승 동력으로 작용할 수 있습니다.</p>
+                                </div>
+                            </div>
                         </div>
-                        <p id="gad7-score" class="text-center text-2xl font-bold my-4"></p>
-                        <p id="gad7-interpretation" class="text-center text-lg text-gray-700 p-4 bg-teal-50 rounded-lg"></p>
-                        <p class="text-center text-sm text-gray-500 mt-4"><strong>주의:</strong> 이 결과는 참고용이며, 정확한 진단은 반드시 정신건강의학과 전문의와 상의해야 합니다.</p>
-                    </div>
-                </div>
-            </section>
-            
-            <section id="treatment">
-                 <h2 class="text-3xl font-bold text-center mb-2 text-teal-800">Q4. 어떻게 치료하고, 나아질 수 있나요?</h2>
-                <p class="text-center text-gray-600 mb-12">불안장애는 효과적인 치료법이 잘 확립된 질환입니다. 치료의 목표는 불안을 '제거'하는 것이 아니라, 불안을 '관리'하며 건강한 삶을 사는 것입니다. 이 섹션에서는 대표적인 치료법을 알아봅니다.</p>
-                 <div class="grid md:grid-cols-2 gap-8">
-                    <div class="card bg-white p-6 rounded-lg shadow-md border border-gray-200">
-                        <h3 class="text-xl font-bold mb-4 text-teal-700">인지행동치료 (CBT)</h3>
-                        <p class="mb-4 text-gray-600">불안을 유지시키는 왜곡된 생각과 행동의 고리를 끊어내는 '뇌 훈련'입니다. '내가 생각을 조절할 수 있구나'라는 통제감을 되찾는 과정입니다.</p>
-                        <div class="space-y-3">
-                            <div class="p-4 bg-gray-50 rounded-md"><strong>1단계: 생각의 오류 찾기</strong><p class="text-sm text-gray-600">"모두가 나를 비웃을 거야"와 같은 비합리적인 '자동적 사고'를 찾아냅니다.</p></div>
-                             <div class="p-4 bg-gray-50 rounded-md"><strong>2단계: 생각 바꾸기</strong><p class="text-sm text-gray-600">"누군가는 나에게 호감을 가질 수도 있어"와 같이 균형 잡힌 생각으로 교체합니다.</p></div>
-                             <div class="p-4 bg-gray-50 rounded-md"><strong>3단계: 행동으로 증명하기 (노출치료)</strong><p class="text-sm text-gray-600">두려운 상황을 단계적으로 마주하며 '생각만큼 위험하지 않다'는 것을 뇌에 학습시킵니다.</p></div>
+                         <div class="bg-gray-50 p-6 rounded-lg">
+                            <h4 class="font-semibold text-lg mb-3">금리 1%p 상승 시 월 이자 부담 증가액</h4>
+                            <div>
+                                <label for="realty-loan-principal" class="block text-sm font-medium text-gray-700">주택담보대출 원금 (만원)</label>
+                                <input type="number" id="realty-loan-principal" value="40000" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            </div>
+                            <button id="calculate-realty-loan" class="mt-6 w-full bg-[#BF5B3F] text-white py-2 px-4 rounded-md hover:bg-[#a94f36] transition-colors">계산하기</button>
+                            <div id="realty-loan-result" class="mt-4 text-center">
+                                <p class="text-gray-600">금리 1%p 상승 시 월 추가 이자</p>
+                                <p class="font-bold text-2xl text-red-600"></p>
+                            </div>
                         </div>
                     </div>
-                    <div class="card bg-white p-6 rounded-lg shadow-md border border-gray-200">
-                        <h3 class="text-xl font-bold mb-4 text-teal-700">약물 치료 (SSRI 등)</h3>
-                        <p class="mb-4 text-gray-600">과열된 뇌의 엔진을 식히고 브레이크를 수리해, CBT 훈련을 받을 수 있는 안정적인 상태를 만들어줍니다. 흔한 오해들을 확인해보세요.</p>
-                        <div id="medication-myths-container" class="space-y-3"></div>
+                </div>
+            </div>
+        </section>
+
+        <div class="border-t my-16"></div>
+
+        <section id="forecast" class="py-12 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-10">금리 예측하기: 중앙은행의 언어 읽기</h2>
+            <p class="max-w-3xl mx-auto text-gray-600 mb-12 text-center">
+                금리를 예측하는 것은 어렵지만, 중앙은행이 발표하는 핵심 지표를 이해하면 미래 방향에 대한 힌트를 얻을 수 있습니다. 중앙은행의 '소통'은 금리 변동 그 자체보다 강력한 신호가 될 수 있습니다.
+            </p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="font-bold text-xl mb-3">CPI (소비자물가지수)</h3>
+                    <p class="text-gray-600 mb-4">물가 상승률을 나타내는 핵심 지표로, 중앙은행의 '성적표'와 같습니다. CPI가 목표치(보통 2%)를 크게 웃돌면 금리 인상 압력이 커집니다.</p>
+                    <div class="chart-container"><canvas id="cpiChart"></canvas></div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="font-bold text-xl mb-3">연준 점도표 (Dot Plot)</h3>
+                    <p class="text-gray-600 mb-4">연준 위원들이 미래 금리 수준을 어떻게 예상하는지 점으로 찍은 차트입니다. 공식 약속은 아니지만, 연준의 생각을 엿보는 강력한 신호입니다.</p>
+                    <div class="chart-container"><canvas id="dotPlotChart"></canvas></div>
+                </div>
+            </div>
+        </section>
+
+        <div class="border-t my-16"></div>
+
+        <section id="strategy" class="py-12 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-10">금리 변동기 생존 전략</h2>
+            <p class="max-w-3xl mx-auto text-gray-600 mb-12 text-center">
+                금리의 방향에 따라 자산 포트폴리오를 어떻게 조정해야 할까요? 금리 상승기와 하락기, 각 상황에 맞는 기본 전략을 확인하고 나의 자산 계획을 점검해보세요.
+            </p>
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2">
+                    <div class="p-6 md:p-8 bg-red-50">
+                        <h3 class="text-2xl font-bold text-red-800 mb-4">📈 금리 상승기 전략 (방어)</h3>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <span class="text-xl mr-3">💸</span>
+                                <div><strong class="font-semibold text-gray-800">부채 관리:</strong> 변동금리 대출을 고정금리로 전환 고려. 고금리 부채부터 상환하여 이자 부담 줄이기.</div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-xl mr-3">💰</span>
+                                <div><strong class="font-semibold text-gray-800">예금 확대:</strong> 안전자산인 예/적금 비중 늘리기. 금리 상승기에는 단기 고금리 상품으로 유동성 확보.</div>
+                            </li>
+                             <li class="flex items-start">
+                                <span class="text-xl mr-3">🏭</span>
+                                <div><strong class="font-semibold text-gray-800">주식 투자:</strong> 성장주보다 가치주, 배당주 중심으로 포트폴리오 재편. 현금 흐름이 좋은 기업에 주목.</div>
+                            </li>
+                             <li class="flex items-start">
+                                <span class="text-xl mr-3">📜</span>
+                                <div><strong class="font-semibold text-gray-800">채권 투자:</strong> 금리 변동에 덜 민감한 단기 채권 위주로 방어적 투자.</div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="p-6 md:p-8 bg-green-50">
+                        <h3 class="text-2xl font-bold text-green-800 mb-4">📉 금리 하락기 전략 (공격)</h3>
+                         <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <span class="text-xl mr-3">🚀</span>
+                                <div><strong class="font-semibold text-gray-800">레버리지 활용:</strong> 저렴한 이자 비용을 활용해 우량 자산(부동산, 사업) 투자 고려.</div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-xl mr-3">🔒</span>
+                                <div><strong class="font-semibold text-gray-800">예금 고정:</strong> 금리가 더 떨어지기 전에 장기 예금으로 현재의 높은 금리를 고정.</div>
+                            </li>
+                             <li class="flex items-start">
+                                <span class="text-xl mr-3">💎</span>
+                                <div><strong class="font-semibold text-gray-800">주식 투자:</strong> 금리 하락의 최대 수혜주인 기술주, 성장주 비중 확대.</div>
+                            </li>
+                             <li class="flex items-start">
+                                <span class="text-xl mr-3">📊</span>
+                                <div><strong class="font-semibold text-gray-800">채권/대안 투자:</strong> 금리 하락 시 가격이 오르는 장기 국채 투자로 시세차익 추구. 리츠(REITs) 등도 유망.</div>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-            </section>
-            
-            <section id="dailycare">
-                 <h2 class="text-3xl font-bold text-center mb-2 text-teal-800">Q5. 일상에서 불안을 줄이는 효과적인 방법</h2>
-                <p class="text-center text-gray-600 mb-12">전문적인 치료와 더불어 일상에서 꾸준히 실천할 수 있는 방법들은 불안을 관리하는 데 큰 도움이 됩니다. 이 섹션에서는 누구나 쉽게 따라 할 수 있는 구체적인 방법들을 소개합니다.</p>
-                <div id="daily-care-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                </div>
-            </section>
-        </div>
+            </div>
+        </section>
+
     </main>
 
-    <footer class="bg-gray-800 text-white mt-24">
-        <div class="container mx-auto px-6 py-12 text-center">
-            <h2 class="text-2xl font-bold mb-4">불안의 주인이 되는 삶을 향하여</h2>
-            <p class="max-w-3xl mx-auto mb-6">불안은 없애야 할 적이 아니라, 길들여야 할 나의 일부입니다. 내 안의 소란스러운 목소리의 정체를 이해하고, 귀 기울여주고, 다독여주는 법을 배울 때, 우리는 비로소 불안의 주인이 될 수 있습니다.</p>
-            <p>당신의 평온한 일상을 응원합니다.</p>
-        </div>
-    </footer>
-    
-    <div id="modal-container" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none">
-        <div id="modal-content" class="bg-white rounded-lg shadow-xl w-full max-w-lg max-h-[80vh] overflow-y-auto">
-            <div class="p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 id="modal-title" class="text-2xl font-bold text-teal-700"></h3>
-                    <button id="modal-close-button" class="text-gray-500 hover:text-gray-800">&times;</button>
-                </div>
-                <div id="modal-body" class="text-gray-700"></div>
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
+            <h3 class="text-xl font-bold">금리는 가장 중요한 '생존 신호'입니다.</h3>
+            <p class="mt-2 max-w-2xl mx-auto text-gray-300">
+                더 이상 경제 뉴스 앞에서 불안해하지 마세요. 금리의 흐름을 읽고 스스로의 자산을 지키는 현명한 경제 주체가 될 수 있습니다.
+            </p>
+            <div class="mt-6">
+                <a href="#header" class="bg-[#BF5B3F] text-white py-3 px-6 rounded-md hover:bg-[#a94f36] transition-colors font-semibold">처음으로 돌아가기</a>
             </div>
         </div>
-    </div>
+    </footer>
 
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            
-            const data = {
-                anxietyToggles: [
-                    { title: "과도성", content: "불안의 강도가 실제 위협에 비해 지나치게 강한 경우입니다. (예: TV 속 강아지 사진만 봐도 극심한 공포)" },
-                    { title: "지속성", content: "원인이 사라졌음에도 불안감이 몇 달 이상 계속되는 상태입니다. (최소 6개월 이상 지속)" },
-                    { title: "통제 불가능성", content: "스스로도 비합리적임을 알지만 걱정을 멈출 수 없는 상태를 말합니다." },
-                    { title: "일상생활 지장", content: "이러한 불안 때문에 학업, 직장, 대인관계 등 기능에 심각한 지장이 초래됩니다." }
-                ],
-                symptoms: {
-                    mental: [
-                        { icon: '🧠', title: '끊이지 않는 걱정', desc: "마음이 늘 최악의 시나리오를 향해 달려갑니다. (예: 평범한 이메일에 '해고 징조'라며 전전긍긍)" },
-                        { icon: '🏃', title: '안절부절못함', desc: "가만히 앉아있지 못하고, 늘 긴장되어 있거나 벼랑 끝에 선 느낌을 받습니다." },
-                        { icon: '🌫️', title: '집중력 저하', desc: "걱정에 에너지를 소진해 머리가 멍해지고, 책이나 대화에 집중하기 어렵습니다." },
-                        { icon: '😠', title: '짜증과 과민함', desc: "신경계가 곤두서 있어 사소한 일에도 쉽게 짜증이 나고 예민하게 반응합니다." },
-                        { icon: '💥', title: '과도한 놀람 반응', desc: "전화벨 소리나 문 여는 소리에도 심장이 철렁 내려앉습니다." }
-                    ],
-                    physical: [
-                        { icon: '🤕', title: '만성 두통/근육 뭉침', desc: "불안으로 목과 어깨 근육이 만성적으로 뭉치면서 긴장성 두통을 유발합니다." },
-                        { icon: '🤢', title: '소화불량/과민성 대장', desc: "스트레스 반응으로 소화기관 혈류가 줄어 메스꺼움, 설사, 변비 등이 나타납니다." },
-                        { icon: '😴', title: '수면장애', desc: "머릿속 걱정이 멈추지 않아 잠들기 어렵거나, 잠이 들어도 자주 깹니다." },
-                        { icon: '💓', title: '심장 두근거림', desc: "특별한 이유 없이 심장이 빨리 뛰거나 불규칙하게 뛰는 것을 느낍니다." },
-                        { icon: '💧', title: '잦은 발한/어지러움', desc: "긴장 상태가 지속되면서 땀이 나거나 어지러움을 느끼는 경우가 많습니다." }
-                    ]
-                },
-                gad7: {
-                    questions: [
-                        "초조하거나 불안하거나 조마조마하게 느낌",
-                        "걱정하는 것을 멈추거나 조절할 수가 없음",
-                        "여러 가지 것들에 대해 걱정을 너무 많이 함",
-                        "편하게 있기가 어려움",
-                        "너무 안절부절못해서 가만히 있기가 힘듦",
-                        "쉽게 짜증이 나거나 쉽게 성을 내게 됨",
-                        "마치 끔찍한 일이 생길 것처럼 두렵게 느껴짐"
-                    ],
-                    options: ["전혀 아님 (0점)", "며칠 (1점)", "절반 이상 (2점)", "거의 매일 (3점)"]
-                },
-                medicationMyths: [
-                    { title: "중독성?", content: "SSRI는 마약처럼 의존성/내성을 유발하지 않습니다. 다만, 갑자기 끊으면 '중단 증후군'이 생길 수 있어 의사 지시에 따라 서서히 줄여야 합니다." },
-                    { title: "부작용?", content: "복용 초기 메스꺼움, 졸음 등이 나타날 수 있지만 대부분 일시적이며 시간이 지나면 사라집니다. 과거 약물에 비해 훨씬 안전합니다." },
-                    { title: "왜 항우울제?", content: "세로토닌 시스템이 우울증과 불안장애 모두에 관여하기 때문입니다. 이름과 상관없이 불안장애에 매우 효과적인 1차 치료제입니다." }
-                ],
-                dailyCare: [
-                    { id: 'worry-jar', icon: '🏺', title: '걱정 항아리', desc: "걱정에도 시간을 정해주세요. 정해진 시간에만 걱정하고 나머지 시간엔 미루는 훈련입니다.",
-                        modalContent: `
-                            <p class="mb-4">하루 종일 머릿속을 떠나지 않는 걱정의 소용돌이를 멈추는 효과적인 방법입니다.</p>
-                            <ol class="list-decimal list-inside space-y-2">
-                                <li>하루 중 특정 시간(예: 저녁 7시, 15분간)을 '나의 걱정 시간'으로 정합니다. (단, 잠들기 직전은 피하세요.)</li>
-                                <li>낮 동안 걱정이 떠오르면, '이따 걱정 시간에 실컷 해줘야지'라고 생각하며 메모장에 적어두거나 마음속 '걱정 항아리'에 담아둡니다.</li>
-                                <li>정해진 시간이 되면, 모아둔 걱정들을 꺼내 마음껏 걱정합니다.</li>
-                                <li>시간이 끝나면, 즉시 걱정을 멈추고 다른 즐거운 활동으로 전환합니다.</li>
-                            </ol>
-                            <p class="mt-4 p-3 bg-teal-50 rounded-lg text-sm"><strong>효과:</strong> 걱정을 억지로 누를 때 더 심해지는 '백곰 효과'를 피하고, '내가 걱정을 통제할 수 있다'는 조절감을 되찾게 해줍니다.</p>
-                        `
-                    },
-                    { id: 'exercise', icon: '🏃‍♀️', title: '규칙적 운동', desc: "스트레스 호르몬을 태우고 기분을 좋게 하는 엔도르핀을 분비시켜 불안을 줄입니다.", 
-                        modalContent: `
-                            <p class="mb-4">과열된 교감신경계를 진정시키는 데 신체적 접근은 매우 효과적입니다.</p>
-                            <h4 class="font-bold mb-2">추천 운동</h4>
-                            <p class="mb-4">걷기, 조깅, 수영, 자전거 타기 같은 유산소 운동이 특히 좋습니다. 스트레스 호르몬인 코르티솔을 태워 없애고, '천연 진통제'라 불리는 엔도르핀 분비를 촉진합니다.</p>
-                            <h4 class="font-bold mb-2">권장 빈도</h4>
-                            <p>일주일에 3~5회, 한 번에 최소 20분 이상 꾸준히 하는 것이 효과적입니다.</p>
-                             <p class="mt-4 p-3 bg-teal-50 rounded-lg text-sm"><strong>팁:</strong> 거창하게 시작할 필요 없이, 엘리베이터 대신 계단을 이용하거나 한 정거장 먼저 내려 걷는 것부터 시작해보세요.</p>
-                        `
-                    },
-                    { id: 'pmr', icon: '🧘', title: '점진적 근육 이완법', desc: "몸의 특정 근육을 의도적으로 긴장시켰다 이완하며 몸과 마음의 긴장을 푸는 기법입니다.", 
-                        modalContent: `
-                            <p class="mb-4">불안으로 만성적으로 뭉친 근육을 풀어주는 강력하고 효과적인 이완 기법입니다. 몸의 이완이 마음의 이완으로 이어집니다.</p>
-                            <ol class="list-decimal list-inside space-y-2">
-                                <li>조용한 곳에서 편안히 앉거나 눕습니다.</li>
-                                <li>먼저 양손에 집중합니다. 주먹을 5초간 꽉 쥐어 긴장감을 느낍니다.</li>
-                                <li>그 다음 힘을 탁 풀고, 10~20초간 손에 퍼지는 따뜻하고 편안한 이완감을 충분히 느껴봅니다.</li>
-                                <li>이 '긴장과 이완'을 팔, 어깨, 얼굴(인상 쓰기), 복부(배에 힘주기), 다리, 발 등 온몸의 근육으로 옮겨가며 반복합니다.</li>
-                            </ol>
-                            <p class="mt-4 p-3 bg-teal-50 rounded-lg text-sm"><strong>효과:</strong> 몸과 마음이 어떻게 연결되어 있는지, 그리고 내가 스스로 긴장을 풀어낼 수 있다는 사실을 체감하게 해줍니다.</p>
-                        `
-                    },
-                    { id: 'food', icon: '🥗', title: '음식 조절', desc: "우리가 먹는 음식도 뇌 기능과 기분에 직접적인 영향을 미칩니다.",
-                        modalContent: `
-                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <h4 class="font-bold mb-2 text-red-600">불안을 악화시키는 음식 👎</h4>
-                                    <ul class="list-disc list-inside space-y-1">
-                                        <li><strong>카페인:</strong> 커피, 에너지 드링크 등. 심장 박동을 빠르게 하고 신경을 흥분시킵니다.</li>
-                                        <li><strong>정제 설탕:</strong> 혈당을 급격히 올렸다 떨어뜨려 기분 변화를 유발합니다.</li>
-                                        <li><strong>알코올:</strong> 일시적 안정감을 주지만, 술이 깨면서 더 심한 불안감을 유발할 수 있습니다.</li>
-                                    </ul>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold mb-2 text-green-600">마음을 안정시키는 음식 👍</h4>
-                                    <ul class="list-disc list-inside space-y-1">
-                                        <li><strong>복합 탄수화물:</strong> 현미, 귀리 등. 세로토닌 분비를 돕습니다.</li>
-                                        <li><strong>오메가-3:</strong> 연어, 고등어, 호두 등. 뇌의 염증을 줄여줍니다.</li>
-                                        <li><strong>마그네슘:</strong> 시금치, 견과류 등. '천연 이완제'로 불립니다.</li>
-                                        <li><strong>프로바이오틱스:</strong> 김치, 요거트 등. 건강한 장은 건강한 마음으로 이어집니다.</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        `
-                    },
-                    { id: 'breathing', icon: '🌬️', title: '마음챙김 호흡법', desc: "불안한 생각의 소용돌이에 휩쓸릴 때, 현재 순간으로 돌아오는 가장 강력한 닻입니다.", 
-                        modalContent: `
-                            <p class="mb-4">생각을 없애는 것이 아니라, 판단 없이 그저 바라보는 연습입니다. '나'와 '나의 생각'을 분리하는 첫걸음입니다.</p>
-                            <ol class="list-decimal list-inside space-y-2">
-                                <li>편안하게 앉아 허리를 펴고, 눈을 감거나 시선을 한 곳에 부드럽게 고정합니다.</li>
-                                <li>주의를 온전히 코끝으로 가져갑니다. 숨이 들어오고 나가는 감각, 공기의 온도 변화를 느껴봅니다.</li>
-                                <li>호흡을 억지로 조절하려 하지 말고, 그저 자연스럽게 일어나는 들숨과 날숨을 관찰합니다.</li>
-                                <li>마음이 다른 생각으로 떠돌기 시작하면(이는 지극히 정상입니다), '아, 이런 생각을 하고 있구나'라고 부드럽게 알아차린 뒤, 다시 주의를 호흡으로 가져옵니다.</li>
-                                <li>이 과정을 1분, 3분, 5분... 시간을 정해 반복합니다.</li>
-                            </ol>
-                            <p class="mt-4 p-3 bg-teal-50 rounded-lg text-sm"><strong>효과:</strong> 생각이 단지 스쳐 지나가는 정신적 현상일 뿐이라는 것을 깨닫고, 생각의 힘에서 벗어나는 연습을 할 수 있습니다.</p>
-                        `
-                    },
-                    { id: 'info', icon: 'ℹ️', title: '불안장애 유형', desc: '대표적인 불안장애인 범불안장애와 사회불안장애의 특징을 알아봅니다.', 
-                        modalContent: `
-                            <h4 class="font-bold text-lg mb-2 text-teal-700">범불안장애 (Generalized Anxiety Disorder, GAD)</h4>
-                            <p class="mb-4">이름 그대로 걱정의 범위가 매우 넓습니다. 건강, 돈, 업무, 가족 등 거의 모든 것에 대해 과도하게 걱정하는 상태가 오랫동안 지속됩니다. 걱정이 뚜렷한 원인 없이 한 주제에서 다른 주제로 옮겨 다니는 '떠다니는 불안'의 양상을 보입니다.</p>
+        document.addEventListener('DOMContentLoaded', () => {
 
-                            <h4 class="font-bold text-lg mb-2 text-teal-700">사회불안장애 (Social Anxiety Disorder, SAD)</h4>
-                            <p>다른 사람들에게 부정적인 평가를 받는 것에 대한 극심한 두려움이 핵심입니다. 여러 사람 앞에서 발표하거나, 낯선 사람과 대화하는 등 타인의 시선에 노출되는 사회적 상황을 매우 두려워하고 피하려 합니다. 자신이 불안해하는 모습을 남에게 보일까 봐 전전긍긍하는 것이 특징입니다.</p>
-                        `
-                    }
-                ]
+            const formatCurrency = (value) => {
+                return new Intl.NumberFormat('ko-KR').format(value);
             };
             
-            // Anxiety Toggle
-            const toggleContainer = document.getElementById('anxiety-toggle-container');
-            data.anxietyToggles.forEach(item => {
-                const div = document.createElement('div');
-                div.innerHTML = `
-                    <button class="w-full text-left p-4 bg-gray-50 rounded-md font-bold flex justify-between items-center hover:bg-teal-50 transition-colors">
-                        <span>${item.title}</span>
-                        <span class="transform transition-transform text-teal-600">+</span>
-                    </button>
-                    <div class="p-4 text-sm text-gray-600 bg-white hidden">
-                        ${item.content}
-                    </div>
-                `;
-                const button = div.querySelector('button');
-                const content = div.querySelector('div');
-                const icon = button.querySelector('span:last-child');
-                button.addEventListener('click', () => {
-                    content.classList.toggle('hidden');
-                    icon.textContent = content.classList.contains('hidden') ? '+' : '−';
-                    icon.classList.toggle('rotate-45');
+            const rateSlider = document.getElementById('rate-slider');
+            const rateDisplay = document.getElementById('rate-display');
+            const gravitySystem = document.getElementById('gravity-system');
+            const planets = gravitySystem.querySelectorAll('.planet');
+            const sun = document.getElementById('sun');
+            const gravityExplanation = document.getElementById('gravity-explanation');
+
+            const initialPositions = Array.from(planets).map(p => ({
+                el: p,
+                distanceFactor: parseFloat(p.dataset.distance),
+                top: p.style.top,
+                left: p.style.left
+            }));
+            
+            const explanations = {
+                "0.5": "초저금리 시대입니다. 돈의 가치가 낮아져 모두가 대출을 받아 주식, 부동산 등 위험자산에 투자하려 합니다. 자산 가격이 부풀어 오릅니다.",
+                "1.5": "여전히 낮은 금리입니다. 경기를 부양하기 위한 정책이 유지되며, 투자가 활발하게 일어납니다.",
+                "2.5": "중립적인 금리 수준에 가깝습니다. 경제가 안정적으로 성장하고 있지만, 과열을 경계하기 시작합니다.",
+                "3.5": "경제가 과열되거나 물가가 오르기 시작해 금리를 인상하는 시기입니다. 돈의 가치가 높아지며 자산 시장이 압박을 받기 시작합니다.",
+                "4.5": "본격적인 긴축의 시대입니다. 대출 이자 부담이 커지고, 기업 투자가 위축됩니다. 안전 자산인 예금의 매력이 커집니다.",
+                "5.5": "강력한 긴축 정책이 시행됩니다. 자산 가격이 하락 압력을 강하게 받고, 경제 전반의 활동이 둔화될 수 있습니다.",
+                "6.5": "초고금리 시대입니다. 경제를 희생해서라도 물가를 잡겠다는 강력한 의지가 보입니다. 자산 시장이 크게 위축될 수 있습니다.",
+            };
+
+            const updateGravity = () => {
+                const rate = parseFloat(rateSlider.value);
+                rateDisplay.textContent = `${rate.toFixed(2)}%`;
+                const gravityFactor = (rate - 0.5) / (6.5 - 0.5); 
+
+                const sunRect = sun.getBoundingClientRect();
+                const systemRect = gravitySystem.getBoundingClientRect();
+                const sunCenterX = sun.offsetLeft + sun.offsetWidth / 2;
+                const sunCenterY = sun.offsetTop + sun.offsetHeight / 2;
+
+                planets.forEach(planet => {
+                    const distanceFactor = parseFloat(planet.dataset.distance);
+                    const baseDistance = 150 + (distanceFactor - 1) * 50; 
+                    const currentDistance = baseDistance * (1 - gravityFactor * 0.6); 
+                    
+                    const angle = (Array.from(planets).indexOf(planet) * (360 / planets.length)) * (Math.PI / 180);
+                    const x = sunCenterX + currentDistance * Math.cos(angle) - planet.offsetWidth / 2;
+                    const y = sunCenterY + currentDistance * Math.sin(angle) - planet.offsetHeight / 2;
+
+                    planet.style.transform = `translate(${x - planet.offsetLeft}px, ${y - planet.offsetTop}px)`;
                 });
-                toggleContainer.appendChild(div);
+
+                const closestRateKey = Object.keys(explanations).reduce((prev, curr) => {
+                   return (Math.abs(curr - rate) < Math.abs(prev - rate) ? curr : prev);
+                });
+                gravityExplanation.textContent = explanations[closestRateKey];
+            };
+
+            rateSlider.addEventListener('input', updateGravity);
+            updateGravity();
+            
+            const tabs = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(item => item.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    const target = tab.dataset.tab;
+                    tabContents.forEach(content => {
+                        if (content.id === `${target}-content`) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
             });
 
-            // Disorder Comparison Chart
-            new Chart(document.getElementById('disorder-comparison-chart'), {
+            const calculateDepositBtn = document.getElementById('calculate-deposit');
+            calculateDepositBtn.addEventListener('click', () => {
+                const principal = parseFloat(document.getElementById('deposit-principal').value) * 10000;
+                const rate = parseFloat(document.getElementById('deposit-rate').value) / 100;
+                if (isNaN(principal) || isNaN(rate)) return;
+
+                const interest = principal * rate;
+                const resultDiv = document.getElementById('deposit-result');
+                resultDiv.innerHTML = `1년 후 세전 이자: <span class="text-green-600">${formatCurrency(Math.round(interest))}원</span>`;
+            });
+            
+            const loanRateSlider = document.getElementById('loan-rate-slider');
+            const loanRateDisplay = document.getElementById('loan-rate-display');
+            const loanResultP = document.querySelector('#loan-result p:last-child');
+            const calculateLoan = () => {
+                const principal = parseFloat(document.getElementById('loan-principal').value) * 10000;
+                const rate = parseFloat(loanRateSlider.value);
+                loanRateDisplay.textContent = `${rate.toFixed(1)}%`;
+                if(isNaN(principal) || isNaN(rate)) return;
+                
+                const monthlyInterest = (principal * (rate / 100)) / 12;
+                loanResultP.textContent = `${formatCurrency(Math.round(monthlyInterest))}원`;
+            };
+            document.getElementById('loan-principal').addEventListener('input', calculateLoan);
+            loanRateSlider.addEventListener('input', calculateLoan);
+            calculateLoan();
+
+            const discountRateSlider = document.getElementById('discount-rate-slider');
+            const discountRateDisplay = document.getElementById('discount-rate-display');
+            const stockValueResultP = document.querySelector('#stock-value-result p:last-child');
+            const calculateStockValue = () => {
+                const futureValue = 100000000;
+                const rate = parseFloat(discountRateSlider.value);
+                discountRateDisplay.textContent = `${rate.toFixed(1)}%`;
+                if(isNaN(rate)) return;
+
+                const presentValue = futureValue / Math.pow(1 + rate / 100, 10);
+                stockValueResultP.textContent = `${formatCurrency(Math.round(presentValue))}원`;
+            };
+            discountRateSlider.addEventListener('input', calculateStockValue);
+            calculateStockValue();
+
+            const calculateRealtyBtn = document.getElementById('calculate-realty-loan');
+            calculateRealtyBtn.addEventListener('click', () => {
+                 const principal = parseFloat(document.getElementById('realty-loan-principal').value) * 10000;
+                 if(isNaN(principal)) return;
+                 const additionalInterest = (principal * 0.01) / 12;
+                 document.querySelector('#realty-loan-result p:last-child').textContent = `${formatCurrency(Math.round(additionalInterest))}원`;
+            });
+
+            const cpiCtx = document.getElementById('cpiChart').getContext('2d');
+            new Chart(cpiCtx, {
                 type: 'line',
                 data: {
-                    labels: ['시간 1', '시간 2', '시간 3', '시간 4', '시간 5', '시간 6', '시간 7'],
+                    labels: ['1월', '2월', '3월', '4월', '5월', '6월', '7월'],
                     datasets: [{
-                        label: '공황장애 (급작스러운 공포)',
-                        data: [1, 1, 9, 2, 1, 1, 1],
-                        borderColor: 'rgb(239, 68, 68)',
-                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        label: '소비자물가지수(CPI) 상승률',
+                        data: [5.2, 5.0, 4.2, 3.7, 3.3, 2.7, 2.3],
+                        borderColor: '#BF5B3F',
+                        backgroundColor: 'rgba(191, 91, 63, 0.1)',
                         fill: true,
-                        tension: 0.4
+                        tension: 0.4,
                     }, {
-                        label: '범불안장애 (만성적 걱정)',
-                        data: [6, 6.5, 6, 7, 6.5, 6, 7],
-                        borderColor: 'rgb(13, 148, 136)',
-                        backgroundColor: 'rgba(13, 148, 136, 0.1)',
-                        fill: true,
-                        tension: 0.4
+                        label: '중앙은행 목표',
+                        data: [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],
+                        borderColor: '#81B29A',
+                        borderDash: [5, 5],
+                        fill: false,
+                        pointRadius: 0
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true, max: 10, title: { display: true, text: '불안 수준' } } }
+                    plugins: { legend: { position: 'top' }, title: { display: true, text: '가상 CPI 추이' } },
+                    scales: { y: { beginAtZero: true, ticks: { callback: value => value + '%' } } }
                 }
             });
 
-            // Symptoms Tabs
-            const symptomsContent = document.getElementById('symptoms-content');
-            const symptomTabButtons = document.querySelectorAll('.symptom-tab-button');
-            
-            function renderSymptoms(type) {
-                symptomsContent.innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    ${data.symptoms[type].map(symptom => `
-                        <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
-                            <span class="text-3xl mt-1">${symptom.icon}</span>
-                            <div>
-                                <h4 class="font-bold">${symptom.title}</h4>
-                                <p class="text-sm text-gray-600">${symptom.desc}</p>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>`;
-            }
-            
-            symptomTabButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    symptomTabButtons.forEach(btn => {
-                        btn.classList.remove('text-teal-600', 'border-teal-600');
-                        btn.classList.add('text-gray-500');
-                    });
-                    button.classList.add('text-teal-600', 'border-teal-600');
-                    button.classList.remove('text-gray-500');
-                    renderSymptoms(button.dataset.tab);
-                });
-            });
-
-            renderSymptoms('mental'); // Initial render
-            
-            // GAD-7 Quiz
-            const quizContainer = document.getElementById('gad7-quiz-container');
-            data.gad7.questions.forEach((q, i) => {
-                const questionDiv = document.createElement('div');
-                questionDiv.className = 'gad7-question';
-                questionDiv.innerHTML = `
-                    <p class="font-semibold mb-3">${i + 1}. ${q}</p>
-                    <div class="flex flex-wrap gap-x-4 gap-y-2">
-                        ${data.gad7.options.map((opt, j) => `
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="radio" name="q${i}" value="${j}" class="form-radio text-teal-600">
-                                <span>${opt}</span>
-                            </label>
-                        `).join('')}
-                    </div>
-                `;
-                quizContainer.appendChild(questionDiv);
-            });
-
-            const gad7Submit = document.getElementById('gad7-submit');
-            const gad7ResultContainer = document.getElementById('gad7-result-container');
-            let gad7ChartInstance = null;
-            gad7Submit.addEventListener('click', () => {
-                const answers = document.querySelectorAll('input[type="radio"]:checked');
-                if (answers.length < data.gad7.questions.length) {
-                    alert('모든 질문에 답변해주세요.');
-                    return;
-                }
-                const score = Array.from(answers).reduce((acc, curr) => acc + parseInt(curr.value), 0);
-                
-                let interpretation = '';
-                let color = '';
-                if (score <= 4) { interpretation = "정상 범위의 불안 수준입니다."; color = 'rgb(74, 222, 128)'; }
-                else if (score <= 9) { interpretation = "경미한 수준의 불안이 의심됩니다."; color = 'rgb(250, 204, 21)'; }
-                else if (score <= 14) { interpretation = "중등도 수준의 불안이 의심됩니다. 전문가와의 상담을 고려해볼 필요가 있습니다."; color = 'rgb(249, 115, 22)'; }
-                else { interpretation = "심한 수준의 불안이 의심됩니다. 전문가의 도움이 적극적으로 필요합니다."; color = 'rgb(239, 68, 68)'; }
-                
-                document.getElementById('gad7-score').textContent = `총점: ${score} / 21`;
-                document.getElementById('gad7-interpretation').textContent = interpretation;
-                gad7ResultContainer.classList.remove('hidden');
-
-                const chartCanvas = document.getElementById('gad7-result-chart');
-                if (gad7ChartInstance) {
-                    gad7ChartInstance.destroy();
-                }
-                gad7ChartInstance = new Chart(chartCanvas, {
-                    type: 'bar',
-                    data: {
-                        labels: ['나의 점수'],
-                        datasets: [{
-                            label: '점수',
-                            data: [score],
-                            backgroundColor: color,
-                            borderColor: color,
-                            borderWidth: 1,
-                            barThickness: 50
-                        }]
+            const dotPlotCtx = document.getElementById('dotPlotChart').getContext('2d');
+            new Chart(dotPlotCtx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: '연준 위원 금리 전망',
+                        data: [
+                            {x: 2025, y: 4.6}, {x: 2025, y: 4.6}, {x: 2025, y: 4.9}, {x: 2025, y: 5.1}, {x: 2025, y: 5.1}, {x: 2025, y: 5.1},
+                            {x: 2026, y: 3.1}, {x: 2026, y: 3.4}, {x: 2026, y: 3.6}, {x: 2026, y: 3.9}, {x: 2026, y: 3.9}, {x: 2026, y: 4.1},
+                            {x: 2027, y: 2.5}, {x: 2027, y: 2.5}, {x: 2027, y: 2.8}, {x: 2027, y: 3.0}, {x: 2027, y: 3.0}
+                        ],
+                        backgroundColor: '#BF5B3F',
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, title: { display: true, text: '가상 연준 점도표' },
+                        tooltip: { callbacks: { label: (context) => `전망 금리: ${context.parsed.y}%` } }
                     },
-                    options: {
-                        indexAxis: 'y',
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: { x: { beginAtZero: true, max: 21 } }
+                    scales: {
+                        x: { type: 'linear', position: 'bottom', min: 2024.5, max: 2027.5, ticks: { stepSize: 1, callback: value => value } },
+                        y: { ticks: { callback: value => value + '%' } }
                     }
-                });
-            });
-
-            // Medication Myths
-            const mythsContainer = document.getElementById('medication-myths-container');
-            data.medicationMyths.forEach(myth => {
-                const div = document.createElement('div');
-                div.innerHTML = `
-                    <button class="w-full text-left p-4 bg-gray-50 rounded-md font-bold flex justify-between items-center hover:bg-teal-50 transition-colors">
-                        <span>${myth.title}</span>
-                        <span class="transform transition-transform text-teal-600">+</span>
-                    </button>
-                    <div class="p-4 text-sm text-gray-600 bg-white hidden">
-                        ${myth.content}
-                    </div>
-                `;
-                const button = div.querySelector('button');
-                const content = div.querySelector('div');
-                const icon = button.querySelector('span:last-child');
-                button.addEventListener('click', () => {
-                    content.classList.toggle('hidden');
-                    icon.textContent = content.classList.contains('hidden') ? '+' : '−';
-                });
-                mythsContainer.appendChild(div);
-            });
-            
-            // Daily Care Grid & Modal
-            const dailyCareGrid = document.getElementById('daily-care-grid');
-            const modalContainer = document.getElementById('modal-container');
-            const modalContent = document.getElementById('modal-content');
-            const modalTitle = document.getElementById('modal-title');
-            const modalBody = document.getElementById('modal-body');
-            const modalCloseButton = document.getElementById('modal-close-button');
-
-            data.dailyCare.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'card bg-white p-6 rounded-lg shadow-md border border-gray-200 cursor-pointer';
-                card.innerHTML = `
-                    <div class="flex items-center space-x-4">
-                        <span class="text-4xl">${item.icon}</span>
-                        <div>
-                            <h4 class="text-lg font-bold text-teal-700">${item.title}</h4>
-                            <p class="text-sm text-gray-600">${item.desc}</p>
-                        </div>
-                    </div>
-                `;
-                card.addEventListener('click', () => {
-                    modalTitle.textContent = item.title;
-                    modalBody.innerHTML = item.modalContent;
-                    modalContainer.classList.remove('opacity-0', 'pointer-events-none');
-                });
-                dailyCareGrid.appendChild(card);
-            });
-
-            function closeModal() {
-                modalContainer.classList.add('opacity-0', 'pointer-events-none');
-            }
-            modalCloseButton.addEventListener('click', closeModal);
-            modalContainer.addEventListener('click', (e) => {
-                if (e.target === modalContainer) {
-                    closeModal();
                 }
             });
-
-            // Mobile menu toggle
+            
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
             mobileMenuButton.addEventListener('click', () => {
                 mobileMenu.classList.toggle('hidden');
             });
             
-            // Nav link active state on scroll
-            const sections = document.querySelectorAll('section[id]');
             const navLinks = document.querySelectorAll('.nav-link');
-            const headerHeight = document.getElementById('nav-header').offsetHeight;
+            const sections = document.querySelectorAll('section');
 
-            window.addEventListener('scroll', () => {
-                let current = '';
-                sections.forEach(section => {
-                    const sectionTop = section.offsetTop - headerHeight - 20;
-                    if (pageYOffset >= sectionTop) {
-                        current = section.getAttribute('id');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
                     }
                 });
+            }, { rootMargin: "-50% 0px -50% 0px" });
 
-                navLinks.forEach(link => {
-                    link.classList.remove('active');
-                    if (link.getAttribute('href').includes(current)) {
-                        link.classList.add('active');
-                    }
-                });
+            sections.forEach(section => observer.observe(section));
+            
+            navLinks.forEach(link => {
+              link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 70, // header height
+                        behavior: 'smooth'
+                    });
+                }
+                if (mobileMenu.classList.contains('hidden') === false) {
+                    mobileMenu.classList.add('hidden');
+                }
+              });
             });
-
         });
     </script>
-
 </body>
 </html>
